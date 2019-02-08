@@ -1,5 +1,6 @@
 package com.example.team31_personalbest;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -46,9 +47,15 @@ public class MainActivity extends AppCompatActivity
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                launchWalkRunActivity();
             }
         });
+    }
+
+    public void launchWalkRunActivity() {
+        Intent intent = new Intent(this, WalkRunActivity.class);
+        //intent.putExtra(WalkRunActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
+        startActivity(intent);
     }
 
     @Override
