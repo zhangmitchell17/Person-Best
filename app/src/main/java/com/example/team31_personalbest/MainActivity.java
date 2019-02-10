@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity
      * inner class used to reset time everyday
      */
     class resetThread extends TimerTask {
-
         public void run() {
             runOnUiThread(new Runnable() {
                 public void run() {

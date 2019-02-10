@@ -1,16 +1,23 @@
 package com.example.team31_personalbest;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import edu.ucsd.cse110.googlefitapp.fitness.FitnessServiceFactory;
+public class StepCountActivity extends AppCompatActivity {
 
-public class GoogleConnecter extends AppCompatActivity {
+    public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
+
+    private static final String TAG = "StepCountActivity";
+
+    private TextView textSteps;
     private FitnessService fitnessService;
 
     @Override
@@ -32,9 +39,6 @@ public class GoogleConnecter extends AppCompatActivity {
 
         fitnessService.setup();
 
-
-
-
     }
 
 
@@ -44,10 +48,35 @@ public class GoogleConnecter extends AppCompatActivity {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == fitnessService.getRequestCode()) {
                 fitnessService.updateStepCount();
+
             }
         } else {
             Log.e(TAG, "ERROR, google fit result code: " + resultCode);
         }
     }
+
+    public void setStepCount(long stepCount) {
+        textSteps.setText(String.valueOf(stepCount));
+
+        int i = 1000;
+        textSteps.setText(Integer.toString(i));
+        if(Integer.parseInt(textSteps.getText().toString()) == 1000) {
+            showEncouragement();
+        }
+    }
+
+    public void showEncouragement() {
+        int steps = Integer.parseInt(textSteps.getText().toString());
+
+        // use toast message
+        Context context = getApplicationContext();
+        CharSequence text = "Good job! You're already at ";
+        int duration = Toast.LENGTH_LONG;
+
+        text  = text + Double.toString(steps / (double)(100)) + "% of the daily recommended number of steps.";
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
+
 
 }
