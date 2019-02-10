@@ -1,4 +1,4 @@
-import com.example.team31_personalbest.R;
+package com.example.team31_personalbest;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,7 +19,7 @@ public class Timer extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_walk_run);
-        timeDisplay = findViewById(R.id.timeDisplay);
+        timeDisplay = findViewById(R.id.textViewTimer);
         btnStop = findViewById(R.id.buttonStop);
         Clock clock = new Clock();
         clock.execute();
@@ -69,7 +69,7 @@ public class Timer extends AppCompatActivity {
         }
 
         @Override
-        protected void onProgressUpdate() {
+        protected void onProgressUpdate(String ... s) {
             updateTime();
             String currTime = hours + ":" + minutes + ":" + seconds;
             timeDisplay.setText(currTime);
