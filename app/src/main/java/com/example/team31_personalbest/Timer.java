@@ -76,10 +76,6 @@ public class Timer extends AppCompatActivity {
             timeDisplay.setText(s[0]);
         }
 
-        public long getTime() {
-            return time;
-        }
-
         public void updateTime() {
             int temp = (int) time;
             hours = (int) time / SECS_PER_HOUR;
@@ -91,7 +87,7 @@ public class Timer extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            if (!isCancelled) {
+            if (isCancelled) {
                 String currTime = hours + ":" + minutes + ":" + seconds;
                 String finalMessage = "Final Time: " + currTime;
                 timeDisplay.setText(finalMessage);
