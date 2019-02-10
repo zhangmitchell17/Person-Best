@@ -48,9 +48,12 @@ public class Timer extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
+            String currTime;
             while (true) {
                 if (isCancelled()) break;
-                publishProgress();
+                updateTime();
+                currTime = hours + ":" + minutes + ":" + seconds;
+                publishProgress(currTime);
                 try {
                     int t = Integer.parseInt(params[0]) * 1000;
                     Thread.sleep(t);
@@ -70,9 +73,7 @@ public class Timer extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(String ... s) {
-            updateTime();
-            String currTime = hours + ":" + minutes + ":" + seconds;
-            timeDisplay.setText(currTime);
+            timeDisplay.setText(s[0]);
         }
 
         public long getTime() {
