@@ -1,3 +1,5 @@
+package com.example.team31_personalbest;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -5,8 +7,8 @@ import android.widget.TextView;
 
 public class Timer extends AppCompatActivity {
     private TextView timeDisplay;
-    private final const int SECS_PER_HOUR = 3600;
-    private final const int SECS_PER_MIN = 60;
+    private final static int SECS_PER_HOUR = 3600;
+    private final static int SECS_PER_MIN = 60;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +59,12 @@ public class Timer extends AppCompatActivity {
         }
 
         public void updateTime() {
-            int temp = time;
-            int hours = time/SECS_PER_HOUR;
+            long temp = time;
+            long hours = time/SECS_PER_HOUR;
             temp = time % SECS_PER_HOUR;
-            int minutes = temp/SECS_PER_MIN;
+            long minutes = temp/SECS_PER_MIN;
             temp = temp % SECS_PER_MIN;
-            int seconds = temp;
+            long seconds = temp;
         }
     }
 }
