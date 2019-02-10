@@ -33,9 +33,6 @@ public class Timer extends AppCompatActivity {
         });
     }
 
-
-
-
     private class Clock extends AsyncTask<String, String, String> {
         private String resp;
 

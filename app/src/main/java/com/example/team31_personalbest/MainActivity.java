@@ -2,10 +2,12 @@ package com.example.team31_personalbest;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.format.Time;
@@ -35,43 +37,46 @@ import static android.content.Context.MODE_PRIVATE;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    // inner class used to reset time everyday
-    class ResetSteps {
-        Timer timer;
+    public int steps = 100;
 
-        public ResetSteps() {
+    /*
+     * inner class used to reset time everyday
+     */
+    class resetThread extends TimerTask {
+
+        public void run() {
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    // reset time
+                    Toast.makeText(MainActivity.this, "Your step is reset", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    }
+
+    /* background time checking to reset time */
+    class backGroundTimeChecking extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
             // set time to be midnight
             Calendar midnight = Calendar.getInstance();
-            midnight.set(Calendar.HOUR_OF_DAY, 0);
-            midnight.set(Calendar.MINUTE, 0);
+            midnight.set(Calendar.HOUR_OF_DAY, 22);
+            midnight.set(Calendar.MINUTE, 41);
             midnight.set(Calendar.SECOND, 0);
 
-            timer = new Timer();
-            timer.schedule(new ResetTask(), midnight.getTime(),
-                    TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
-        }
+            while(true) {
+                resetThread thread = new resetThread();
 
-        class ResetTask extends TimerTask {
-            public void run() {
-                SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharePref.edit();
+                // if mid night, reset time
+                if (midnight.get(Calendar.HOUR) == 0) {
+                    thread.run();
+                }
 
-                // today's date
-                Handler mHandler = new Handler(Looper.getMainLooper()) {
-                    @Override
-                    public void handleMessage(Message message) {
-                        // This is where you do your work in the UI thread.
-                        // Your worker tells you in the message what to do.
-                        Toast.makeText(MainActivity.this, "Your step is reset", Toast.LENGTH_LONG).show();
-                    }
-                };
-
-                String date = new SimpleDateFormat("MM-dd-yyyy").format(Calendar.getInstance().getTime());
-
-                // store date in sharedPreferenceFile
-                editor.remove("date");
-                editor.putString("date", date);
-                editor.apply();
+                // check time every one minute
+                try {
+                    TimeUnit.MINUTES.sleep(1);
+                } catch (Exception e) {
+                }
             }
         }
     }
@@ -109,16 +114,20 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        // Use time thread to reset step when app is running
-        ResetSteps resetSteps = new ResetSteps();
+        // Use time thread to reset step when app is runningi
+        new backGroundTimeChecking().execute(null,null,null);
     }
 
     // everytime user back to main page, check for step reset
     public void onResume() {
         super.onResume();
         // Hongyu: when app is launched check if date changed, if date is changed reset steps
+
         SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharePref.edit();
+
+        editor.putString("date", "02-09-2019");
+        editor.apply();
 
         // today's date
         String date = new SimpleDateFormat("MM-dd-yyyy").format(Calendar.getInstance().getTime());
