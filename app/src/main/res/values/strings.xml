@@ -6,4 +6,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="hint">Please enter your height(In inches)</string>
+    <string name = "saveButton"> Save</string>
+    <string name = "backButton"> Go to main page</string>
 </resources>
