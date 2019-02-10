@@ -15,6 +15,7 @@ public class WalkRunActivity extends AppCompatActivity {
     private TextView timeDisplay;
     private final int SECS_PER_HOUR = 3600;
     private final int SECS_PER_MIN = 60;
+    private final int MS_PER_SEC = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,9 @@ public class WalkRunActivity extends AppCompatActivity {
             }
         });
 
+        /*
+         * makes a timer, makes the async task for it, and begins it
+         */
         timeDisplay = findViewById(R.id.textViewTimer);
         btnStop = findViewById(R.id.buttonStop);
         Clock clock = new Clock();
@@ -43,11 +47,15 @@ public class WalkRunActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Clock class is an AsyncTask that offloads a timer task onto a thread
+     * to continuously update the timer text on WalkRunActivity
+     */
     private class Clock extends AsyncTask<String, String, String> {
         private String resp;
 
         // Holds the number of seconds since beginning
-        private long time;
+        private long time = 0;
 
         private int hours;
         private int minutes;
@@ -55,15 +63,18 @@ public class WalkRunActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
+            // variable that holds the string for time
             String currTime;
+
+            // loop that iterates each second to update time
             while (true) {
-                if (isCancelled()) break;
+                if (isCancelled) break;
                 updateTime();
-                currTime = hours + ":" + minutes + ":" + seconds;
+                // format to pad 1 digits numbers with a 0 e.g. "01, 02"
+                currTime = String.format("%02d:%02d:%02d", hours, minutes, seconds);
                 publishProgress(currTime);
                 try {
-                    int t = Integer.parseInt(params[0]) * 1000;
-                    Thread.sleep(t);
+                    Thread.sleep(MS_PER_SEC);
                     time++;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -74,35 +85,38 @@ public class WalkRunActivity extends AppCompatActivity {
         }
 
         @Override
+        /**
+         * present so that we can extend the classs
+         */
         protected void onPreExecute() {
-            time = 0;
         }
 
         @Override
+        /**
+         * updating timeDisplay so that the text is updated on the activity
+         */
         protected void onProgressUpdate(String ... s) {
             timeDisplay.setText(s[0]);
         }
 
-        public long getTime() {
-            return time;
-        }
-
+        /**
+         * incrementing minutes and hours if seconds or minutes overflows above 60
+         */
         public void updateTime() {
             int temp = (int) time;
-            hours = (int) time / SECS_PER_HOUR;
-            temp = (int) time % SECS_PER_HOUR;
+            hours = temp / SECS_PER_HOUR;
+            temp = temp % SECS_PER_HOUR;
             minutes = temp / SECS_PER_MIN;
             temp = temp % SECS_PER_MIN;
             seconds = temp;
         }
 
         @Override
+        /**
+         * present so that we can extend the class
+         */
         protected void onPostExecute(String result) {
-            if (!isCancelled) {
-                String currTime = hours + ":" + minutes + ":" + seconds;
-                String finalMessage = "Final Time: " + currTime;
-                timeDisplay.setText(finalMessage);
-            }
+            // doesn't need to to anything after finishing
         }
     }
 
