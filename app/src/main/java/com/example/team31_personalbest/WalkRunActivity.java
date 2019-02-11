@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class WalkRunActivity extends AppCompatActivity {
-    private boolean isCancelled = false;
     private Button btnStop;
     private TextView timeDisplay;
     private Timer t;
