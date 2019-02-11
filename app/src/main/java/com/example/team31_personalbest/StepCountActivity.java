@@ -39,6 +39,7 @@ public class StepCountActivity extends AppCompatActivity {
 
         fitnessService.setup();
 
+        switchToInputHeight();
     }
 
 
@@ -78,5 +79,8 @@ public class StepCountActivity extends AppCompatActivity {
         toast.show();
     }
 
-
+    public void switchToInputHeight() {
+        Intent intent = new Intent(this, InputHeight.class);
+        startActivity(intent);
+    }
 }

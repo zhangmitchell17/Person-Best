@@ -36,10 +36,28 @@ import static android.content.Context.MODE_PRIVATE;
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private String fitnessServiceKey = "GOOGLE_FIT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_start_login);
+        Button btnGoToSteps = findViewById(R.id.buttonLogin);
+        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchStepCountActivity();
+            }
+        });
+
+        FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
+            @Override
+            public FitnessService create(StepCountActivity stepCountActivity) {
+                return new GoogleFitAdapter(stepCountActivity);
+            }
+        });
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -97,6 +115,12 @@ public class MainActivity extends AppCompatActivity
         editor.remove("date");
         editor.putString("date", date);
         editor.apply();
+    }
+
+    public void launchStepCountActivity() {
+        Intent intent = new Intent(this, InputHeight.class);
+        //intent.putExtra(StepCountActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
+        startActivity(intent);
     }
 
     public void launchInputHeightActivity() {
