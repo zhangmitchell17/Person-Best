@@ -2,15 +2,9 @@ package com.example.team31_personalbest;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.text.format.Time;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,14 +18,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
-
-import static android.content.Context.MODE_PRIVATE;
 
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
@@ -116,8 +103,8 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    public void launchInputHeightActivity() {
-        Intent intent = new Intent(this, InputHeight.class);
+    public void launchInputHeightStepGoalActivity() {
+        Intent intent = new Intent(this, InputHeightStepGoal.class);
         //intent.putExtra(WalkRunActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
         startActivity(intent);
     }
@@ -168,7 +155,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_stride) {
             // Go to stride settings
-            launchInputHeightActivity();
+            launchInputHeightStepGoalActivity();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
