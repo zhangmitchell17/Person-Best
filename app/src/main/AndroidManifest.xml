@@ -21,6 +21,8 @@
         </activity>
         <activity android:name=".WalkRunActivity" />
         <activity android:name=".InputHeight"></activity>
+        <activity android:name=".StepCountActivity"></activity>
+
     </application>
 
 </manifest>

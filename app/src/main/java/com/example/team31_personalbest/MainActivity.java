@@ -42,56 +42,44 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_start_login);
-        Button btnGoToSteps = findViewById(R.id.buttonLogin);
-        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchStepCountActivity();
-            }
-        });
+        //Shicheng: need to redesign the first layout that appears to the user,
+        //          otherwise hard to login
 
-        FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
-            @Override
-            public FitnessService create(StepCountActivity stepCountActivity) {
-                return new GoogleFitAdapter(stepCountActivity);
-            }
-        });
+            setContentView(R.layout.activity_main);
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
 
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+            FloatingActionButton fab = findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.addDrawerListener(toggle);
+            toggle.syncState();
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+            NavigationView navigationView = findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+            Button startButton = findViewById(R.id.buttonStart);
+            startButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    launchWalkRunActivity();
+                }
+            });
 
-        Button startButton = findViewById(R.id.buttonStart);
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchWalkRunActivity();
-            }
-        });
-
-        //fake steps
-        SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharePref.edit();
-        editor.putInt("steps", 100);
+            //fake steps
+            SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharePref.edit();
+            editor.putInt("steps", 100);
+//        }
     }
 
     // every time user back to main page, check for step reset
@@ -117,9 +105,14 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
     }
 
-    public void launchStepCountActivity() {
-        Intent intent = new Intent(this, InputHeight.class);
-        //intent.putExtra(StepCountActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
+    public void launchLogin() {
+        Intent intent = new Intent(this, Login.class);
+        startActivity(intent);
+    }
+
+    public void launchStepCount() {
+        Intent intent = new Intent(MainActivity.this, StepCountActivity.class);
+        intent.putExtra(StepCountActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
         startActivity(intent);
     }
 
