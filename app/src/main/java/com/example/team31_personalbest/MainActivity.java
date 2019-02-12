@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
         //updateUI(account);
-        if (account != null) { launchLogin();}
+        if (account == null) { launchLogin();}
     }
 
     // every time user back to main page, check for step reset
