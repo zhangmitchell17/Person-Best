@@ -74,10 +74,11 @@ public class MainActivity extends AppCompatActivity
 
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        // GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
         //updateUI(account);
-        if (account == null) { launchLogin();}
+        //if (account == null) { launchLogin();}
+        launchLogin();
     }
 
     // every time user back to main page, check for step reset
