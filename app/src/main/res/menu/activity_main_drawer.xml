@@ -6,8 +6,8 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_stride"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Stride Length Settings" />
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Stride Length/ Step Goal" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
