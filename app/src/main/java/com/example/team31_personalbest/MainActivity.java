@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -27,6 +28,7 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private String fitnessServiceKey = "GOOGLE_FIT";
+    int cnt = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +71,8 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharePref.edit();
             editor.putInt("steps", 100);
-//        }
 
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-
-        launchLogin();
+            launchLogin();
     }
 
     // every time user back to main page, check for step reset
@@ -99,6 +96,25 @@ public class MainActivity extends AppCompatActivity
         editor.remove("date");
         editor.putString("date", date);
         editor.apply();
+
+        // update step count on screen
+        updateStepCntAndStride();
+
+    }
+
+    public void updateStepCntAndStride() {
+        // store current height and stride length for textview in main page to use
+
+        SharedPreferences sharePref = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
+        String currentSteps = sharePref.getString("step", "1000");
+
+        sharePref = getSharedPreferences("savedHeight", MODE_PRIVATE);
+        String currentStrideLength = sharePref.getString("height", "69");
+
+        TextView strideLength = (TextView)findViewById(R.id.stride_length);
+        strideLength.setText("Your stride length is: " + currentStrideLength);
+        TextView stepCount = (TextView)findViewById(R.id.step_count);
+        stepCount.setText("Your step goal is: " + currentSteps);
     }
 
     public void launchLogin() {
