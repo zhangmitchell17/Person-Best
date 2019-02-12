@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -58,9 +59,19 @@ public class Login extends AppCompatActivity {
                 startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
             }
 
+
         });
 
+        Button backButton = findViewById(R.id.back_button);
 
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+
+        });
     }
 
 
@@ -85,6 +96,7 @@ public class Login extends AppCompatActivity {
 
             // Signed in successfully, show authenticated UI.
             updateUI(account);
+
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -95,7 +107,7 @@ public class Login extends AppCompatActivity {
 
     public void updateUI(GoogleSignInAccount account) {
         if (account != null) {
-            Log.w(TAG, "Successfully logged in.");
+            Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_LONG);
         } else {
             Log.w(TAG, "You need to log in again.");
         }

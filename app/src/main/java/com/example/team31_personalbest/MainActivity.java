@@ -17,6 +17,9 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -67,6 +70,12 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences.Editor editor = sharePref.edit();
             editor.putInt("steps", 100);
 //        }
+
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+
+        launchLogin();
     }
 
     // every time user back to main page, check for step reset
