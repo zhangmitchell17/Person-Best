@@ -58,7 +58,19 @@ public class Login extends AppCompatActivity {
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                 startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
             }
+        });
 
+        Button backButton = findViewById(R.id.back_button);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+//                private void signIn() {
+//                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//                    startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
+//                }
 
         });
     }
@@ -101,5 +113,9 @@ public class Login extends AppCompatActivity {
             Log.w(TAG, "You need to log in again.");
         }
     }
+
+//    public GoogleSignInAccount checkAccount() {
+//        return GoogleSignIn.getLastSignedInAccount(this);
+//    }
 
 }
