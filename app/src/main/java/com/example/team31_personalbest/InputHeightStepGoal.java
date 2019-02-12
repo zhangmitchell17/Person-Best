@@ -13,8 +13,6 @@ import android.widget.Toast;
 import static java.lang.Integer.parseInt;
 
 public class InputHeightStepGoal extends AppCompatActivity{
-    public static String currentSteps = "0";
-    public static String currentStrideLength = "0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +41,7 @@ public class InputHeightStepGoal extends AppCompatActivity{
                     int newHeight = parseInt(height.getText().toString());
                     Toast.makeText(InputHeightStepGoal.this, "Your stride length is saved",
                             Toast.LENGTH_LONG).show();
-                    if (sharePref.getString("height", "69").equals("") ||
+                    if (sharePref.getString("height", "").equals("") ||
                         newHeight <= 0) {
                         notification = "Please enter your height :)";
 
@@ -84,7 +82,7 @@ public class InputHeightStepGoal extends AppCompatActivity{
                     int newGoal = Integer.parseInt(step.getText().toString());
                     Toast.makeText(InputHeightStepGoal.this, "Your step goal is saved",
                             Toast.LENGTH_LONG).show();
-                    if (sharePref.getString("step", "1000").equals("") ||
+                    if (sharePref.getString("step", "").equals("") ||
                             newGoal <= 1) {
                         notification = "Please enter a new step goal of at least 2 :)";
 
@@ -111,13 +109,7 @@ public class InputHeightStepGoal extends AppCompatActivity{
             }
         });
 
-        // store current height and stride length for textview in main page to use
-        SharedPreferences sharePref = getSharedPreferences
-                ("savedHeight", MODE_PRIVATE);
-        this.currentStrideLength = sharePref.getString("height", "69");
 
-        sharePref = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
-        this.currentSteps = sharePref.getString("step", "1000");
     }
 
     public void launchActivity() {

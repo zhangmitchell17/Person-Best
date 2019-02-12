@@ -100,10 +100,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void updateStepCntAndStride() {
+        // store current height and stride length for textview in main page to use
+
+        SharedPreferences sharePref = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
+        String currentSteps = sharePref.getString("step", "1000");
+
+        sharePref = getSharedPreferences("savedHeight", MODE_PRIVATE);
+        String currentStrideLength = sharePref.getString("height", "69");
+
         TextView strideLength = (TextView)findViewById(R.id.stride_length);
-        strideLength.setText("Your stride length is: " + InputHeightStepGoal.currentStrideLength);
+        strideLength.setText("Your stride length is: " + currentStrideLength);
         TextView stepCount = (TextView)findViewById(R.id.step_count);
-        stepCount.setText("Your step count is: " + InputHeightStepGoal.currentSteps);
+        stepCount.setText("Your step goal is: " + currentSteps);
     }
 
     public void launchLogin() {
