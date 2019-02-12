@@ -12,7 +12,9 @@ import android.widget.Toast;
 
 import static java.lang.Integer.parseInt;
 
-public class InputHeightStepGoal extends AppCompatActivity {
+public class InputHeightStepGoal extends AppCompatActivity{
+    public static String currentSteps = "0";
+    public static String currentStrideLength = "0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +37,13 @@ public class InputHeightStepGoal extends AppCompatActivity {
                 editor.apply();
                 TextView displayFirstName = (TextView)findViewById(R.id.enteredHeight);
                 String notification = "";
+
+                // get user input height and calculate stride length
                 try {
                     int newHeight = parseInt(height.getText().toString());
                     Toast.makeText(InputHeightStepGoal.this, "Your stride length is saved",
                             Toast.LENGTH_LONG).show();
-                    if (sharePref.getString("height", "0").equals("") ||
+                    if (sharePref.getString("height", "69").equals("") ||
                         newHeight <= 0) {
                         notification = "Please enter your height :)";
 
@@ -56,14 +60,15 @@ public class InputHeightStepGoal extends AppCompatActivity {
                 } catch (NumberFormatException e) {
                     notification = "Please enter your height :)";
                 }
-                displayFirstName.setText(notification);
 
+                displayFirstName.setText(notification);
             }
         });
 
         final EditText step = (EditText)findViewById(R.id.stepInput);
         Button updateStepButton = (Button)findViewById(R.id.updateStep);
 
+        // let user enter step goal
         updateStepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,7 +84,7 @@ public class InputHeightStepGoal extends AppCompatActivity {
                     int newGoal = Integer.parseInt(step.getText().toString());
                     Toast.makeText(InputHeightStepGoal.this, "Your step goal is saved",
                             Toast.LENGTH_LONG).show();
-                    if (sharePref.getString("step", "0").equals("") ||
+                    if (sharePref.getString("step", "1000").equals("") ||
                             newGoal <= 1) {
                         notification = "Please enter a new step goal of at least 2 :)";
 
@@ -105,6 +110,14 @@ public class InputHeightStepGoal extends AppCompatActivity {
                 launchActivity();
             }
         });
+
+        // store current height and stride length for textview in main page to use
+        SharedPreferences sharePref = getSharedPreferences
+                ("savedHeight", MODE_PRIVATE);
+        this.currentStrideLength = sharePref.getString("height", "69");
+
+        sharePref = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
+        this.currentSteps = sharePref.getString("step", "1000");
     }
 
     public void launchActivity() {

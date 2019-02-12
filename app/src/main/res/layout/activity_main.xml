@@ -8,10 +8,40 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+
+
     <include
         layout="@layout/app_bar_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/stride_length"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Your stride length is: 123"
+            android:textSize="30dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="100dp"
+            />
+
+        <TextView
+            android:id="@+id/step_count"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Step count: 123"
+
+            android:layout_gravity="center"
+            android:textSize="30dp"/>
+
+    </LinearLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

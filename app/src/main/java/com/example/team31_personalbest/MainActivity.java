@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -24,6 +25,7 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private String fitnessServiceKey = "GOOGLE_FIT";
+    int cnt = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,8 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharePref.edit();
             editor.putInt("steps", 100);
-//        }
+
+            launchLogin();
     }
 
     // every time user back to main page, check for step reset
@@ -90,6 +93,17 @@ public class MainActivity extends AppCompatActivity
         editor.remove("date");
         editor.putString("date", date);
         editor.apply();
+
+        // update step count on screen
+        updateStepCntAndStride();
+
+    }
+
+    public void updateStepCntAndStride() {
+        TextView strideLength = (TextView)findViewById(R.id.stride_length);
+        strideLength.setText("Your stride length is: " + InputHeightStepGoal.currentStrideLength);
+        TextView stepCount = (TextView)findViewById(R.id.step_count);
+        stepCount.setText("Your step count is: " + InputHeightStepGoal.currentSteps);
     }
 
     public void launchLogin() {
