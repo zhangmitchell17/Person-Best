@@ -60,7 +60,7 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        Button backButton = findViewById(R.id.back_button);
+        Button backButton = findViewById(R.id.main_button);
 
         backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
