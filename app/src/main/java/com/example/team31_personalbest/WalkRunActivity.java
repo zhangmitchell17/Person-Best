@@ -20,7 +20,6 @@ public class WalkRunActivity extends AppCompatActivity {
     private FitnessService fitnessService;
 
     //private boolean isCancelled = false;
-    //private Button btnStop;
     private TextView stepDisplay;
 
     @Override
@@ -28,19 +27,20 @@ public class WalkRunActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_walk_run);
 
-//        String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
-//        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
-//        fitnessService.setup();
+
 
         // Makes a timer, makes the async task for it, and begins it
         timeDisplay = findViewById(R.id.textViewTimer);
         t = new Timer(timeDisplay);
         t.execute();
 
-//        // Makes a step counter(as an async task) and execute
-//        stepDisplay = findViewById(R.id.textViewSteps);
-//        final StepCounter counter = new StepCounter(stepDisplay, fitnessService);
-//        counter.execute();
+
+
+//        String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
+//        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, new StepCountActivity());
+//        fitnessService.setup();
+//        StepCounter sc = new StepCounter(stepDisplay, fitnessService);
+//        sc.execute();
 
         // Returns back to Home Page after session finished
         btnStop = findViewById(R.id.buttonStop);

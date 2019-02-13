@@ -8,7 +8,22 @@
     <string name="action_settings">Settings</string>
     <string name="heightHint">Height (In inches)</string>
     <string name="stepHint">Step Goal</string>
-    <string name = "updateHeightButton"> Update Height</string>
-    <string name = "updateStepButton"> Update Step Goal</string>
-    <string name = "backButton"> Go to main page</string>
+    <string name ="updateHeightButton"> Update Height</string>
+    <string name ="updateStepButton"> Update Step Goal</string>
+    <string name ="backButton"> Go to main page</string>
+    <string name ="enterHeight"> Enter your height (inches) </string>
+    <string name="enterStepGoal"> Enter your step goal</string>
+    <string name="strideLength">Your stride length is: 123</string>
+    <string name="stepCount">Step count: 123</string>
+    <string name="signIn">Sign in</string>
+    <string name="main">Main</string>
+    <string name="updateSteps">update steps</string>
+    <string name="stepsShown">steps will be shown here</string>
+    <string name="startWalkRunButton">Start Walk/Run</string>
+    <string name="timer">00:00:00</string>
+    <string name="speed">0</string>
+    <string name="mph">mph</string>
+    <string name="walkRunSteps">0</string>
+    <string name="steps">steps</string>
+    <string name="stopWalkRunButton">Stop Walk/Run</string>
 </resources>
