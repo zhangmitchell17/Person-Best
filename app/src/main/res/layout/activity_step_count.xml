@@ -13,12 +13,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:text="update steps" />
+        android:text="@string/updateSteps" />
 
     <TextView
         android:id="@+id/textSteps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="steps will be shown here" />
+        android:text="@string/stepsShown" />
 
 </LinearLayout>

@@ -26,8 +26,8 @@
             android:id="@+id/stride_length"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:text="Your stride length is: 123"
-            android:textSize="30dp"
+            android:text="@string/strideLength"
+            android:textSize="30sp"
             android:layout_gravity="center"
             android:layout_marginTop="100dp"
             />
@@ -36,10 +36,10 @@
             android:id="@+id/step_count"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:text="Step count: 123"
+            android:text="@string/stepCount"
 
             android:layout_gravity="center"
-            android:textSize="30dp"/>
+            android:textSize="30sp"/>
 
     </LinearLayout>
 
