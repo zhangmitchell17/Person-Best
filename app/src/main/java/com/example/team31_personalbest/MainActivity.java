@@ -2,15 +2,10 @@ package com.example.team31_personalbest;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.text.format.Time;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,65 +16,81 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 
-import static android.content.Context.MODE_PRIVATE;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private String fitnessServiceKey = "GOOGLE_FIT";
+    int cnt = 0;
+
+    private static final String TAG = "SignIn";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Shicheng: need to redesign the first layout that appears to the user,
-        //          otherwise hard to login
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail().build();
 
-            setContentView(R.layout.activity_main);
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
+        // Build a GoogleSignInClient with the options specified by gso.
+        /*
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-            FloatingActionButton fab = findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-            });
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
+        */
 
-            DrawerLayout drawer = findViewById(R.id.drawer_layout);
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            drawer.addDrawerListener(toggle);
-            toggle.syncState();
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-            NavigationView navigationView = findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
-            Button startButton = findViewById(R.id.buttonStart);
-            startButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    launchWalkRunActivity();
-                }
-            });
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-            //fake steps
-            SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharePref.edit();
-            editor.putInt("steps", 100);
-//        }
+        Button startButton = findViewById(R.id.buttonStart);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchWalkRunActivity();
+            }
+        });
+
+        //fake steps
+        SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharePref.edit();
+        editor.putInt("steps", 100);
+
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+        launchLogin();
+    }
+
+    public void onStart() {
+        super.onStart();
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        //if (account == null) {launchLogin();}
+        //launchLogin();
+        updateUI(account);
     }
 
     // every time user back to main page, check for step reset
@@ -103,6 +114,25 @@ public class MainActivity extends AppCompatActivity
         editor.remove("date");
         editor.putString("date", date);
         editor.apply();
+
+        // update step count on screen
+        updateStepCntAndStride();
+
+    }
+
+    public void updateStepCntAndStride() {
+        // store current height and stride length for textview in main page to use
+
+        SharedPreferences sharePref = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
+        String currentSteps = sharePref.getString("step", "1000");
+
+        sharePref = getSharedPreferences("savedHeight", MODE_PRIVATE);
+        String currentStrideLength = sharePref.getString("height", "69");
+
+        TextView strideLength = (TextView)findViewById(R.id.stride_length);
+        strideLength.setText("Your stride length is: " + (int)((0.413)*Integer.parseInt(currentStrideLength)) + "''");
+        TextView stepCount = (TextView)findViewById(R.id.step_count);
+        stepCount.setText("Your step goal is: " + currentSteps);
     }
 
     public void launchLogin() {
@@ -116,8 +146,8 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    public void launchInputHeightActivity() {
-        Intent intent = new Intent(this, InputHeight.class);
+    public void launchInputHeightStepGoalActivity() {
+        Intent intent = new Intent(this, InputHeightStepGoal.class);
         //intent.putExtra(WalkRunActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
         startActivity(intent);
     }
@@ -168,7 +198,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_stride) {
             // Go to stride settings
-            launchInputHeightActivity();
+            launchInputHeightStepGoalActivity();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -185,4 +215,42 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == AppCompatActivity.RESULT_OK) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            updateUI(account);
+
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            updateUI(null);
+        }
+    }
+
+    public void updateUI(GoogleSignInAccount account) {
+        if (account != null) {
+            Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_LONG);
+        } else {
+            Log.w(TAG, "You need to log in again.");
+        }
+    }
+
 }

@@ -13,6 +13,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/stride_length"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/strideLength"
+            android:textSize="30sp"
+            android:layout_gravity="center"
+            android:layout_marginTop="100dp"
+            />
+
+        <TextView
+            android:id="@+id/step_count"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/stepCount"
+
+            android:layout_gravity="center"
+            android:textSize="30sp"/>
+
+    </LinearLayout>
+
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"

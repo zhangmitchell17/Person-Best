@@ -45,7 +45,7 @@
         android:id="@+id/buttonStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Walk/Run"
+        android:text="@string/startWalkRunButton"
         android:background="#00ff00"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

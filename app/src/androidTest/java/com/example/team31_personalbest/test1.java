@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
@@ -31,13 +32,13 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class InputHeightTest {
+public class test1 {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void inputHeightTest() {
+    public void test1() {
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
@@ -60,104 +61,36 @@ public class InputHeightTest {
         navigationMenuItemView.perform(click());
 
         ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.height),
+                allOf(withId(R.id.stepInput),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
                                         0),
-                                0),
+                                1),
                         isDisplayed()));
-        appCompatEditText.perform(replaceText("12"), closeSoftKeyboard());
+        appCompatEditText.perform(replaceText("123"), closeSoftKeyboard());
+
+        pressBack();
 
         ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.save), withText("Save"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatButton.perform(click());
-
-        ViewInteraction textView = onView(
-                allOf(withId(R.id.text3), withText("Your stride length will be 4 inches"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                2),
-                        isDisplayed()));
-        textView.check(matches(withText("Your stride length will be 4 inches")));
-
-        ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.height), withText("12"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                0),
-                        isDisplayed()));
-        appCompatEditText2.perform(click());
-
-        ViewInteraction appCompatEditText3 = onView(
-                allOf(withId(R.id.height), withText("12"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                0),
-                        isDisplayed()));
-        appCompatEditText3.perform(click());
-
-        ViewInteraction appCompatEditText4 = onView(
-                allOf(withId(R.id.height), withText("12"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                0),
-                        isDisplayed()));
-        appCompatEditText4.perform(replaceText("123"));
-
-        ViewInteraction appCompatEditText5 = onView(
-                allOf(withId(R.id.height), withText("123"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                0),
-                        isDisplayed()));
-        appCompatEditText5.perform(closeSoftKeyboard());
-
-        ViewInteraction appCompatButton2 = onView(
-                allOf(withId(R.id.save), withText("Save"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatButton2.perform(click());
-
-        ViewInteraction textView2 = onView(
-                allOf(withId(R.id.text3), withText("Your stride length will be 50 inches"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                2),
-                        isDisplayed()));
-        textView2.check(matches(withText("Your stride length will be 50 inches")));
-
-        ViewInteraction appCompatButton3 = onView(
-                allOf(withId(R.id.backToMain), withText("Go to main page"),
+                allOf(withId(R.id.updateStep), withText("Update Step Goal"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
                                         0),
                                 3),
                         isDisplayed()));
-        appCompatButton3.perform(click());
+        appCompatButton.perform(click());
+
+        ViewInteraction textView = onView(
+                allOf(withId(R.id.enteredStep), withText("Congrats! Your new step goal is 123 steps"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                6),
+                        isDisplayed()));
+        textView.check(matches(withText("Congrats! Your new step goal is 123 steps")));
     }
 
     private static Matcher<View> childAtPosition(
