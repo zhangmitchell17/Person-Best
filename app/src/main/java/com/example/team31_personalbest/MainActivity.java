@@ -55,40 +55,31 @@ public class MainActivity extends AppCompatActivity
         //Shicheng: need to redesign the first layout that appears to the user,
         //          otherwise hard to login
 
-            setContentView(R.layout.activity_main);
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-            FloatingActionButton fab = findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-            });
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
-            DrawerLayout drawer = findViewById(R.id.drawer_layout);
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            drawer.addDrawerListener(toggle);
-            toggle.syncState();
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-            NavigationView navigationView = findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this);
+        Button startButton = findViewById(R.id.buttonStart);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchWalkRunActivity();
+            }
+        });
 
-            Button startButton = findViewById(R.id.buttonStart);
-            startButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    launchWalkRunActivity();
-                }
-            });
-
-            //fake steps
-            SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharePref.edit();
-            editor.putInt("steps", 100);
+        //fake steps
+        SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharePref.edit();
+        editor.putInt("steps", 100);
 
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
@@ -145,9 +136,9 @@ public class MainActivity extends AppCompatActivity
         sharePref = getSharedPreferences("savedHeight", MODE_PRIVATE);
         String currentStrideLength = sharePref.getString("height", "69");
 
-        TextView strideLength = (TextView)findViewById(R.id.stride_length);
+        TextView strideLength = findViewById(R.id.stride_length);
         strideLength.setText("Your stride length is: " + currentStrideLength);
-        TextView stepCount = (TextView)findViewById(R.id.step_count);
+        TextView stepCount = findViewById(R.id.step_count);
         stepCount.setText("Your step goal is: " + currentSteps);
     }
 
@@ -264,6 +255,7 @@ public class MainActivity extends AppCompatActivity
     public void updateUI(GoogleSignInAccount account) {
         if (account != null) {
             Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_LONG);
+            Toast.show();
         } else {
             Log.w(TAG, "You need to log in again.");
         }
