@@ -21,15 +21,15 @@ public class WalkRunActivityTest {
     @Before
     public void setup() {
         walkRunActivity = Robolectric.setupActivity(WalkRunActivity.class);
-        timeDisplay = WalkRunActivity.findViewById(R.id.textViewTimer);
-        stepDisplay = WalkRunActivity.findViewById(R.id.textViewSteps);
-        speedDisplay = WalkRunActivity.findViewById(R.id.textViewSpeed);
+        timeDisplay = walkRunActivity.findViewById(R.id.textViewTimer);
+        stepDisplay = walkRunActivity.findViewById(R.id.textViewSteps);
+        speedDisplay = walkRunActivity.findViewById(R.id.textViewSpeed);
     }
 
     @Test
     public void testInitial() {
         assertEquals("00:00:00", timeDisplay.getText());
         assertEquals("0", stepDisplay.getText());
-        assertEquals("0", stepDisplay.getText());
+        assertEquals("0", speedDisplay.getText());
     }
 }
