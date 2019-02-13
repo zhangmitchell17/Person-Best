@@ -2,6 +2,7 @@ package com.example.team31_personalbest;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -48,7 +49,6 @@ public class Login extends AppCompatActivity {
         // Set the dimensions of the sign-in button.
         Button signInButton = findViewById(R.id.login_button);
 
-
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,7 +61,6 @@ public class Login extends AppCompatActivity {
         });
 
         Button backButton = findViewById(R.id.main_button);
-
         backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -73,6 +72,7 @@ public class Login extends AppCompatActivity {
 //                }
 
         });
+
     }
 
     public void onStart() {
@@ -104,7 +104,6 @@ public class Login extends AppCompatActivity {
 
             // Signed in successfully, show authenticated UI.
             updateUI(account);
-
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -116,6 +115,7 @@ public class Login extends AppCompatActivity {
     public void updateUI(GoogleSignInAccount account) {
         if (account != null) {
             Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_LONG);
+
         } else {
             Log.w(TAG, "You need to log in again.");
         }
