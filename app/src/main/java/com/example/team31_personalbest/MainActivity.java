@@ -37,36 +37,24 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "SignIn";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail().build();
 
         // Build a GoogleSignInClient with the options specified by gso.
+        /*
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
         */
 
-        //Shicheng: need to redesign the first layout that appears to the user,
-        //          otherwise hard to login
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -92,10 +80,6 @@ public class MainActivity extends AppCompatActivity
 
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
-        // GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-
-        //updateUI(account);
-        //if (account == null) { launchLogin();}
         launchLogin();
     }
 
@@ -146,7 +130,7 @@ public class MainActivity extends AppCompatActivity
         String currentStrideLength = sharePref.getString("height", "69");
 
         TextView strideLength = (TextView)findViewById(R.id.stride_length);
-        strideLength.setText("Your stride length is: " + currentStrideLength);
+        strideLength.setText("Your stride length is: " + (int)((0.413)*Integer.parseInt(currentStrideLength)) + "''");
         TextView stepCount = (TextView)findViewById(R.id.step_count);
         stepCount.setText("Your step goal is: " + currentSteps);
     }

@@ -8,12 +8,12 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
+
+    <com.google.android.gms.common.SignInButton
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="@string/signIn"/>
+        android:layout_marginTop="30dp"/>
 
 
     <Button
