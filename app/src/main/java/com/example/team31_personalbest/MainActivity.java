@@ -33,8 +33,7 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private String fitnessServiceKey = "GOOGLE_FIT";
-//    int cnt = 0;
-//
+
     private static final String TAG = "SignIn";
 
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
@@ -56,7 +55,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -172,11 +170,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void updateSteps() {
-        SharedPreferences sharePref = getSharedPreferences("totalSteps", MODE_PRIVATE);
-        Long stepAdd = sharePref.getLong("stepCount", 0);
+        SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
+        int stepAdd = sharePref.getInt("steps", -1);
         TextView totalSteps = (TextView) findViewById(R.id.step_text);
         Long stepsCounted = Long.parseLong(totalSteps.getText().toString());
-        totalSteps.setText(String.valueOf(stepsCounted + stepAdd));
+        totalSteps.setText(String.valueOf(stepAdd));
     }
 
     public void launchLogin() {

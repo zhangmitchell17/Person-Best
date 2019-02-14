@@ -3,6 +3,7 @@ package com.example.team31_personalbest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -64,10 +65,15 @@ public class StepCountActivity extends AppCompatActivity implements IStepActivit
 
     public void setStepCount(long stepCount) {
         textSteps.setText(String.valueOf(stepCount));
+        SharedPreferences sharedPref = getSharedPreferences("resetSteps", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("steps", (int)stepCount);
+        editor.apply();
 
         if(Integer.parseInt(textSteps.getText().toString()) == 1000) {
             showEncouragement();
         }
+
     }
 
     public void showEncouragement() {

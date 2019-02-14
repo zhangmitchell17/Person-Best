@@ -65,9 +65,6 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
                 //editor.putLong(nameOfDay + "Steps", steps);
                 //editor.apply();
 
-
-
-
                 t.cancel();
                 s.cancel();
 
