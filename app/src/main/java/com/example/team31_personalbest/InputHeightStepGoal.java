@@ -50,7 +50,7 @@ public class InputHeightStepGoal extends AppCompatActivity{
                         //editor.apply();
                     }
                     else {
-                        int stride = (int) 0.413 * parseInt(height.getText().toString());
+                        int stride = (int) (0.413 * parseInt(height.getText().toString()));
                         notification = "Your stride length will be " + stride + " inches";
                         sharePref = getSharedPreferences("savedStride", MODE_PRIVATE);
                         editor = sharePref.edit();
