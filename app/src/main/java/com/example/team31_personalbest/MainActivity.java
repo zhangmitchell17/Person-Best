@@ -31,12 +31,14 @@ import java.util.Calendar;
 
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, IStepActivity{
     private String fitnessServiceKey = "GOOGLE_FIT";
 
     private static final String TAG = "SignIn";
 
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
+
+    private TextView stepDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // setting stepDisplay
+        stepDisplay = findViewById(R.id.textViewStepMain);
 
         Button startButton = findViewById(R.id.buttonStart);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -104,8 +109,8 @@ public class MainActivity extends AppCompatActivity
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
             @Override
-            public FitnessService create(StepCountActivity stepCount) {
-                return new GoogleFitAdapter(stepCount);
+            public FitnessService create(IStepActivity stepActivity) {
+                return new GoogleFitAdapter(stepActivity);
             }
         });
     }
@@ -149,12 +154,12 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
 
         // update step count on screen
-        updateStepCntAndStride();
+        updateStepCountAndStride();
 
         updateSteps();
     }
 
-    public void updateStepCntAndStride() {
+    public void updateStepCountAndStride() {
         // store current height and stride length for textview in main page to use
 
         SharedPreferences sharePref = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
@@ -172,9 +177,8 @@ public class MainActivity extends AppCompatActivity
     public void updateSteps() {
         SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
         int stepAdd = sharePref.getInt("steps", -1);
-        TextView totalSteps = (TextView) findViewById(R.id.step_text);
-        Long stepsCounted = Long.parseLong(totalSteps.getText().toString());
-        totalSteps.setText(String.valueOf(stepAdd));
+        Long stepsCounted = Long.parseLong(stepDisplay.getText().toString());
+        stepDisplay.setText(String.valueOf(stepAdd));
     }
 
     public void launchLogin() {
@@ -304,6 +308,14 @@ public class MainActivity extends AppCompatActivity
 
     public void setFitnessServiceKey(String fitnessServiceKey) {
         this.fitnessServiceKey = fitnessServiceKey;
+    }
+
+    public void setStepCount(long stepCount) {
+        stepDisplay.setText(String.valueOf(stepCount));
+        int i = 1000;
+        stepDisplay.setText(Integer.toString(i));
+        if (Integer.parseInt(stepDisplay.getText().toString()) == 1000) {
+        }
     }
 
 }
