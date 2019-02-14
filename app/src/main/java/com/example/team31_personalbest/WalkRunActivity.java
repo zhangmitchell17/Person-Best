@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class WalkRunActivity extends AppCompatActivity implements StepCountable{
+public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     private Button btnStop;
     private TextView timeDisplay;
     private Timer t;
