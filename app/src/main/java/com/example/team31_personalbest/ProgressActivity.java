@@ -75,9 +75,11 @@ public class ProgressActivity extends AppCompatActivity {
         barChart.setData(data);
 
         barChart.invalidate(); // refresh
+
     }
 }
 
+/*
 class DateAxisValueFormatter implements IAxisValueFormatter {
     private String[] vals;
 
@@ -88,4 +90,4 @@ class DateAxisValueFormatter implements IAxisValueFormatter {
     public String getFormattedValue(float value, AxisBase axis) {
         return vals[(int) value];
     }
-}
+}*/
