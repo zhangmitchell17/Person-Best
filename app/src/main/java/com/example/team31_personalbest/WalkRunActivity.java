@@ -21,6 +21,7 @@ public class WalkRunActivity extends AppCompatActivity {
 
     //private boolean isCancelled = false;
     private TextView stepDisplay;
+    private TextView speedDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +43,16 @@ public class WalkRunActivity extends AppCompatActivity {
 //        StepCounter sc = new StepCounter(stepDisplay, fitnessService);
 //        sc.execute();
 
+        speedDisplay = findViewById(R.id.textViewSpeed);
+
         // Returns back to Home Page after session finished
         btnStop = findViewById(R.id.buttonStop);
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                long seconds = t.getSeconds();
+
                 t.cancel();
-//                counter.cancel();
                 finish();
             }
         });
