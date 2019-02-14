@@ -1,7 +1,5 @@
 package com.example.team31_personalbest;
 
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -14,21 +12,16 @@ public class WalkRunActivity extends AppCompatActivity {
     private Button btnStop;
     private TextView timeDisplay;
     private Timer t;
-    private SpeedUpdate s;
+    private SpeedUpdater s;
     private StepCounter sc;
 
     public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
     private static final String TAG = "StepCountActivity";
     private FitnessService fitnessService;
 
-    //private boolean isCancelled = false;
     private TextView stepDisplay;
     private TextView speedDisplay;
 
-    private static final long SECONDS_PER_HOUR = 3600;
-    private static final long MS_PER_SEC = 1000;
-
-    private static final long INCHES_PER_MILE = 63360;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +44,7 @@ public class WalkRunActivity extends AppCompatActivity {
 //        sc.execute();
 
         speedDisplay = findViewById(R.id.textViewSpeed);
-        s = new SpeedUpdate(speedDisplay, t);
+        s = new SpeedUpdater(this, speedDisplay, t);
         s.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
@@ -88,79 +81,4 @@ public class WalkRunActivity extends AppCompatActivity {
     }
 
 
-    public class SpeedUpdate extends AsyncTask<String, String, String>
-    {
-        private String resp;
-        private TextView speed;
-        private Timer t;
-        private boolean isCancelled;
-        private float mph;
-
-        // Initialize values
-        public SpeedUpdate (TextView text, Timer timer)
-        {
-            this.speed = text;
-            this.t = timer;
-        }
-
-        /**
-         * Continuously run in the background, calling publishProgress to update MPH if the
-         * value is different than what is already there
-         * @return error message
-         */
-        @Override
-        protected String doInBackground(String... params) {
-            isCancelled = false;
-            // Loop that iterates each second to update time
-            // Only loop while the AsyncTask should be running
-            while (true) {
-                if(isCancelled) {
-                    break;
-                }
-                SharedPreferences sharedPreferences = getSharedPreferences("savedStride", MODE_PRIVATE);
-                int strideLength = sharedPreferences.getInt("stride", 0);
-                // TODO: NEED TO MULTIPLY THIS BY NUMBER OF STEPS TAKEN (replace the 10000)
-                mph = (float) (Math.round((10000.0 * strideLength * SECONDS_PER_HOUR)/(t.getSeconds() * INCHES_PER_MILE) * 10.0)/10.0);
-                if (Double.parseDouble(speed.getText().toString()) != mph)
-                {
-                    publishProgress(("" + mph));
-                }
-
-
-                // Waits for 1 second before each update
-
-                try {
-                    Thread.sleep(MS_PER_SEC);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    resp = e.getMessage();
-                }
-            }
-            return resp;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            isCancelled = false;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-        }
-
-        //Update the speedDisplay TextView
-        @Override
-        protected void onProgressUpdate(String... text) {
-            speed.setText(text[0]);
-        }
-
-        public void cancel() {
-            isCancelled = true;
-        }
-
-        public float getMPH() {
-            return mph;
-        }
-
-    }
 }
