@@ -202,12 +202,10 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    /*
     public void launchProgressActivity() {
         Intent intent = new Intent(this, ProgressActivity.class);
         startActivity(intent);
     }
-    */
 
     @Override
     public void onBackPressed() {
@@ -251,7 +249,7 @@ public class MainActivity extends AppCompatActivity
             // Go to stride settings
             launchInputHeightStepGoalActivity();
         } else if(id == R.id.nav_progress) {
-            //launchProgressActivity();
+            launchProgressActivity();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
