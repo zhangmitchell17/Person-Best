@@ -30,7 +30,7 @@ public class Login extends AppCompatActivity {
             .requestEmail().build();
 
     GoogleSignInClient mGoogleSignInClient;
-    public static boolean loggedIn = false;
+    public static boolean loggedIn = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
