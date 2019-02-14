@@ -82,6 +82,12 @@ public class Timer extends AsyncTask<String, String, String> {
     }
 
     /**
+     * @return the number of total seconds
+     */
+    public long getSeconds() {
+        return time;
+    }
+    /**
      * Incrementing seconds, minutes, and hours if seconds
      * or minutes overflows above 60
      */

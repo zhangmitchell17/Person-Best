@@ -182,6 +182,11 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    public void launchProgressActivity() {
+        Intent intent = new Intent(this, ProgressActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -223,6 +228,8 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_stride) {
             // Go to stride settings
             launchInputHeightStepGoalActivity();
+        } else if(id == R.id.nav_progress) {
+            launchProgressActivity();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
