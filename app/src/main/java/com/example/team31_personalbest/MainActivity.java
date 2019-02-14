@@ -31,8 +31,10 @@ import java.util.Calendar;
 
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements  NavigationView.OnNavigationItemSelectedListener,
+                    IStepActivity {
     private String fitnessServiceKey = "GOOGLE_FIT";
+    private TextView stepDisplay;
 //    int cnt = 0;
 //
     private static final String TAG = "SignIn";
@@ -56,6 +58,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // finding and setting the step textView
+        stepDisplay = findViewById(R.id.textViewStepsMain);
 
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -90,8 +95,8 @@ public class MainActivity extends AppCompatActivity
 
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
             @Override
-            public FitnessService create(WalkRunActivity walkRun) {
-                return new GoogleFitAdapter(walkRun);
+            public FitnessService create(IStepActivity stepActivity) {
+                return new GoogleFitAdapter(stepActivity);
             }
         });
 
@@ -286,6 +291,16 @@ public class MainActivity extends AppCompatActivity
 
     public void setFitnessServiceKey(String fitnessServiceKey) {
         this.fitnessServiceKey = fitnessServiceKey;
+    }
+
+    public void setStepCount(long stepCount) {
+        stepDisplay.setText(String.valueOf(stepCount));
+        int i = 1000;
+        stepDisplay.setText(Integer.toString(i));
+
+/*        if (Integer.parseInt(stepDisplay.getText().toString()) == 1000) {
+            showEncouragement();
+        }*/
     }
 
 }

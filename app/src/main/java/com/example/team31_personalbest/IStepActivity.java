@@ -1,5 +1,5 @@
 package com.example.team31_personalbest;
 
-public interface StepCountable {
+public interface IStepActivity {
     void setStepCount(long stepCount);
 }

@@ -8,9 +8,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class WalkRunActivity extends AppCompatActivity {
+public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     private Button btnStop;
     private TextView timeDisplay;
+    private TextView stepDisplay;
     private Timer t;
     private SpeedUpdater s;
     private StepCounter sc;
@@ -19,7 +20,6 @@ public class WalkRunActivity extends AppCompatActivity {
     private static final String TAG = "StepCountActivity";
     private FitnessService fitnessService;
 
-    private TextView stepDisplay;
     private TextView speedDisplay;
 
 
@@ -28,21 +28,21 @@ public class WalkRunActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_walk_run);
 
-
+        stepDisplay = findViewById(R.id.textViewSteps);
 
         // Makes a timer, makes the async task for it, and begins it
         timeDisplay = findViewById(R.id.textViewTimer);
         t = new Timer(timeDisplay);
         t.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+        // setting up step counter and fitness objects
+        String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
+        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
+        fitnessService.setup();
+        StepCounter sc = new StepCounter(stepDisplay, fitnessService, this);
+        sc.execute();
 
-
-//        String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
-//        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, new StepCountActivity());
-//        fitnessService.setup();
-//        StepCounter sc = new StepCounter(stepDisplay, fitnessService);
-//        sc.execute();
-
+        // makes a speed updater to update speed object and begins it
         speedDisplay = findViewById(R.id.textViewSpeed);
         s = new SpeedUpdater(this, speedDisplay, t);
         s.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -67,9 +67,6 @@ public class WalkRunActivity extends AppCompatActivity {
                 //editor.putLong(nameOfDay + "Steps", steps);
                 //editor.apply();
 
-
-
-
                 t.cancel();
                 s.cancel();
 
@@ -80,5 +77,14 @@ public class WalkRunActivity extends AppCompatActivity {
 
     }
 
+    public void setStepCount(long stepCount) {
+        stepDisplay.setText(String.valueOf(stepCount));
+        int i = 1000;
+        stepDisplay.setText(Integer.toString(i));
+
+/*        if (Integer.parseInt(stepDisplay.getText().toString()) == 1000) {
+            showEncouragement();
+        }*/
+    }
 
 }
