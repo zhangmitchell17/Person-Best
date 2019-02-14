@@ -39,7 +39,17 @@
             android:layout_gravity="center"
             android:textSize="30sp"/>
 
+        <TextView
+            android:id="@+id/step_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="0"
+            android:textSize="30dp" />
+
     </LinearLayout>
+
+
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

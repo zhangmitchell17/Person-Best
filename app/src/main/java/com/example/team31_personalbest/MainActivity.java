@@ -33,9 +33,11 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private String fitnessServiceKey = "GOOGLE_FIT";
-    int cnt = 0;
-
+//    int cnt = 0;
+//
     private static final String TAG = "SignIn";
+
+    private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,16 +47,16 @@ public class MainActivity extends AppCompatActivity
                 .requestEmail().build();
 
         // Build a GoogleSignInClient with the options specified by gso.
-        /*
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
-        */
+
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -80,7 +82,20 @@ public class MainActivity extends AppCompatActivity
 
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
-        launchLogin();
+        // GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+
+        //updateUI(account);
+        //if (account == null) { launchLogin();}
+        //launchLogin();
+
+        FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
+            @Override
+            public FitnessService create(WalkRunActivity walkRun) {
+                return new GoogleFitAdapter(walkRun);
+            }
+        });
+
+
     }
 
     public void onStart() {
@@ -118,6 +133,7 @@ public class MainActivity extends AppCompatActivity
         // update step count on screen
         updateStepCntAndStride();
 
+        updateSteps();
     }
 
     public void updateStepCntAndStride() {
@@ -130,9 +146,17 @@ public class MainActivity extends AppCompatActivity
         String currentStrideLength = sharePref.getString("height", "69");
 
         TextView strideLength = (TextView)findViewById(R.id.stride_length);
-        strideLength.setText("Your stride length is: " + (int)((0.413)*Integer.parseInt(currentStrideLength)) + "''");
+        strideLength.setText("Your stride length is: " + currentStrideLength);
         TextView stepCount = (TextView)findViewById(R.id.step_count);
         stepCount.setText("Your step goal is: " + currentSteps);
+    }
+
+    public void updateSteps() {
+        SharedPreferences sharePref = getSharedPreferences("totalSteps", MODE_PRIVATE);
+        Long stepAdd = sharePref.getLong("stepCount", 0);
+        TextView totalSteps = (TextView) findViewById(R.id.step_text);
+        Long stepsCounted = Long.parseLong(totalSteps.getText().toString());
+        totalSteps.setText(String.valueOf(stepsCounted + stepAdd));
     }
 
     public void launchLogin() {
@@ -140,11 +164,11 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    public void launchStepCount() {
-        Intent intent = new Intent(MainActivity.this, StepCountActivity.class);
-        intent.putExtra(StepCountActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
-        startActivity(intent);
-    }
+//    public void launchStepCount() {
+//        Intent intent = new Intent(MainActivity.this, StepCountActivity.class);
+//        intent.putExtra(StepCountActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
+//        startActivity(intent);
+//    }
 
     public void launchInputHeightStepGoalActivity() {
         Intent intent = new Intent(this, InputHeightStepGoal.class);
@@ -154,7 +178,7 @@ public class MainActivity extends AppCompatActivity
 
     public void launchWalkRunActivity() {
         Intent intent = new Intent(this, WalkRunActivity.class);
-        //intent.putExtra(WalkRunActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
+        intent.putExtra(WalkRunActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
         startActivity(intent);
     }
 
@@ -253,4 +277,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public void setFitnessServiceKey(String fitnessServiceKey) {
+        this.fitnessServiceKey = fitnessServiceKey;
+    }
+
 }
+

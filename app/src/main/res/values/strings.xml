@@ -26,4 +26,5 @@
     <string name="walkRunSteps">0</string>
     <string name="steps">steps</string>
     <string name="stopWalkRunButton">Stop Walk/Run</string>
+    <string name="updateStep">update steps</string>
 </resources>

@@ -13,14 +13,15 @@ import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+
 public class GoogleFitAdapter implements FitnessService {
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
     private final String TAG = "GoogleFitAdapter";
 
-    private StepCountActivity activity;
+    private WalkRunActivity walkRun;
 
-    public GoogleFitAdapter(StepCountActivity activity) {
-        this.activity = activity;
+    public GoogleFitAdapter(WalkRunActivity walkRun) {
+        this.walkRun = walkRun;
     }
 
 
@@ -30,11 +31,11 @@ public class GoogleFitAdapter implements FitnessService {
                 .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
                 .build();
 
-        if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(activity), fitnessOptions)) {
+        if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(walkRun), fitnessOptions)) {
             GoogleSignIn.requestPermissions(
-                    activity, // your activity
+                    walkRun, // your walkRun
                     GOOGLE_FIT_PERMISSIONS_REQUEST_CODE,
-                    GoogleSignIn.getLastSignedInAccount(activity),
+                    GoogleSignIn.getLastSignedInAccount(walkRun),
                     fitnessOptions);
         } else {
             updateStepCount();
@@ -43,12 +44,13 @@ public class GoogleFitAdapter implements FitnessService {
     }
 
     private void startRecording() {
-        GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        //check if logged in
+        GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(walkRun);
         if (lastSignedInAccount == null) {
             return;
         }
 
-        Fitness.getRecordingClient(activity, GoogleSignIn.getLastSignedInAccount(activity))
+        Fitness.getRecordingClient(walkRun, GoogleSignIn.getLastSignedInAccount(walkRun))
                 .subscribe(DataType.TYPE_STEP_COUNT_CUMULATIVE)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -70,12 +72,13 @@ public class GoogleFitAdapter implements FitnessService {
      * current timezone.
      */
     public void updateStepCount() {
-        GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        //check if logged in
+        GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(walkRun);
         if (lastSignedInAccount == null) {
             return;
         }
 
-        Fitness.getHistoryClient(activity, lastSignedInAccount)
+        Fitness.getHistoryClient(walkRun, lastSignedInAccount)
                 .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
                 .addOnSuccessListener(
                         new OnSuccessListener<DataSet>() {
@@ -87,7 +90,7 @@ public class GoogleFitAdapter implements FitnessService {
                                                 ? 0
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
 
-                                activity.setStepCount(total);
+                                walkRun.setStepCount(total);
                                 Log.d(TAG, "Total steps: " + total);
                             }
                         })
