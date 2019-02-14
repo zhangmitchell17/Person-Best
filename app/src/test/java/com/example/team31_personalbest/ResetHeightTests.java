@@ -58,6 +58,8 @@ public class ResetHeightTests {
         controller.resume();
 
         assertEquals(sharePref.getInt("steps", -1), 0);
+        editor.remove("date");
+        editor.apply();
     }
 
 

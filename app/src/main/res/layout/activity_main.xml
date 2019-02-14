@@ -45,7 +45,18 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="0"
-            android:textSize="30dp" />
+            android:textSize="30dp"
+            android:layout_marginTop="100dp"/>
+
+        <Button
+            android:layout_width="80dp"
+            android:layout_height="50dp"
+            android:id="@+id/buttonGoToSteps"
+            android:layout_gravity="center_horizontal"
+            android:text="Go To Your Daily Step Count"
+            android:layout_marginTop="20dp"
+            />
+
 
     </LinearLayout>
 

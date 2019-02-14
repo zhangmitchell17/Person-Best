@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+/*
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -17,7 +18,9 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
+*/
 
+/*
 public class ProgressActivity extends AppCompatActivity {
     private final String[] dayNames = { "Sunday", "Monday", "Tuesday",
             "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -44,13 +47,14 @@ public class ProgressActivity extends AppCompatActivity {
 
         List<BarEntry> stepVals = new ArrayList<BarEntry>();
 
-
+*/
         /*
           TODO code that pulls dat from shared preferences for steps and unplanned steps should
           TODO and fill the ps and ups int arrays that stand for planned steps and unplanned
           TODO steps respectively
          */
 
+        /*
         int[] ps = {762, 720, 710, 732, 720, 600, 500};
         int[] ups = {612, 264, 523, 498, 100, 55, 173};
 
@@ -85,3 +89,4 @@ class DateAxisValueFormatter implements IAxisValueFormatter {
         return vals[(int) value];
     }
 }
+*/

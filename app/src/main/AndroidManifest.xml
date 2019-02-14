@@ -21,7 +21,13 @@
         </activity>
         <activity android:name=".WalkRunActivity" />
         <activity android:name=".InputHeightStepGoal"></activity>
-        <activity android:name=".Login"></activity>
+        <activity android:name=".Login">
+
+        </activity>
+        <activity android:name=".StepCountActivity">
+
+        </activity>
+
         <!--<activity android:name=".StepCountActivity"></activity>-->
 
     </application>

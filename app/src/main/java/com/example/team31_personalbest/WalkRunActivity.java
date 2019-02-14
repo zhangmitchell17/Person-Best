@@ -8,12 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class WalkRunActivity extends AppCompatActivity {
+public class WalkRunActivity extends AppCompatActivity implements StepCountable{
     private Button btnStop;
     private TextView timeDisplay;
     private Timer t;
     private SpeedUpdater s;
-    private StepCounter sc;
+    //private StepCounter sc;
 
     public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
     private static final String TAG = "StepCountActivity";
@@ -27,8 +27,6 @@ public class WalkRunActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_walk_run);
-
-
 
         // Makes a timer, makes the async task for it, and begins it
         timeDisplay = findViewById(R.id.textViewTimer);
@@ -78,6 +76,14 @@ public class WalkRunActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    public void setStepCount(long stepCount) {
+      stepDisplay.setText(String.valueOf(stepCount));
+      int i = 1000;
+        stepDisplay.setText(Integer.toString(i));
+        if (Integer.parseInt(stepDisplay.getText().toString()) == 1000) {
+        }
     }
 
 

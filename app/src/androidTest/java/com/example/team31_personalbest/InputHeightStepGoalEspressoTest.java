@@ -39,6 +39,7 @@ public class InputHeightStepGoalEspressoTest {
 
     @Test
     public void inputHeightStepGoalEspressoTest() {
+        Login.loggedIn = true;
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
@@ -67,7 +68,9 @@ public class InputHeightStepGoalEspressoTest {
                                         withId(android.R.id.content),
                                         0),
                                 0),
+
                         isDisplayed()));
+
         textView.check(matches(withText("Enter your height (inches)")));
 
         ViewInteraction editText = onView(

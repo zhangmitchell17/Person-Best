@@ -88,14 +88,34 @@ public class MainActivity extends AppCompatActivity
         //if (account == null) { launchLogin();}
         //launchLogin();
 
-        FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
+//        FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
+//            @Override
+//            public FitnessService create(WalkRunActivity walkRun) {
+//                return new GoogleFitAdapter(walkRun);
+//            }
+//        });
+
+        Button btnGoToSteps = findViewById(R.id.buttonGoToSteps);
+        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
             @Override
-            public FitnessService create(WalkRunActivity walkRun) {
-                return new GoogleFitAdapter(walkRun);
+            public void onClick(View v) {
+                launchStepCountActivity();
             }
         });
 
+        FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
+            @Override
+            public FitnessService create(StepCountActivity stepCount) {
+                return new GoogleFitAdapter(stepCount);
+            }
+        });
+    }
+
+    public void launchStepCountActivity() {
+        Intent intent = new Intent(this, StepCountActivity.class);
+        intent.putExtra(StepCountActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
+        startActivity(intent);
     }
 
     public void onStart() {
@@ -182,10 +202,12 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    /*
     public void launchProgressActivity() {
         Intent intent = new Intent(this, ProgressActivity.class);
         startActivity(intent);
     }
+    */
 
     @Override
     public void onBackPressed() {
@@ -229,7 +251,7 @@ public class MainActivity extends AppCompatActivity
             // Go to stride settings
             launchInputHeightStepGoalActivity();
         } else if(id == R.id.nav_progress) {
-            launchProgressActivity();
+            //launchProgressActivity();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
