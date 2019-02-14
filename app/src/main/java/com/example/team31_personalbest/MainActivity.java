@@ -160,8 +160,8 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sharePref = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
         String currentSteps = sharePref.getString("step", "1000");
 
-        sharePref = getSharedPreferences("savedHeight", MODE_PRIVATE);
-        String currentStrideLength = sharePref.getString("height", "69");
+        SharedPreferences sharedPreferences = getSharedPreferences("savedStride", MODE_PRIVATE);
+        int currentStrideLength = sharedPreferences.getInt("stride", 0);
 
         TextView strideLength = (TextView)findViewById(R.id.stride_length);
         strideLength.setText("Your stride length is: " + currentStrideLength);
