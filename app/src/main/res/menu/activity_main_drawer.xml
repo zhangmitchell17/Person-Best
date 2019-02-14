@@ -9,6 +9,10 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="Stride Length/ Step Goal" />
         <item
+            android:id="@+id/nav_progress"
+            android:icon="@drawable/common_full_open_on_phone"
+            android:title="Progress Chart"/>
+        <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Gallery" />
