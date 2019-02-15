@@ -1,10 +1,12 @@
 package com.example.team31_personalbest;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -29,6 +31,8 @@ import com.google.android.gms.tasks.Task;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import static java.lang.Integer.parseInt;
+
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IStepActivity{
@@ -42,10 +46,12 @@ public class MainActivity extends AppCompatActivity
     public static boolean loggedIn = false;
 
     private FitnessService fitnessService;
+    boolean goalAchievedDisplayed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        goalAchievedDisplayed = false;
 
         if(loggedIn) {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -188,6 +194,7 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
         TextView totalSteps = (TextView) findViewById(R.id.textViewStepMain);
         totalSteps.setText(String.valueOf(stepCount));
+        goalAchievement(stepCount);
     }
 
     public void updateSteps() {
@@ -329,5 +336,33 @@ public class MainActivity extends AppCompatActivity
         this.fitnessServiceKey = fitnessServiceKey;
     }
 
+
+    public void goalAchievement(long stepCount) {
+        SharedPreferences sharedPreferences = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
+        int stepGoal = parseInt(sharedPreferences.getString("step", "0"));
+        if (stepCount >= stepGoal && !goalAchievedDisplayed) {
+            goalAchievedDisplayed = true;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Achievement Notification");
+            builder.setMessage("Good Job! You have achieved your step goal. Would you like to set a new one?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    launchInputHeightStepGoalActivity();
+                }
+            });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+
+    }
 
 }
