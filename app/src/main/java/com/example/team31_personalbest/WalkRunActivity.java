@@ -76,8 +76,8 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     }
 
     public void setStepCount(long stepCount) {
-      stepDisplay.setText(String.valueOf(stepCount));
-      int i = 1000;
+        stepDisplay.setText(String.valueOf(stepCount));
+        int i = 1000;
         stepDisplay.setText(Integer.toString(i));
         if (Integer.parseInt(stepDisplay.getText().toString()) == 1000) {
         }

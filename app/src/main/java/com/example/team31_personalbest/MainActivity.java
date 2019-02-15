@@ -1,6 +1,5 @@
 package com.example.team31_personalbest;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -35,13 +34,13 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IStepActivity{
     private String fitnessServiceKey = "GOOGLE_FIT";
 
-    public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
-
     private static final String TAG = "SignIn";
 
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
 
     private TextView stepDisplay;
+
+    private FitnessService fitnessService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,12 +108,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-//        String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
-//
-//        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
-//        fitnessService.setup();
-
-
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
             @Override
@@ -125,7 +118,6 @@ public class MainActivity extends AppCompatActivity
 
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
-
     }
 
     public void launchStepCountActivity() {
@@ -187,11 +179,17 @@ public class MainActivity extends AppCompatActivity
         stepCount.setText("Your step goal is: " + currentSteps);
     }
 
+    public void setStepCount(long stepCount) {
+        SharedPreferences sharedPref = getSharedPreferences("resetSteps", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("steps", (int)stepCount);
+        editor.apply();
+        TextView totalSteps = (TextView) findViewById(R.id.textViewStepMain);
+        totalSteps.setText(String.valueOf(stepCount));
+    }
+
     public void updateSteps() {
-        SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
-        int stepAdd = sharePref.getInt("steps", -1);
-        Long stepsCounted = Long.parseLong(stepDisplay.getText().toString());
-        stepDisplay.setText(String.valueOf(stepAdd));
+        fitnessService.updateStepCount();
     }
 
     public void launchLogin() {
@@ -329,13 +327,5 @@ public class MainActivity extends AppCompatActivity
         this.fitnessServiceKey = fitnessServiceKey;
     }
 
-    public void setStepCount(long stepCount) {
-        stepDisplay.setText(String.valueOf(stepCount));
-        int i = 1000;
-        stepDisplay.setText(Integer.toString(i));
-        if (Integer.parseInt(stepDisplay.getText().toString()) == 1000) {
-        }
-    }
 
 }
-
