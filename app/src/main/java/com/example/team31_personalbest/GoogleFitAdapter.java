@@ -1,5 +1,6 @@
 package com.example.team31_personalbest;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -18,9 +19,9 @@ public class GoogleFitAdapter implements FitnessService {
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
     private final String TAG = "GoogleFitAdapter";
 
-    private StepCountActivity walkRun;
+    private Activity walkRun;
 
-    public GoogleFitAdapter(StepCountActivity walkRun) {
+    public GoogleFitAdapter(Activity walkRun) {
         this.walkRun = walkRun;
     }
 
@@ -90,7 +91,7 @@ public class GoogleFitAdapter implements FitnessService {
                                                 ? 0
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
 
-                                walkRun.setStepCount(total);
+                                ((IStepActivity)walkRun).setStepCount(total);
                                 Log.d(TAG, "Total steps: " + total);
                             }
                         })

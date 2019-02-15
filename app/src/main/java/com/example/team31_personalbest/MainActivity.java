@@ -1,5 +1,6 @@
 package com.example.team31_personalbest;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -31,12 +32,16 @@ import java.util.Calendar;
 
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, IStepActivity {
     private String fitnessServiceKey = "GOOGLE_FIT";
+
+    public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
 
     private static final String TAG = "SignIn";
 
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
+
+    private FitnessService fitnessService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,17 +102,27 @@ public class MainActivity extends AppCompatActivity
         btnGoToSteps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                launchStepCountActivity();
+                updateSteps();
             }
         });
+
+//        String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
+//
+//        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
+//        fitnessService.setup();
+
 
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
             @Override
-            public FitnessService create(StepCountActivity stepCount) {
+            public FitnessService create(Activity stepCount) {
                 return new GoogleFitAdapter(stepCount);
             }
         });
+
+        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
+        fitnessService.setup();
+
     }
 
     public void launchStepCountActivity() {
@@ -169,12 +184,20 @@ public class MainActivity extends AppCompatActivity
         stepCount.setText("Your step goal is: " + currentSteps);
     }
 
-    public void updateSteps() {
-        SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
-        int stepAdd = sharePref.getInt("steps", -1);
+//    public void setStepCount(long steps) {
+//
+//    }
+
+    public void setStepCount(long total) {
+        //SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
+        //int stepAdd = sharePref.getInt("steps", -1);
         TextView totalSteps = (TextView) findViewById(R.id.step_text);
-        Long stepsCounted = Long.parseLong(totalSteps.getText().toString());
-        totalSteps.setText(String.valueOf(stepAdd));
+        //Long stepsCounted = Long.parseLong(totalSteps.getText().toString());
+        totalSteps.setText(String.valueOf(total));
+    }
+
+    public void updateSteps() {
+        fitnessService.updateStepCount();
     }
 
     public void launchLogin() {
