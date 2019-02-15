@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
 
     private TextView stepDisplay;
+    public static boolean loggedIn = false;
 
     private FitnessService fitnessService;
 
@@ -46,15 +47,16 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail().build();
+        if(loggedIn) {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail().build();
 
-        // Build a GoogleSignInClient with the options specified by gso.
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+            // Build a GoogleSignInClient with the options specified by gso.
+            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
-
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
+        }
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
