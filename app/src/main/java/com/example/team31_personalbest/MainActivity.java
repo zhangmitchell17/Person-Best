@@ -359,9 +359,22 @@ public class MainActivity extends AppCompatActivity
             goalAchievedDisplayed = true;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Achievement Notification");
-            builder.setMessage("Good Job! You have achieved your step goal. Would you like to set a new one?");
+            final int newStepGoal = (stepGoal * 1.10 > stepGoal + 500) ? stepGoal + 500 :
+                                                                         (int) (stepGoal * 1.10);
+            builder.setMessage("Good Job! You have achieved your step goal. Would you like accept our a new step goal of: " + newStepGoal);
             // Yes button redirects to page to set step goal
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    SharedPreferences sharedPreferences = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("step", "" + newStepGoal);
+                    editor.apply();
+                    updateStepCountAndStride();
+                }
+            });
+            builder.setNeutralButton("I'd like to set my own new step goal", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
