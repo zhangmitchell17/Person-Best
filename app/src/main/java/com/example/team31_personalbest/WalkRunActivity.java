@@ -16,7 +16,7 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     //private StepCounter sc;
 
     public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
-    private static final String TAG = "StepCountActivity";
+    private static final String TAG = "WalkRunActivity";
     private FitnessService fitnessService;
 
     private TextView stepDisplay;
@@ -36,10 +36,10 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
 
 
 //        String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
-//        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, new StepCountActivity());
+//        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, new WalkRunActivity());
 //        fitnessService.setup();
-//        StepCounter sc = new StepCounter(stepDisplay, fitnessService);
-//        sc.execute();
+//        //StepCounter sc = new StepCounter(stepDisplay, fitnessService);
+//        //sc.execute();
 
         speedDisplay = findViewById(R.id.textViewSpeed);
         s = new SpeedUpdater(this, speedDisplay, t);
@@ -71,16 +71,11 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
                 finish();
             }
         });
-
-
     }
 
     public void setStepCount(long stepCount) {
-      stepDisplay.setText(String.valueOf(stepCount));
-      int i = 1000;
-        stepDisplay.setText(Integer.toString(i));
-        if (Integer.parseInt(stepDisplay.getText().toString()) == 1000) {
-        }
+        SharedPreferences sharedPref = getSharedPreferences("resetSteps", MODE_PRIVATE);
+        stepDisplay.setText(sharedPref.getInt("steps", -1));
     }
 
 
