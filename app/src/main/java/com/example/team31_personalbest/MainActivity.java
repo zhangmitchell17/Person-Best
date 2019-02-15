@@ -187,6 +187,10 @@ public class MainActivity extends AppCompatActivity
         stepCount.setText("Your step goal is: " + currentSteps);
     }
 
+    /**
+     * Save the number of steps in sharedPreferences and change the TextView appropriately
+     * @param stepCount The number of steps to update with
+     */
     public void setStepCount(long stepCount) {
         SharedPreferences sharedPref = getSharedPreferences("resetSteps", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -229,6 +233,9 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    /**
+     * Launch the activity showing the past week's walks/runs
+     */
     public void launchPastWalksActivity() {
         Intent intent = new Intent(this, PastWalksActivity.class);
         startActivity(intent);
@@ -337,14 +344,20 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Display the step goal achievement notification and ask if the user wants to set a new step goal
+     * @param stepCount The number of current steps to compare the step goal to
+     */
     public void goalAchievement(long stepCount) {
         SharedPreferences sharedPreferences = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
         int stepGoal = parseInt(sharedPreferences.getString("step", "0"));
+        // Only display it if the step count is greater than the step goal and the notification has not been displayed yet
         if (stepCount >= stepGoal && !goalAchievedDisplayed) {
             goalAchievedDisplayed = true;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Achievement Notification");
             builder.setMessage("Good Job! You have achieved your step goal. Would you like to set a new one?");
+            // Yes button redirects to page to set step goal
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
