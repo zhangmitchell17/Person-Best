@@ -24,6 +24,9 @@ public class InputHeightStepGoal extends AppCompatActivity{
         final Button backButton = (Button)findViewById(R.id.backToMain);
         backButton.setVisibility(View.VISIBLE);
 
+
+
+
         updateHeightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
