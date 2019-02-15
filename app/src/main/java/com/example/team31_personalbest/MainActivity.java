@@ -126,6 +126,9 @@ public class MainActivity extends AppCompatActivity
 
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
+
+        Intent intent = new Intent(MainActivity.this, TimeService.class);
+        startService(intent);
     }
 
     public void launchStepCountActivity() {
@@ -314,7 +317,6 @@ public class MainActivity extends AppCompatActivity
             handleSignInResult(task);
         }
     }
-
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {

@@ -44,7 +44,6 @@ public class ResetHeightTests {
         assertEquals(sharePref.getInt("steps", -1), 100);
     }
 
-
     @Test
     public void testIfStepIsResetDifferentDay() {
         SharedPreferences sharePref = activity.getSharedPreferences("resetSteps", MODE_PRIVATE);
