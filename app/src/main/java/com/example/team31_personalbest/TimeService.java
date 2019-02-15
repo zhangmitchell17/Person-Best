@@ -20,6 +20,8 @@ import androidx.annotation.RequiresApi;
 public class TimeService extends Service {
     static boolean ifPassed = false;
 
+    private String secondStr, minuteStr, hourStr, dayStr;
+
     public TimeService() {
     }
 
@@ -55,10 +57,10 @@ public class TimeService extends Service {
                     DateFormat dayFormat = new SimpleDateFormat(day);
 
                     // convert time to string
-                    String secondStr = secondFormat.format(date);
-                    String minuteStr = minuteFormat.format(date);
-                    String hourStr = hourFormat.format(date);
-                    String dayStr = dayFormat.format(date);
+                    secondStr = secondFormat.format(date);
+                    minuteStr = minuteFormat.format(date);
+                    hourStr = hourFormat.format(date);
+                    dayStr = dayFormat.format(date);
 
                     System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
 
@@ -89,5 +91,22 @@ public class TimeService extends Service {
     public void onDestroy() {
         Toast.makeText(TimeService.this, "Service Stopped", Toast.LENGTH_SHORT).show();
         super.onDestroy();
+    }
+
+    public String getSeconds()
+    {
+        return secondStr;
+    }
+
+    public String getMinutes() {
+        return minuteStr;
+    }
+
+    public String getHours() {
+        return hourStr;
+    }
+
+    public String getDays() {
+        return dayStr;
     }
 }
