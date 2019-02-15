@@ -79,7 +79,7 @@ public class ProgressActivity extends AppCompatActivity {
     }
 }
 
-/*
+
 class DateAxisValueFormatter implements IAxisValueFormatter {
     private String[] vals;
 
@@ -90,4 +90,4 @@ class DateAxisValueFormatter implements IAxisValueFormatter {
     public String getFormattedValue(float value, AxisBase axis) {
         return vals[(int) value];
     }
-}*/
+}
