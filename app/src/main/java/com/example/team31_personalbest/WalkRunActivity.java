@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     private Button btnStop;
+    private Button btnUpdate;
     private TextView timeDisplay;
     private Timer t;
     private SpeedUpdater s;
@@ -22,11 +23,20 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     private TextView stepDisplay;
     private TextView speedDisplay;
 
-
+    private int stepCnted;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_walk_run);
+
+        stepDisplay = findViewById(R.id.textViewSteps);
+
+        SharedPreferences sharedPref = getSharedPreferences("resetSteps", MODE_PRIVATE);
+        stepCnted = sharedPref.getInt("steps", -1);
+
+        String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
+        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
+        fitnessService.setup();
 
         // Makes a timer, makes the async task for it, and begins it
         timeDisplay = findViewById(R.id.textViewTimer);
@@ -45,6 +55,13 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         s = new SpeedUpdater(this, speedDisplay, t);
         s.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+        btnUpdate = findViewById(R.id.button_update_steps);
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fitnessService.updateStepCount();
+            }
+        });
 
         // Returns back to Home Page after session finished
         btnStop = findViewById(R.id.buttonStop);
@@ -74,8 +91,7 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     }
 
     public void setStepCount(long stepCount) {
-        SharedPreferences sharedPref = getSharedPreferences("resetSteps", MODE_PRIVATE);
-        stepDisplay.setText(sharedPref.getInt("steps", -1));
+        stepDisplay.setText(String.valueOf(stepCount - stepCnted));
     }
 
 
