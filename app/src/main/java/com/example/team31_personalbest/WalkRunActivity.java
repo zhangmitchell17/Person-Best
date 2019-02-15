@@ -53,7 +53,7 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
             public void onClick(View v) {
                 long seconds = t.getSeconds();
                 String nameOfDay = "";
-                SharedPreferences sharedPreferences = getSharedPreferences("savedData", MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences("savedWalks", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putLong(nameOfDay + "Time", seconds);
                 editor.apply();

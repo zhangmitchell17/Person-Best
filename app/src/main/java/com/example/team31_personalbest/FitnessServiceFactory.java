@@ -16,16 +16,12 @@ public class FitnessServiceFactory {
         blueprints.put(key, bluePrint);
     }
 
-    public static FitnessService create(String key, Activity walkRun) {
+    public static FitnessService create(String key, IStepActivity stepActivity) {
         Log.i(TAG, String.format("creating FitnessService with key %s", key));
-        System.out.println(key);
-        if (blueprints.get(key) == null) {
-            System.out.println("Blueprint getkey is null!");
-        }
-        return blueprints.get(key).create(walkRun);
+        return blueprints.get(key).create(stepActivity);
     }
 
     public interface BluePrint {
-        FitnessService create(Activity walkRun);
+        FitnessService create(IStepActivity stepActivity);
     }
 }

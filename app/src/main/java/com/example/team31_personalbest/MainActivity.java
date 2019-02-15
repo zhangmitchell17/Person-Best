@@ -32,7 +32,7 @@ import java.util.Calendar;
 
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, IStepActivity {
+        implements NavigationView.OnNavigationItemSelectedListener, IStepActivity{
     private String fitnessServiceKey = "GOOGLE_FIT";
 
     public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity
 
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
 
-    private FitnessService fitnessService;
+    private TextView stepDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // setting stepDisplay
+        stepDisplay = findViewById(R.id.textViewStepMain);
 
         Button startButton = findViewById(R.id.buttonStart);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -115,8 +118,8 @@ public class MainActivity extends AppCompatActivity
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
             @Override
-            public FitnessService create(Activity stepCount) {
-                return new GoogleFitAdapter(stepCount);
+            public FitnessService create(IStepActivity stepActivity) {
+                return new GoogleFitAdapter(stepActivity);
             }
         });
 
@@ -164,19 +167,19 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
 
         // update step count on screen
-        updateStepCntAndStride();
+        updateStepCountAndStride();
 
         updateSteps();
     }
 
-    public void updateStepCntAndStride() {
+    public void updateStepCountAndStride() {
         // store current height and stride length for textview in main page to use
 
         SharedPreferences sharePref = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
         String currentSteps = sharePref.getString("step", "1000");
 
-        sharePref = getSharedPreferences("savedHeight", MODE_PRIVATE);
-        String currentStrideLength = sharePref.getString("height", "69");
+        SharedPreferences sharedPreferences = getSharedPreferences("savedStride", MODE_PRIVATE);
+        int currentStrideLength = sharedPreferences.getInt("stride", 0);
 
         TextView strideLength = (TextView)findViewById(R.id.stride_length);
         strideLength.setText("Your stride length is: " + currentStrideLength);
@@ -184,20 +187,11 @@ public class MainActivity extends AppCompatActivity
         stepCount.setText("Your step goal is: " + currentSteps);
     }
 
-//    public void setStepCount(long steps) {
-//
-//    }
-
-    public void setStepCount(long total) {
-        //SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
-        //int stepAdd = sharePref.getInt("steps", -1);
-        TextView totalSteps = (TextView) findViewById(R.id.step_text);
-        //Long stepsCounted = Long.parseLong(totalSteps.getText().toString());
-        totalSteps.setText(String.valueOf(total));
-    }
-
     public void updateSteps() {
-        fitnessService.updateStepCount();
+        SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
+        int stepAdd = sharePref.getInt("steps", -1);
+        Long stepsCounted = Long.parseLong(stepDisplay.getText().toString());
+        stepDisplay.setText(String.valueOf(stepAdd));
     }
 
     public void launchLogin() {
@@ -225,6 +219,11 @@ public class MainActivity extends AppCompatActivity
 
     public void launchProgressActivity() {
         Intent intent = new Intent(this, ProgressActivity.class);
+        startActivity(intent);
+    }
+
+    public void launchPastWalksActivity() {
+        Intent intent = new Intent(this, PastWalksActivity.class);
         startActivity(intent);
     }
 
@@ -271,7 +270,8 @@ public class MainActivity extends AppCompatActivity
             launchInputHeightStepGoalActivity();
         } else if(id == R.id.nav_progress) {
             launchProgressActivity();
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_pastWalks) {
+            launchPastWalksActivity();
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -327,6 +327,14 @@ public class MainActivity extends AppCompatActivity
 
     public void setFitnessServiceKey(String fitnessServiceKey) {
         this.fitnessServiceKey = fitnessServiceKey;
+    }
+
+    public void setStepCount(long stepCount) {
+        stepDisplay.setText(String.valueOf(stepCount));
+        int i = 1000;
+        stepDisplay.setText(Integer.toString(i));
+        if (Integer.parseInt(stepDisplay.getText().toString()) == 1000) {
+        }
     }
 
 }
