@@ -31,6 +31,8 @@ import com.google.android.gms.tasks.Task;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import static java.lang.Integer.parseInt;
+
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IStepActivity{
@@ -337,10 +339,11 @@ public class MainActivity extends AppCompatActivity
 
     public void goalAchievement(long stepCount) {
         SharedPreferences sharedPreferences = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
-        int stepGoal = sharedPreferences.getInt("step", 0);
-        if (stepCount >= stepGoal && goalAchievedDisplayed) {
+        int stepGoal = parseInt(sharedPreferences.getString("step", "0"));
+        if (stepCount >= stepGoal && !goalAchievedDisplayed) {
             goalAchievedDisplayed = true;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Achievement Notification");
             builder.setMessage("Good Job! You have achieved your step goal. Would you like to set a new one?");
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
