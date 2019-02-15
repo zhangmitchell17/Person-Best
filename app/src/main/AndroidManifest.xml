@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".PastWalksActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -20,16 +21,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".WalkRunActivity" />
-        <activity android:name=".InputHeightStepGoal"></activity>
-        <activity android:name=".Login">
-
-        </activity>
-        <activity android:name=".StepCountActivity">
-
-        </activity>
-
-        <!--<activity android:name=".StepCountActivity"></activity>-->
-
+        <activity android:name=".InputHeightStepGoal" />
+        <activity android:name=".Login"></activity>
+        <activity android:name=".StepCountActivity"></activity>
     </application>
 
 </manifest>

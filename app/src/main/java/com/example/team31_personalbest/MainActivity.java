@@ -205,6 +205,11 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    public void launchPastWalksActivity() {
+        Intent intent = new Intent(this, PastWalksActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -248,7 +253,8 @@ public class MainActivity extends AppCompatActivity
             launchInputHeightStepGoalActivity();
         } else if(id == R.id.nav_progress) {
             launchProgressActivity();
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_pastWalks) {
+            launchPastWalksActivity();
 
         } else if (id == R.id.nav_slideshow) {
 
