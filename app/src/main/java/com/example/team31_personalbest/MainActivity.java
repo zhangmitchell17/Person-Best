@@ -200,6 +200,7 @@ public class MainActivity extends AppCompatActivity
         updateStepCountAndStride();
 
         updateSteps();
+
     }
 
     public void updateStepCountAndStride() {
