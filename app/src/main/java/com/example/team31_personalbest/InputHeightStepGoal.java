@@ -19,6 +19,8 @@ public class InputHeightStepGoal extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_height);
         final EditText height = (EditText)findViewById(R.id.heightInput);
+        updateHeightHint();
+
         Button updateHeightButton = (Button)findViewById(R.id.updateHeight);
 
         final Button backButton = (Button)findViewById(R.id.backToMain);
@@ -66,11 +68,14 @@ public class InputHeightStepGoal extends AppCompatActivity{
                 }
 
                 displayFirstName.setText(notification);
+                updateHeightHint();
             }
         });
 
         final EditText step = (EditText)findViewById(R.id.stepInput);
         Button updateStepButton = (Button)findViewById(R.id.updateStep);
+
+        updateGoalHint();
 
         // let user enter step goal
         updateStepButton.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +110,8 @@ public class InputHeightStepGoal extends AppCompatActivity{
                     notification = "Please enter a new step goal of at least 2 :)";
                 }
                 displayFirstName.setText(notification);
+                updateGoalHint();
+
             }
         });
 
@@ -122,5 +129,41 @@ public class InputHeightStepGoal extends AppCompatActivity{
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
+    }
+
+    /**
+     * Update the EditText height hint to show the current height
+     */
+    private void updateHeightHint() {
+        EditText height = (EditText)findViewById(R.id.heightInput);
+        SharedPreferences sharedPreferences = getSharedPreferences("savedHeight", MODE_PRIVATE);
+        String savedHeight = sharedPreferences.getString("height", "");
+        if (!savedHeight.equals(""))
+        {
+            height.setHint(savedHeight);
+        }
+        else
+        {
+            height.setHint(getString(R.string.heightHint));
+        }
+    }
+
+
+    /**
+     * Update the EditText step goal hint to show the current step goal
+     */
+    private void updateGoalHint() {
+        EditText step = (EditText)findViewById(R.id.stepInput);
+
+        SharedPreferences sharedPreference = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
+        String savedStepGoal = sharedPreference.getString("step", "");
+        if (!savedStepGoal.equals(""))
+        {
+            step.setHint(savedStepGoal);
+        }
+        else
+        {
+            step.setHint(getString(R.string.goalHint));
+        }
     }
 }

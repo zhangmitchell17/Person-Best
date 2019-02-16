@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.widget.Toast;
@@ -22,7 +23,16 @@ public class TimeService extends Service {
 
     private String secondStr, minuteStr, hourStr, dayStr;
 
+    private final IBinder iBinder = new LocalService();
+
+
     public TimeService() {
+    }
+
+    class LocalService extends Binder {
+        public TimeService getService() {
+            return TimeService.this;
+        }
     }
 
     final class MyThread implements Runnable {
@@ -77,19 +87,20 @@ public class TimeService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return iBinder;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
-        Toast.makeText(TimeService.this, "Service Started", Toast.LENGTH_LONG).show();
+        //Toast.makeText(TimeService.this, "Service Started", Toast.LENGTH_LONG).show();
         Thread thread = new Thread(new MyThread(startID));
         thread.start();
         return super.onStartCommand(intent, flags, startID);
     }
 
+
     public void onDestroy() {
-        Toast.makeText(TimeService.this, "Service Stopped", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(TimeService.this, "Service Stopped", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
 
@@ -109,4 +120,5 @@ public class TimeService extends Service {
     public String getDays() {
         return dayStr;
     }
+
 }

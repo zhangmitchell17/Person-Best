@@ -1,9 +1,13 @@
 package com.example.team31_personalbest;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -46,12 +50,29 @@ public class MainActivity extends AppCompatActivity
     public static boolean loggedIn = false;
 
     private FitnessService fitnessService;
-    boolean goalAchievedDisplayed;
+    private boolean goalAchievedDisplayed;
+
+    private TimeService timeService;
+    private boolean isBound;
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            TimeService.LocalService localService = (TimeService.LocalService) service;
+            timeService = localService.getService();
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        goalAchievedDisplayed = false;
 
         if(loggedIn) {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -128,10 +149,14 @@ public class MainActivity extends AppCompatActivity
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
 
+
+
+        // Bind time service to main activity
         Intent intent = new Intent(MainActivity.this, TimeService.class);
-        //if (intent == null) { System.out.println("Intent is null!"); }
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         startService(intent);
     }
+
 
     public void launchStepCountActivity() {
         Intent intent = new Intent(this, StepCountActivity.class);
@@ -355,6 +380,13 @@ public class MainActivity extends AppCompatActivity
     public void goalAchievement(long stepCount) {
         SharedPreferences sharedPreferences = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
         int stepGoal = parseInt(sharedPreferences.getString("step", "0"));
+
+        SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
+        // Check if an accomplishment notification has been displayed today yet
+        String date = sharedPref.getString("date", "");
+        if (!timeService.getDays().equals(date)) {
+            goalAchievedDisplayed = false;
+        }
         // Only display it if the step count is greater than the step goal and the notification has not been displayed yet
         if (stepCount >= stepGoal && !goalAchievedDisplayed) {
             goalAchievedDisplayed = true;
@@ -363,7 +395,7 @@ public class MainActivity extends AppCompatActivity
             final int newStepGoal = (stepGoal * 1.10 > stepGoal + 500) ? stepGoal + 500 :
                                                                          (int) (stepGoal * 1.10);
             builder.setMessage("Good Job! You have achieved your step goal. Would you like accept our a new step goal of: " + newStepGoal);
-            // Yes button redirects to page to set step goal
+            // Yes button sets the recommended step goal
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -375,6 +407,7 @@ public class MainActivity extends AppCompatActivity
                     updateStepCountAndStride();
                 }
             });
+            // Redirect to page to let the user set their own step goal
             builder.setNeutralButton("I'd like to set my own new step goal", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -382,6 +415,7 @@ public class MainActivity extends AppCompatActivity
                     launchInputHeightStepGoalActivity();
                 }
             });
+            // Close the message
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -390,6 +424,11 @@ public class MainActivity extends AppCompatActivity
             });
             AlertDialog alert = builder.create();
             alert.show();
+
+            // Save the date that the accomplishment notification has been set
+            sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("date", timeService.getDays());
         }
 
 
