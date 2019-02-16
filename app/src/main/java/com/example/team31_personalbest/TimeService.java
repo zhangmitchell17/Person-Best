@@ -75,6 +75,12 @@ public class TimeService extends Service {
                         setProgressNotificationFlag();
                     }
 
+                    SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
+                    String accomplishmentDate = sharedPref.getString("date", "");
+                    if (!dayStr.equals(accomplishmentDate)) {
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putBoolean("accomplishmentDisplayed", false);
+                    }
                     try {
                         wait(1000);
                     } catch (InterruptedException e) {
