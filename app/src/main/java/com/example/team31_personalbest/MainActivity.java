@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
@@ -53,8 +54,9 @@ public class MainActivity extends AppCompatActivity
     private boolean goalAchievedDisplayed;
 
     private TimeService timeService;
+    private Steps steps;
     private boolean isBound;
-/*
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity
             isBound = false;
         }
     };
-*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,13 +133,14 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
-        Button btnGoToSteps = findViewById(R.id.buttonGoToSteps);
-        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateSteps();
-            }
-        });
+//        Button btnGoToSteps = findViewById(R.id.buttonGoToSteps);
+//        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                updateSteps();
+//            }
+//        });
+        timeService = new TimeService();
 
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
@@ -150,6 +153,8 @@ public class MainActivity extends AppCompatActivity
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
 
+        steps = new Steps(stepDisplay, fitnessService);
+        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
         // Bind time service to main activity
@@ -440,6 +445,7 @@ public class MainActivity extends AppCompatActivity
             // Save the date that the accomplishment notification has been set
             sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
+            //if (timeService == null) { System.out.println("timeService is null!"); }
             editor.putString("date", timeService.getDays());
         }
 
