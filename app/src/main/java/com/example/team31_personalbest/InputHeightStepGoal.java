@@ -163,7 +163,7 @@ public class InputHeightStepGoal extends AppCompatActivity{
         }
         else
         {
-            step.setHint(getString(R.string.stepHint));
+            step.setHint(getString(R.string.goalHint));
         }
     }
 }
