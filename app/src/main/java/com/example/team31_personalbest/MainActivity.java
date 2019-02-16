@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(loggedIn) {
+        if (!loggedIn) {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail().build();
 
@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
         }
+
+        //if (!loggedIn) { return; }
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -336,6 +338,8 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        System.out.println("onActivityResult called");
+
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == AppCompatActivity.RESULT_OK) {
             // The Task returned from this call is always completed, no need to attach
@@ -346,6 +350,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        System.out.println("handleSignInResult called");
+
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
@@ -362,9 +368,11 @@ public class MainActivity extends AppCompatActivity
 
     public void updateUI(GoogleSignInAccount account) {
         if (account != null) {
+            loggedIn = true;
             Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_LONG);
         } else {
             Log.w(TAG, "You need to log in again.");
+            Toast.makeText(getApplicationContext(), "You need to log in again.", Toast.LENGTH_LONG);
         }
     }
 
