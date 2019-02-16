@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity
         fitnessService.setup();
 
         Intent intent = new Intent(MainActivity.this, TimeService.class);
+        //if (intent == null) { System.out.println("Intent is null!"); }
         startService(intent);
     }
 
