@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
 
     private TimeService timeService;
     private boolean isBound;
-
+/*
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -68,8 +68,7 @@ public class MainActivity extends AppCompatActivity
             isBound = false;
         }
     };
-
-
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,7 +154,8 @@ public class MainActivity extends AppCompatActivity
 
         // Bind time service to main activity
         Intent intent = new Intent(MainActivity.this, TimeService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        //bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+
         startService(intent);
     }
 
@@ -202,6 +202,7 @@ public class MainActivity extends AppCompatActivity
         updateStepCountAndStride();
 
         updateSteps();
+
     }
 
     public void updateStepCountAndStride() {
@@ -390,11 +391,14 @@ public class MainActivity extends AppCompatActivity
         int stepGoal = parseInt(sharedPreferences.getString("step", "0"));
 
         SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
+        /*
         // Check if an accomplishment notification has been displayed today yet
         String date = sharedPref.getString("date", "");
         if (!timeService.getDays().equals(date)) {
             goalAchievedDisplayed = false;
         }
+        */
+        goalAchievedDisplayed = sharedPref.getBoolean("accomplishmentDisplayed", false);
         // Only display it if the step count is greater than the step goal and the notification has not been displayed yet
         if (stepCount >= stepGoal && !goalAchievedDisplayed) {
             goalAchievedDisplayed = true;
