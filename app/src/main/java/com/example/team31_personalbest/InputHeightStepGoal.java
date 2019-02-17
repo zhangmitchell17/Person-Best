@@ -36,19 +36,21 @@ public class InputHeightStepGoal extends AppCompatActivity{
                 SharedPreferences sharePref = getSharedPreferences
                                                 ("savedHeight", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharePref.edit();
-                editor.putString("height", height.getText().toString());
-                editor.apply();
+                if (!height.getText().toString().equals("0")) {
+                    editor.putString("height", height.getText().toString());
+                    editor.apply();
+                }
                 TextView displayFirstName = (TextView)findViewById(R.id.enteredHeight);
                 String notification = "";
 
                 // get user input height and calculate stride length
                 try {
                     int newHeight = parseInt(height.getText().toString());
-                    Toast.makeText(InputHeightStepGoal.this, "Your stride length is saved",
-                            Toast.LENGTH_LONG).show();
                     if (sharePref.getString("height", "").equals("") ||
                         newHeight <= 0) {
                         notification = "Please enter your height :)";
+                        Toast.makeText(InputHeightStepGoal.this, "Your stride length is unchanged",
+                                Toast.LENGTH_LONG).show();
 
                         // clear current preferences
                         //editor.clear();
@@ -61,6 +63,8 @@ public class InputHeightStepGoal extends AppCompatActivity{
                         editor = sharePref.edit();
                         editor.putInt("stride", stride);
                         editor.apply();
+                        Toast.makeText(InputHeightStepGoal.this, "Your stride length is saved",
+                                Toast.LENGTH_LONG).show();
                     }
 
                 } catch (NumberFormatException e) {
@@ -85,17 +89,19 @@ public class InputHeightStepGoal extends AppCompatActivity{
                 SharedPreferences sharePref = getSharedPreferences
                         ("savedStepGoal", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharePref.edit();
-                editor.putString("step", step.getText().toString());
-                editor.apply();
+                if (!step.getText().toString().equals("0")) {
+                    editor.putString("step", step.getText().toString());
+                    editor.apply();
+                }
                 TextView displayFirstName = (TextView)findViewById(R.id.enteredStep);
                 String notification = "";
                 try {
                     int newGoal = Integer.parseInt(step.getText().toString());
-                    Toast.makeText(InputHeightStepGoal.this, "Your step goal is saved",
-                            Toast.LENGTH_LONG).show();
                     if (sharePref.getString("step", "").equals("") ||
-                            newGoal <= 1) {
-                        notification = "Please enter a new step goal of at least 2 :)";
+                            newGoal <= 0) {
+                        notification = "Please enter a new step goal of at least 1 :)";
+                        Toast.makeText(InputHeightStepGoal.this, "Your step goal is unchanged",
+                                Toast.LENGTH_LONG).show();
 
                         // clear current preferences
                         //editor.clear();
@@ -103,7 +109,9 @@ public class InputHeightStepGoal extends AppCompatActivity{
                     }
                     else {
                         notification = "Congrats! Your new step goal is " +
-                                sharePref.getString("step", "0") + " steps";
+                                sharePref.getString("step", "1") + " steps";
+                        Toast.makeText(InputHeightStepGoal.this, "Your step goal is saved",
+                                Toast.LENGTH_LONG).show();
                     }
 
                 } catch (NumberFormatException e) {

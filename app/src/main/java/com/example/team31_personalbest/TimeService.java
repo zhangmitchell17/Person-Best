@@ -78,9 +78,7 @@ public class TimeService extends Service {
                     SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     String accomplishmentDate = sharedPref.getString("date", "");
-                    //System.out.println("accomplishmentDate: " + accomplishmentDate);
                     editor.putString("currentDate", dayStr);
-                    //System.out.println("day: " + dayStr + " | " + accomplishmentDate);
                     if (!dayStr.equals(accomplishmentDate)) {
                         editor.putBoolean("accomplishmentDisplayed", false);
                     }
