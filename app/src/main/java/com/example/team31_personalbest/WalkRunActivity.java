@@ -36,6 +36,11 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         SharedPreferences sharedPref = getSharedPreferences("resetSteps", MODE_PRIVATE);
         stepCnted = sharedPref.getInt("steps", -1);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("walkRunStats", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("walkRunSteps", 0);
+        editor.apply();
+
         String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
