@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
     private boolean goalAchievedDisplayed;
 
     private TimeService timeService;
-    //private Steps steps;
+    private Steps steps;
     private boolean isBound;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -104,14 +104,14 @@ public class MainActivity extends AppCompatActivity
         // setting stepDisplay
         stepDisplay = findViewById(R.id.textViewStepMain);
 
-        Button startButton = findViewById(R.id.buttonStart);
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateSteps();
-                launchWalkRunActivity();
-            }
-        });
+//        Button startButton = findViewById(R.id.buttonStart);
+//        startButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                updateSteps();
+//                launchWalkRunActivity();
+//            }
+//        });
 
         //fake steps
         SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
@@ -153,8 +153,8 @@ public class MainActivity extends AppCompatActivity
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
 
-//        steps = new Steps(stepDisplay, fitnessService);
-//        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        steps = new Steps(stepDisplay, fitnessService);
+        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
         // Bind time service to main activity
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
         TextView totalSteps = (TextView) findViewById(R.id.textViewStepMain);
         totalSteps.setText(String.valueOf(stepCount));
-        goalAchievement(stepCount);
+        //goalAchievement(stepCount);
     }
 
     public void updateSteps() {
