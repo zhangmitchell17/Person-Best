@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
     private boolean goalAchievedDisplayed;
 
     private TimeService timeService;
-    private Steps steps;
+    //private Steps steps;
     private boolean isBound;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -133,13 +133,13 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
-//        Button btnGoToSteps = findViewById(R.id.buttonGoToSteps);
-//        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                updateSteps();
-//            }
-//        });
+        Button btnGoToSteps = findViewById(R.id.buttonGoToSteps);
+        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateSteps();
+            }
+        });
         timeService = new TimeService();
 
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
@@ -153,8 +153,8 @@ public class MainActivity extends AppCompatActivity
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
 
-        steps = new Steps(stepDisplay, fitnessService);
-        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//        steps = new Steps(stepDisplay, fitnessService);
+//        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
         // Bind time service to main activity
