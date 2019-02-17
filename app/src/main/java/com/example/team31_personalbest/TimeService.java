@@ -72,7 +72,7 @@ public class TimeService extends Service {
 
                     //System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
 
-                    if(hourStr.equals("17") && minuteStr.equals("22") && secondStr.equals("30")) {
+                    if(hourStr.equals("17") && minuteStr.equals("38") && secondStr.equals("50")) {
                         setProgressNotificationFlag();
                     }
 
@@ -105,6 +105,7 @@ public class TimeService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                // creating a new DataRetriever Object to get yesterdays steps
                 DataRetriever dr = new DataRetriever(MainActivity.mainActivity);
                 dr.setup();
                 int previousDayStepCount = dr.retrieveYesterdaysSteps();
