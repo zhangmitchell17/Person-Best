@@ -1,5 +1,6 @@
 package com.example.team31_personalbest;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,17 +31,27 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.Task;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import static java.lang.Integer.parseInt;
 
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, IStepActivity{
+        implements NavigationView.OnNavigationItemSelectedListener,
+                   IStepActivity,
+                   GoogleApiClient.ConnectionCallbacks,
+                   GoogleApiClient.OnConnectionFailedListener {
+
+    public static Activity mainActivity;
     private String fitnessServiceKey = "GOOGLE_FIT";
 
     private static final String TAG = "SignIn";
@@ -75,6 +86,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mainActivity = this;
         if (!loggedIn) {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail().build();
@@ -160,7 +172,6 @@ public class MainActivity extends AppCompatActivity
         // Bind time service to main activity
         Intent intent = new Intent(MainActivity.this, TimeService.class);
         //bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-
         startService(intent);
     }
 
@@ -451,6 +462,33 @@ public class MainActivity extends AppCompatActivity
             editor.apply();
         }
 
+
+    }
+
+    /**
+     * implementing ConnectionCallbacks
+     * @param i
+     */
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.e("HistoryAPI", "onConnectionSuspended");
+    }
+
+    /**
+     * implementing onConnectionFailedListener
+     * @param connectionResult
+     */
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e("HistoryAPI", "onConnectionFailed");
+    }
+
+    /**
+     * implementing ConnectionCallbacks
+     * @param bundle
+     */
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.e("HistoryAPI", "onConnected");
 
     }
 
