@@ -3,6 +3,7 @@ package com.example.team31_personalbest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -44,6 +45,7 @@ public class SpeedUpdater extends AsyncTask<String, String, String>{
             }
             SharedPreferences sharedPreferences = c.getSharedPreferences("savedStride", MODE_PRIVATE);
             int strideLength = sharedPreferences.getInt("stride", 0);
+
             // TODO: NEED TO MULTIPLY THIS BY NUMBER OF STEPS TAKEN (replace the 10000)
             SharedPreferences sharedPref = c.getSharedPreferences("walkRunStats", MODE_PRIVATE);
             long numSteps = sharedPref.getLong("walkRunSteps", 0);
@@ -59,9 +61,9 @@ public class SpeedUpdater extends AsyncTask<String, String, String>{
                 publishProgress(("" + mph));
             }
 
+            Log.i("mph: ", String.valueOf(mph));
 
             // Waits for 1 second before each update
-
             try {
                 Thread.sleep(MS_PER_SEC);
             } catch (Exception e) {

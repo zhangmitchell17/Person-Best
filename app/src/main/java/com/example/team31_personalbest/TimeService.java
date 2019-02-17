@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -80,9 +81,9 @@ public class TimeService extends Service {
                     hourStr = hourFormat.format(date);
                     dayStr = dayFormat.format(date);
 
-                    System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
+                    Log.i("timeThread: ",secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
 
-                    if(hourStr.equals("18") && minuteStr.equals("03") && secondStr.equals("00")) {
+                    if(hourStr.equals("12") && minuteStr.equals("0") && secondStr.equals("00")) {
                         setProgressNotificationFlag();
                     }
 
@@ -119,6 +120,9 @@ public class TimeService extends Service {
                 int previousDayStepCount = dr.retrieveYesterdaysSteps();
                 int todayStepCount = getSharedPreferences("resetSteps", MODE_PRIVATE).getInt("steps", 0);
 
+                Log.i("today day steps: ", String.valueOf(todayStepCount));
+                Log.i("previous day steps: ", String.valueOf(previousDayStepCount));
+
                 if(todayStepCount >= (2 * previousDayStepCount) && previousDayStepCount > 0) {
                     SharedPreferences sharePref = getSharedPreferences("progressNotification", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharePref.edit();
@@ -131,9 +135,11 @@ public class TimeService extends Service {
                         @Override
                         public void run() {
                             Toast.makeText(TimeService.this,"You made huge progress compared to yesterday",Toast.LENGTH_SHORT).show();
+                            Log.i("progress toast showed", "");
                         }
                     });
                 }
+
             }
         }).start();
     }

@@ -2,6 +2,7 @@ package com.example.team31_personalbest;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -39,6 +40,8 @@ public class StepCounter extends AsyncTask<String, String, String> {
         while (true && !isCancelled) {
             fitnessService.updateStepCount();
             publishProgress(String.valueOf(currStep));
+            Log.i("current Step: ", String.valueOf(currStep));
+
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
@@ -51,7 +54,6 @@ public class StepCounter extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPreExecute() {
-
     }
 
     @Override

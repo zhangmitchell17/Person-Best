@@ -99,11 +99,10 @@ public class MainActivity extends AppCompatActivity
             startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
         }
 
-        //if (!loggedIn) { return; }
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Log.i(TAG, "toolbar: " + toolbar.toString());
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -116,6 +115,7 @@ public class MainActivity extends AppCompatActivity
 
         // setting stepDisplay
         stepDisplay = findViewById(R.id.textViewStepMain);
+        Log.i(TAG, "stepDisplay: " + stepDisplay.toString());
 
         Button startButton = findViewById(R.id.buttonStart);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -128,9 +128,6 @@ public class MainActivity extends AppCompatActivity
 
         timeService = new TimeService();
 
-        /**
-         *
-         */
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
             @Override
@@ -141,14 +138,16 @@ public class MainActivity extends AppCompatActivity
 
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
+        Log.i(TAG, "fitness Service: " + fitnessService.toString());
 
-        if(isCancelled) {
+        if(!isCancelled) {
             steps = new Steps(stepDisplay, fitnessService);
             steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
         // Bind time service to main activity
         Intent intent = new Intent(MainActivity.this, TimeService.class);
+        Log.i(TAG, "Time Service: " + intent.toString());
         //bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         startService(intent);
     }
@@ -222,6 +221,10 @@ public class MainActivity extends AppCompatActivity
         strideLength.setText("Your stride length is: " + currentStrideLength);
         TextView stepCount = (TextView)findViewById(R.id.step_count);
         stepCount.setText("Your step goal is: " + currentSteps);
+
+        // log message to see of text are correct
+        Log.i("Step text: ", "Step goal text is: " + stepCount.getText().toString());
+        Log.i("Stride length: ", "Stride length text is: " + strideLength.getText().toString());
     }
 
     /**
@@ -237,6 +240,7 @@ public class MainActivity extends AppCompatActivity
         TextView totalSteps = (TextView) findViewById(R.id.textViewStepMain);
         totalSteps.setText(String.valueOf(stepCount));
         goalAchievement(stepCount);
+        Log.i(TAG, "currentTotalSteps: " + totalSteps.getText().toString());
     }
 
     // updateSteps() updates the step counts
@@ -478,7 +482,6 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences.Editor editor = sharedPref.edit();
             String currentDate = sharedPref.getString("currentDate", "");
             editor.putString("date", currentDate);
-            System.out.println("date" + currentDate);
             editor.putBoolean("accomplishmentDisplayed", true);
             editor.apply();
         }

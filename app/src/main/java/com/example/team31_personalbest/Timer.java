@@ -50,6 +50,7 @@ public class Timer extends AsyncTask<String, String, String> {
             try {
                 Thread.sleep(MS_PER_SEC);
                 time++;
+                Log.i("timer: ", String.valueOf(time));
             } catch (Exception e) {
                 e.printStackTrace();
                 resp = e.getMessage();
@@ -102,9 +103,8 @@ public class Timer extends AsyncTask<String, String, String> {
         temp = temp % SECS_PER_MIN;
         // Updates seconds
         seconds = temp;
-        Log.i("Hours: ", String.valueOf(hours));
-        Log.i("Minutes: ", String.valueOf(minutes));
-        Log.i("Seconds: ", String.valueOf(seconds));
+
+        Log.i("timer value: ", hours + " " + minutes + " " + seconds);
     }
 
     /**
@@ -112,6 +112,6 @@ public class Timer extends AsyncTask<String, String, String> {
      */
     @Override
     protected void onPostExecute(String result) {
-        // Doesn't need to to anything after finishing
+        // Doesn't need to to anything after finishing : - )
     }
 }
