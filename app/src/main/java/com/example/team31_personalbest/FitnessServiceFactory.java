@@ -6,6 +6,9 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This file is for the FitnessServiceFactory class
+ */
 public class FitnessServiceFactory {
 
     private static final String TAG = "[FitnessServiceFactory]";

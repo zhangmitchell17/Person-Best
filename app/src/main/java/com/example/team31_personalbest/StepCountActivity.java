@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 public class StepCountActivity extends AppCompatActivity implements IStepActivity{
 
     public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
