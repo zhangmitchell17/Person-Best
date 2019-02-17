@@ -1,5 +1,6 @@
 package com.example.team31_personalbest;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -71,16 +72,14 @@ public class TimeService extends Service {
 
                     //System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
 
-                    if(hourStr.equals("09") && minuteStr.equals("34") && secondStr.equals("20")) {
+                    if(hourStr.equals("17") && minuteStr.equals("22") && secondStr.equals("30")) {
                         setProgressNotificationFlag();
                     }
 
                     SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     String accomplishmentDate = sharedPref.getString("date", "");
-                    //System.out.println("accomplishmentDate: " + accomplishmentDate);
                     editor.putString("currentDate", dayStr);
-                    //System.out.println("day: " + dayStr + " | " + accomplishmentDate);
                     if (!dayStr.equals(accomplishmentDate)) {
                         editor.putBoolean("accomplishmentDisplayed", false);
                     }
@@ -97,26 +96,36 @@ public class TimeService extends Service {
 
     public void setProgressNotificationFlag() {
         // check if time is passed 8pm, if so, store today's steps
-        int todayStepCount = getSharedPreferences("resetSteps", MODE_PRIVATE).getInt("steps", 0);
 
-        // TODO: put previous day's step count here
-        int previousDayStepCount = 0;
 
-        if(todayStepCount >= (2 * previousDayStepCount)) {
-            SharedPreferences sharePref = getSharedPreferences("progressNotification", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharePref.edit();
-            editor.putBoolean("makeProgress", true);
-            editor.apply();
+        // running code on a separate thread since DatRetriever has to get data from Historys API
+        // and shouldn't stall the code that calls setProgressNotificationFlag
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DataRetriever dr = new DataRetriever(MainActivity.mainActivity);
+                dr.setup();
+                int previousDayStepCount = dr.retrieveYesterdaysSteps();
+                int todayStepCount = getSharedPreferences("resetSteps", MODE_PRIVATE).getInt("steps", 0);
 
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
+                if(todayStepCount >= (2 * previousDayStepCount)) {
+                    SharedPreferences sharePref = getSharedPreferences("progressNotification", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharePref.edit();
+                    editor.putBoolean("makeProgress", true);
+                    editor.apply();
 
-                @Override
-                public void run() {
-                    Toast.makeText(TimeService.this,"You made huge progress compared to yesterday",Toast.LENGTH_SHORT).show();
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            Toast.makeText(TimeService.this,"You made huge progress compared to yesterday",Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-            });
-        }
+            }
+        }).start();
+
 
     }
 

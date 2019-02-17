@@ -117,6 +117,52 @@ public class DataRetriever implements FitnessService {
         return GOOGLE_FIT_PERMISSIONS_REQUEST_CODE;
     }
 
+    public int retrieveYesterdaysSteps() {
+        List<Bucket> buckets = new ArrayList<>();
+
+        Calendar calendar = Calendar.getInstance();
+        // setting time to midnight
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        // setting today as the last of the days to retrieve data from
+        long endTime = calendar.getTimeInMillis();
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        // setting startTime as a week ago from endTime
+        long startTime = calendar.getTimeInMillis();
+
+        /*
+        Requests for regular steps and planned steps respectively
+         */
+
+        // Create a request to aggregate all of dt by day
+        DataReadRequest dataReadRequest = new DataReadRequest.Builder()
+                .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
+                .bucketByTime(1, TimeUnit.DAYS)
+                .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+                .build();
+
+        DataReadResult dataReadResult = Fitness.HistoryApi.readData(historyClient, dataReadRequest)
+                .await(1, TimeUnit.MINUTES);
+
+        //Used for aggregated data
+        if (dataReadResult.getBuckets().size() > 0) {
+
+            for (Bucket bucket : dataReadResult.getBuckets()) {
+                for(DataSet ds : bucket.getDataSets()) {
+                    for (DataPoint dp : ds.getDataPoints()) {
+                        for(Field field: dp.getDataType().getFields()) {
+                            Log.d("UPS VALUE", dp.getValue(field).asInt() + " steps");
+                            return dp.getValue(field).asInt();
+                        }
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
     public List<Bucket> retrieveAggregatedData(DataType dt, DataType agg) {
 
         List<Bucket> buckets = new ArrayList<>();
