@@ -45,7 +45,15 @@ public class SpeedUpdater extends AsyncTask<String, String, String>{
             SharedPreferences sharedPreferences = c.getSharedPreferences("savedStride", MODE_PRIVATE);
             int strideLength = sharedPreferences.getInt("stride", 0);
             // TODO: NEED TO MULTIPLY THIS BY NUMBER OF STEPS TAKEN (replace the 10000)
-            mph = (float) (Math.round((10000.0 * strideLength * SECONDS_PER_HOUR)/(t.getSeconds() * INCHES_PER_MILE) * 10.0)/10.0);
+            SharedPreferences sharedPref = c.getSharedPreferences("walkRunStats", MODE_PRIVATE);
+            long numSteps = sharedPref.getLong("walkRunSteps", 0);
+            if (numSteps != 0) {
+                mph = (float) (Math.round((numSteps * strideLength * SECONDS_PER_HOUR) / (t.getSeconds() * INCHES_PER_MILE) * 10.0) / 10.0);
+            }
+            else
+            {
+                mph = 0;
+            }
             if (Double.parseDouble(speed.getText().toString()) != mph)
             {
                 publishProgress(("" + mph));
