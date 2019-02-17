@@ -1,6 +1,7 @@
 package com.example.team31_personalbest;
 
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -12,9 +13,15 @@ import android.view.ViewParent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -29,6 +36,18 @@ public class MainActivityElementTests {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+
+    private UiDevice mUiDevice;
+    @Before
+    public void before() throws Exception {
+        mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject mText = mUiDevice.findObject(new UiSelector().textContains("hoz054@ucsd.edu"));
+        try {
+            mText.click();
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void mainActivityElementTests() {

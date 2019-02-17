@@ -108,7 +108,7 @@ public class TimeService extends Service {
                 int previousDayStepCount = dr.retrieveYesterdaysSteps();
                 int todayStepCount = getSharedPreferences("resetSteps", MODE_PRIVATE).getInt("steps", 0);
 
-                if(todayStepCount >= (2 * previousDayStepCount)) {
+                if(todayStepCount >= (2 * previousDayStepCount) && previousDayStepCount > 0) {
                     SharedPreferences sharePref = getSharedPreferences("progressNotification", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharePref.edit();
                     editor.putBoolean("makeProgress", true);

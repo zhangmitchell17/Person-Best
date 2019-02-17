@@ -13,6 +13,7 @@ import android.view.ViewParent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,18 +25,23 @@ import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
+import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class dailyStepCountTests {
+public class stepRecordNavigationTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
-
     private UiDevice mUiDevice;
     @Before
     public void before() throws Exception {
@@ -49,18 +55,39 @@ public class dailyStepCountTests {
     }
 
     @Test
-    public void dailyStepCountTests() {
-        MainActivity.loggedIn = true;
-        MainActivity.isCancelled = true;
-        ViewInteraction button = onView(
-                allOf(withId(R.id.buttonGoToSteps),
+    public void stepRecordNavigationTest() {
+        ViewInteraction appCompatButton = onView(
+                allOf(withId(R.id.buttonGoToSteps), withText("Your Live Daily Step Count"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.drawer_layout),
                                         1),
                                 3),
                         isDisplayed()));
-        button.check(matches(isDisplayed()));
+        appCompatButton.perform(click());
+
+        ViewInteraction appCompatImageButton = onView(
+                allOf(withContentDescription("Open navigation drawer"),
+                        childAtPosition(
+                                allOf(withId(R.id.toolbar),
+                                        childAtPosition(
+                                                withClassName(is("android.support.design.widget.AppBarLayout")),
+                                                0)),
+                                1),
+                        isDisplayed()));
+        appCompatImageButton.perform(click());
+
+        ViewInteraction navigationMenuItemView = onView(
+                allOf(childAtPosition(
+                        allOf(withId(R.id.design_navigation_view),
+                                childAtPosition(
+                                        withId(R.id.nav_view),
+                                        0)),
+                        3),
+                        isDisplayed()));
+        navigationMenuItemView.perform(click());
+
+        pressBack();
     }
 
     private static Matcher<View> childAtPosition(

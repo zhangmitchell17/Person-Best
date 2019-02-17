@@ -1,6 +1,7 @@
 package com.example.team31_personalbest;
 
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.action.CoordinatesProvider;
@@ -17,9 +18,15 @@ import android.view.ViewParent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -34,6 +41,8 @@ import static org.hamcrest.Matchers.is;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class BasicUITests {
+
+    private UiDevice mUiDevice;
 
     public static ViewAction clickPercent(final float pctX, final float pctY){
         return new GeneralClickAction(
@@ -60,11 +69,43 @@ public class BasicUITests {
                 Press.FINGER);
     }
 
+    @Before
+    public void before() throws Exception {
+        mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject mText = mUiDevice.findObject(new UiSelector().textContains("hoz054@ucsd.edu"));
+        try {
+            mText.click();
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+        /*
+        UiObject aText = mUiDevice.findObject(new UiSelector().textContains("NO"));
+        try {
+            aText.click();
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
+        */
+
+    }
+
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
     public void basicUITests() {
+        // find text and click
+        /*
+        UiObject mText = mUiDevice.findObject(new UiSelector().textContains("hoz054@ucsd.edu"));
+        try {
+            mText.click();
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
+        */
+
         clickPercent((float)0.5, (float)0.5);
         MainActivity.loggedIn = true;
         MainActivity.isCancelled = true;

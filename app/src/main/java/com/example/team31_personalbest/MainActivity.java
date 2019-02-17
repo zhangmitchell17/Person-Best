@@ -437,7 +437,7 @@ public class MainActivity extends AppCompatActivity
         */
         goalAchievedDisplayed = sharedPref.getBoolean("accomplishmentDisplayed", false);
         // Only display it if the step count is greater than the step goal and the notification has not been displayed yet
-        if (stepCount >= stepGoal && !goalAchievedDisplayed) {
+        if (stepCount > stepGoal && !goalAchievedDisplayed) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Achievement Notification");
             final int newStepGoal = (stepGoal * 1.10 > stepGoal + 500) ? stepGoal + 500 :
