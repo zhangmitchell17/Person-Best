@@ -7,11 +7,6 @@ import org.junit.Test;
 import org.robolectric.Robolectric;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.android.controller.ActivityController;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import static android.content.Context.MODE_PRIVATE;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
