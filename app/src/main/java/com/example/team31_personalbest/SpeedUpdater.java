@@ -64,25 +64,41 @@ public class SpeedUpdater extends AsyncTask<String, String, String>{
         return resp;
     }
 
+    /**
+     * This method is for pre execution
+     */
     @Override
     protected void onPreExecute() {
         isCancelled = false;
     }
 
+    /**
+     * This method is for post execution
+     * @param result
+     */
     @Override
     protected void onPostExecute(String result) {
     }
 
-    //Update the speedDisplay TextView
+    /**
+     * onProgressUpdate method updates the speedDisplay TextView
+     */
     @Override
     protected void onProgressUpdate(String... text) {
         speed.setText(text[0]);
     }
 
+    /**
+     * cancel method sets isCancelled to true
+     */
     public void cancel() {
         isCancelled = true;
     }
 
+    /**
+     * This method returns the mph
+     * @return
+     */
     public float getMPH() {
         return mph;
     }
