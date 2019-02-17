@@ -45,6 +45,7 @@ public class ProgressActivity extends AppCompatActivity implements
 
     DataRetriever dr;
     List<Integer> ups;
+    List<DataPoint> upsDataPoints;
     List<BarEntry> stepVals;
     BarChart barChart;
     @Override
@@ -90,6 +91,7 @@ public class ProgressActivity extends AppCompatActivity implements
                        retrieveAggregatedData(DataType.TYPE_STEP_COUNT_DELTA,
                                DataType.AGGREGATE_STEP_COUNT_DELTA);
                 ups = new ArrayList();
+                upsDataPoints = new ArrayList<>();
                 DateFormat dateFormat = DateFormat.getDateInstance();
                 DateFormat timeFormat = DateFormat.getTimeInstance();
 
@@ -98,6 +100,7 @@ public class ProgressActivity extends AppCompatActivity implements
                  * data, but the data for this week
                  */
                 boolean afterSunday = false;
+                boolean dataForFirstDay = false;
                 Calendar calendar = Calendar.getInstance();
 
                 /*
@@ -112,6 +115,9 @@ public class ProgressActivity extends AppCompatActivity implements
                             if(!afterSunday && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
                                 afterSunday = true;
                             }
+                            if(afterSunday) {
+                                upsDataPoints.add(dp);
+                            }
                             for(Field field: dp.getDataType().getFields()) {
                                 /*
                                  * if we haven't reached sunday yet and the day is sunday,
@@ -125,23 +131,24 @@ public class ProgressActivity extends AppCompatActivity implements
                                     Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
                                     Log.d("UPS VALUE", dp.getValue(field).asInt() + " " + field.getName());
                                     ups.add(dp.getValue(field).asInt());
+
                                 }
                             }
                         }
                     }
                 }
 
-
-
                 // getting the starting time of the first day of data we retrieve
-                long timeOfFirstDay = unplannedSteps.get(0)
-                        .getDataSets().get(0)
-                        .getDataPoints().get(0)
+                long timeOfFirstDay = upsDataPoints.get(0)
                         .getStartTime(TimeUnit.MILLISECONDS);
 
                 // getting the number of the first day we retrieve data for
                 calendar.setTimeInMillis(timeOfFirstDay);
                 int firstDay = calendar.get(Calendar.DAY_OF_WEEK);
+
+                if(firstDay == Calendar.SUNDAY) {
+                    ups.clear();
+                }
 
 
                 /*
@@ -164,7 +171,7 @@ public class ProgressActivity extends AppCompatActivity implements
                 /*
                  * TODO write code to get planned walks run and replace ps with a proper array
                  */
-                int[] ps = {762, 720, 710, 732, 720, 600, 500};
+                int[] ps = {762, 720, 710, 732, 720, 600, 500, 0};
 
                 // populate BarEntries
                 for (int i = 0; i < ups.size(); i++) {
