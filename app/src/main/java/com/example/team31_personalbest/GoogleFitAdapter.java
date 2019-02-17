@@ -15,19 +15,25 @@ import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-
+/**
+ * This is a google find adapter adapt IStepActivity to the FitnessService interface
+ */
 public class GoogleFitAdapter implements FitnessService {
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
     private final String TAG = "GoogleFitAdapter";
 
     private IStepActivity stepActivity;
 
+    /**
+     * Constructor of the GoogleFitAdapter
+     * @param stepActivity
+     */
     public GoogleFitAdapter(IStepActivity stepActivity) {
         this.stepActivity = stepActivity;
     }
 
     /**
-     *
+     * Initialize method for the Adapter
      */
     public void setup() {
         FitnessOptions fitnessOptions = FitnessOptions.builder()
@@ -47,6 +53,9 @@ public class GoogleFitAdapter implements FitnessService {
         }
     }
 
+    /**
+     * Adapt the startRecording method for IStepActivity
+     */
     private void startRecording() {
         //check if logged in
         GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount((Context)stepActivity);
@@ -72,8 +81,8 @@ public class GoogleFitAdapter implements FitnessService {
 
 
     /**
-     * Reads the current daily step total, computed from midnight of the current day on the device's
-     * current timezone.
+     * Adapt the updateStepCount method which reads the current daily step total,
+     * computed from midnight of the current day on the device's current timezone.
      */
     public void updateStepCount() {
         //check if logged in
@@ -110,6 +119,9 @@ public class GoogleFitAdapter implements FitnessService {
 
 
     @Override
+    /**
+     * Override the getRequestCode method, return the request code
+     */
     public int getRequestCode() {
         return GOOGLE_FIT_PERMISSIONS_REQUEST_CODE;
     }
