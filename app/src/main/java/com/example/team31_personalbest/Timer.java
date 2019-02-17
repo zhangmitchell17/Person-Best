@@ -1,6 +1,7 @@
 package com.example.team31_personalbest;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -101,6 +102,9 @@ public class Timer extends AsyncTask<String, String, String> {
         temp = temp % SECS_PER_MIN;
         // Updates seconds
         seconds = temp;
+        Log.i("Hours: ", String.valueOf(hours));
+        Log.i("Minutes: ", String.valueOf(minutes));
+        Log.i("Seconds: ", String.valueOf(seconds));
     }
 
     /**
@@ -108,6 +112,6 @@ public class Timer extends AsyncTask<String, String, String> {
      */
     @Override
     protected void onPostExecute(String result) {
-        // Doesn't need to to anything after finishing : - )
+        // Doesn't need to to anything after finishing
     }
 }

@@ -84,6 +84,7 @@ public class StepCountActivity extends AppCompatActivity implements IStepActivit
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt("steps", (int)stepCount);
         editor.apply();
+        Log.i("Steps: ",String.valueOf(editor.putInt("steps", (int)stepCount)));
 
         if(Integer.parseInt(textSteps.getText().toString()) == 1000) {
             showEncouragement();
@@ -101,6 +102,7 @@ public class StepCountActivity extends AppCompatActivity implements IStepActivit
         Context context = getApplicationContext();
         CharSequence text = "Good job! You're already at ";
         int duration = Toast.LENGTH_LONG;
+        Log.i("Duration: ", String.valueOf(duration));
 
         text  = text + Double.toString(steps / (double)(100)) + "% of the daily recommended number of steps.";
         Toast toast = Toast.makeText(context, text, duration);

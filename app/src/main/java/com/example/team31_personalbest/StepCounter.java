@@ -51,10 +51,6 @@ public class StepCounter extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPreExecute() {
-        /*
-        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
-        fitnessService.setup();
-        */
 
     }
 
