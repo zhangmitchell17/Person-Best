@@ -126,25 +126,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        // GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-
-        //updateUI(account);
-        //if (account == null) { launchLogin();}
-        //launchLogin();
-
-//        FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
-//            @Override
-//            public FitnessService create(WalkRunActivity walkRun) {
-//                return new GoogleFitAdapter(walkRun);
-//            }
-//        });
-
-
         timeService = new TimeService();
 
+        /**
+         *
+         */
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
             @Override
@@ -168,27 +154,33 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    /**
+     * This method launch the StepCountActivity
+     */
     public void launchStepCountActivity() {
         Intent intent = new Intent(this, StepCountActivity.class);
         intent.putExtra(StepCountActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
         startActivity(intent);
     }
 
+    /**
+     * onStart() method sets the initial behavior
+     */
     public void onStart() {
         super.onStart();
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        //if (account == null) {launchLogin();}
-        //launchLogin();
         updateUI(account);
     }
 
-    // every time user back to main page, check for step reset
+    /**
+     * onResume() method check the dates, print messages, and update steps
+     */
     public void onResume() {
         super.onResume();
-        // Hongyu: when app is launched check if date changed, if date is changed reset steps
 
+        //When app is launched check if date changed, if date is changed reset steps
         SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharePref.edit();
 
@@ -213,8 +205,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * updateStepCountAndStride() method // stores current height and
+     * stride length for textview in main page to use
+     */
     public void updateStepCountAndStride() {
-        // store current height and stride length for textview in main page to use
 
         SharedPreferences sharePref = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
         String currentSteps = sharePref.getString("step", "1000");
@@ -222,6 +217,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sharedPreferences = getSharedPreferences("savedStride", MODE_PRIVATE);
         int currentStrideLength = sharedPreferences.getInt("stride", 0);
 
+        // Update the strideLength and stepCount with output messages
         TextView strideLength = (TextView)findViewById(R.id.stride_length);
         strideLength.setText("Your stride length is: " + currentStrideLength);
         TextView stepCount = (TextView)findViewById(R.id.step_count);
@@ -229,7 +225,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Save the number of steps in sharedPreferences and change the TextView appropriately
+     * setStepCount() method saves the number of steps in sharedPreferences
+     * and changes the TextView appropriately
      * @param stepCount The number of steps to update with
      */
     public void setStepCount(long stepCount) {
@@ -242,46 +239,47 @@ public class MainActivity extends AppCompatActivity
         goalAchievement(stepCount);
     }
 
+    // updateSteps() updates the step counts
     public void updateSteps() {
         fitnessService.updateStepCount();
     }
 
-    public void launchLogin() {
-        Intent intent = new Intent(this, Login.class);
-        startActivity(intent);
-    }
-
-//    public void launchStepCount() {
-//        Intent intent = new Intent(MainActivity.this, StepCountActivity.class);
-//        intent.putExtra(StepCountActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
-//        startActivity(intent);
-//    }
-
+    /**
+     * launchInputHeightStepGoalActivity() launches the height and step goal input activity
+     */
     public void launchInputHeightStepGoalActivity() {
         Intent intent = new Intent(this, InputHeightStepGoal.class);
-        //intent.putExtra(WalkRunActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
         startActivity(intent);
     }
 
+    /**
+     * launchWalkRunActivity() launches the WalkRunActivity
+     */
     public void launchWalkRunActivity() {
         Intent intent = new Intent(this, WalkRunActivity.class);
         intent.putExtra(WalkRunActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
         startActivity(intent);
     }
 
+    /**
+     * launchProgressActivity launches the Progress Activity
+     */
     public void launchProgressActivity() {
         Intent intent = new Intent(this, ProgressActivity.class);
         startActivity(intent);
     }
 
     /**
-     * Launch the activity showing the past week's walks/runs
+     * launchPastWalksActivity Launches the activity showing the past week's walks/runs
      */
     public void launchPastWalksActivity() {
         Intent intent = new Intent(this, PastWalksActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Override the onBackPressed method from super class
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -292,6 +290,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Override the onCreateOptionsMenu method from super class
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -299,6 +300,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Override the onOptionsItemSelected method from super class
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -314,6 +320,12 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Override the onNavigationItemSelected method
+     * specify the function of each buttons
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -343,6 +355,13 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Override the onActivityResult method from super class
+     * handle the sign in result of the task
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -358,6 +377,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * This method updates user interfaces and necessary information
+     * after each time the user signed in
+     * @param completedTask
+     */
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         System.out.println("handleSignInResult called");
 
@@ -375,6 +399,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * This method update the user interface with messages to indicate if you login successful
+     * @param account
+     */
     public void updateUI(GoogleSignInAccount account) {
         if (account != null) {
             loggedIn = true;
@@ -391,7 +419,8 @@ public class MainActivity extends AppCompatActivity
 
 
     /**
-     * Display the step goal achievement notification and ask if the user wants to set a new step goal
+     * This method displays the step goal achievement notification and
+     * asks if the user wants to set a new step goal
      * @param stepCount The number of current steps to compare the step goal to
      */
     public void goalAchievement(long stepCount) {
@@ -458,7 +487,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * implementing ConnectionCallbacks
+     * Override the onConnectionSuspended method implementing ConnectionCallbacks
      * @param i
      */
     @Override
@@ -467,7 +496,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * implementing onConnectionFailedListener
+     * Override onConnectionFailed method implementing onConnectionFailedListener
      * @param connectionResult
      */
     @Override
@@ -476,7 +505,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * implementing ConnectionCallbacks
+     * Override onConnected method implementing ConnectionCallbacks
      * @param bundle
      */
     public void onConnected(@Nullable Bundle bundle) {
