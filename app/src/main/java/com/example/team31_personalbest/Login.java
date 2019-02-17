@@ -19,12 +19,16 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
-
+/**
+ * This class is for the login activity
+ */
 public class Login extends AppCompatActivity {
     // Configure sign-in to request the user's ID, email address, and basic
     // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
 
     private static final String TAG = "SignIn";
+
+    // Button clicked to get back to the main page
     Button backButton;
     GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail().build();
@@ -32,6 +36,10 @@ public class Login extends AppCompatActivity {
     GoogleSignInClient mGoogleSignInClient;
     public static boolean loggedIn = true;
 
+    /**
+     * Override the onCreate method for major activity of login
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,14 +47,6 @@ public class Login extends AppCompatActivity {
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
-
-
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-
-        //updateUI(account);
-
 
         // Set the dimensions of the sign-in button.
         SignInButton signInButton = findViewById(R.id.login_button);
@@ -75,14 +75,13 @@ public class Login extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Please login!", Toast.LENGTH_LONG).show();
                     }
                 }
-//                private void signIn() {
-//                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-//                    startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
-//                }
 
         });
     }
 
+    /**
+     * onStart method to perform initial operations
+     */
     public void onStart() {
         super.onStart();
         // Check for existing Google Sign In account, if the user is already signed in
@@ -91,6 +90,12 @@ public class Login extends AppCompatActivity {
         updateUI(account);
     }
 
+    /**
+     * Override the onActivityResult method for handling sign in result of tasks
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -104,12 +109,10 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    private void isSignedIn() {
-        if(GoogleSignIn.getLastSignedInAccount(this) != null) {
-            loggedIn = true;
-        }
-    }
-
+    /**
+     * handleSignInResult method handle sign in result for based on your sign abilities
+     * @param completedTask
+     */
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
@@ -124,6 +127,10 @@ public class Login extends AppCompatActivity {
         }
     }
 
+    /**
+     * updateUI method updates the interface after you login
+     * @param account
+     */
     public void updateUI(GoogleSignInAccount account) {
         if (account != null) {
             Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_LONG).show();
@@ -132,9 +139,5 @@ public class Login extends AppCompatActivity {
             Log.w(TAG, "You need to log in again.");
         }
     }
-
-//    public GoogleSignInAccount checkAccount() {
-//        return GoogleSignIn.getLastSignedInAccount(this);
-//    }
 
 }
