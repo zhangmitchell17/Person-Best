@@ -34,6 +34,7 @@ public class DataRetriever {
 
     /**
      * filling implementation from FitnessService
+     *
      */
     public void setup() {
         historyClient = new GoogleApiClient.Builder(activity)

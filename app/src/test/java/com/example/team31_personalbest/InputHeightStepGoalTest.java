@@ -1,5 +1,6 @@
 package com.example.team31_personalbest;
 
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,8 +12,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
-
+import static android.content.Context.MODE_PRIVATE;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
@@ -56,7 +59,16 @@ public class InputHeightStepGoalTest {
         // 69 inches => 5' 9"
         inputHeightText.setText("69");
         heightButton.performClick();
+        // tests if shared preferences of stride gets update
+        SharedPreferences sharePref = inputHeightStepGoal.getSharedPreferences
+                ("savedStride", MODE_PRIVATE);
+        assertEquals(28, sharePref.getInt("stride", 0));
+        // tests if shared preferences of height gets update
+        sharePref = inputHeightStepGoal.getSharedPreferences
+                ("savedHeight", MODE_PRIVATE);
+        assertEquals("69", sharePref.getString("height", "0"));
         assertEquals("Your stride length will be 28 inches", enteredHeight.getText());
+
     }
 
     // Tests if new step goal is revealed after inputting : - )
@@ -65,6 +77,9 @@ public class InputHeightStepGoalTest {
         // Sample default step goal like 5000 : - )
         inputStepGoalText.setText("5000");
         stepGoalButton.performClick();
+        SharedPreferences sharePref = inputHeightStepGoal.getSharedPreferences
+                ("savedStepGoal", MODE_PRIVATE);
+        assertEquals("5000", sharePref.getString("step", "0"));
         assertEquals("Congrats! Your new step goal is 5000 steps", enteredStep.getText());
     }
 }

@@ -1,6 +1,7 @@
 package com.example.team31_personalbest;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -70,21 +71,20 @@ public class TimeService extends Service {
                     hourStr = hourFormat.format(date);
                     dayStr = dayFormat.format(date);
 
-                    //System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
+                    System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
 
-                    if(hourStr.equals("17") && minuteStr.equals("38") && secondStr.equals("50")) {
+                    if(hourStr.equals("18") && minuteStr.equals("03") && secondStr.equals("00")) {
                         setProgressNotificationFlag();
                     }
 
                     SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     String accomplishmentDate = sharedPref.getString("date", "");
-                    //System.out.println("accomplishmentDate: " + accomplishmentDate);
                     editor.putString("currentDate", dayStr);
-                    //System.out.println("day: " + dayStr + " | " + accomplishmentDate);
                     if (!dayStr.equals(accomplishmentDate)) {
                         editor.putBoolean("accomplishmentDisplayed", false);
                     }
+
                     editor.apply();
                     try {
                         wait(1000);
@@ -98,14 +98,11 @@ public class TimeService extends Service {
 
     public void setProgressNotificationFlag() {
         // check if time is passed 8pm, if so, store today's steps
-
-
         // running code on a separate thread since DatRetriever has to get data from Historys API
         // and shouldn't stall the code that calls setProgressNotificationFlag
         new Thread(new Runnable() {
             @Override
             public void run() {
-                // creating a new DataRetriever Object to get yesterdays steps
                 DataRetriever dr = new DataRetriever(MainActivity.mainActivity);
                 dr.setup();
                 int previousDayStepCount = dr.retrieveYesterdaysSteps();
@@ -128,8 +125,6 @@ public class TimeService extends Service {
                 }
             }
         }).start();
-
-
     }
 
     @Override

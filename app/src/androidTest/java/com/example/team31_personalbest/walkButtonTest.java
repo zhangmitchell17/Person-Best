@@ -33,6 +33,7 @@ public class walkButtonTest {
     @Test
     public void walkButtonTest() {
         MainActivity.loggedIn = true;
+        MainActivity.isCancelled = true;
         ViewInteraction button = onView(
                 allOf(withId(R.id.buttonStart),
                         childAtPosition(

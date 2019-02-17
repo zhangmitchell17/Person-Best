@@ -14,53 +14,68 @@ import static java.lang.Integer.parseInt;
 
 public class InputHeightStepGoal extends AppCompatActivity{
 
+
+    /**
+     * Begins on creation of the activity page
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_height);
+        // Where the user can input their height
         final EditText height = (EditText)findViewById(R.id.heightInput);
         updateHeightHint();
 
         Button updateHeightButton = (Button)findViewById(R.id.updateHeight);
 
-        final Button backButton = (Button)findViewById(R.id.backToMain);
-        backButton.setVisibility(View.VISIBLE);
+        // Where the user can input their step goal
+        Button returnButton = (Button)findViewById(R.id.backToMain);
 
 
 
 
         updateHeightButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Functionality for when the button is clicked
+             * If the height is not 0, saves the height into sharedPreferences and
+             * updates according TextViews
+             * Displays a toast message
+             */
             @Override
             public void onClick(View v) {
                 // save user height to file savedHeight
-                SharedPreferences sharePref = getSharedPreferences
+                SharedPreferences sharedPref = getSharedPreferences
                                                 ("savedHeight", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharePref.edit();
-                editor.putString("height", height.getText().toString());
-                editor.apply();
+                SharedPreferences.Editor editor = sharedPref.edit();
+                // Only save the height if the user did not input 0
+                if (!height.getText().toString().equals("0")) {
+                    editor.putString("height", height.getText().toString());
+                    editor.apply();
+                }
                 TextView displayFirstName = (TextView)findViewById(R.id.enteredHeight);
                 String notification = "";
 
                 // get user input height and calculate stride length
                 try {
                     int newHeight = parseInt(height.getText().toString());
-                    Toast.makeText(InputHeightStepGoal.this, "Your stride length is saved",
-                            Toast.LENGTH_LONG).show();
-                    if (sharePref.getString("height", "").equals("") ||
+                    // Invalid height
+                    if (sharedPref.getString("height", "").equals("") ||
                         newHeight <= 0) {
                         notification = "Please enter your height :)";
+                        Toast.makeText(InputHeightStepGoal.this, "Your stride length is unchanged",
+                                Toast.LENGTH_LONG).show();
 
-                        // clear current preferences
-                        //editor.clear();
-                        //editor.apply();
                     }
+                    // Valid height
                     else {
                         int stride = (int) (0.413 * parseInt(height.getText().toString()));
                         notification = "Your stride length will be " + stride + " inches";
-                        sharePref = getSharedPreferences("savedStride", MODE_PRIVATE);
-                        editor = sharePref.edit();
+                        sharedPref = getSharedPreferences("savedStride", MODE_PRIVATE);
+                        editor = sharedPref.edit();
                         editor.putInt("stride", stride);
                         editor.apply();
+                        Toast.makeText(InputHeightStepGoal.this, "Your stride length is saved",
+                                Toast.LENGTH_LONG).show();
                     }
 
                 } catch (NumberFormatException e) {
@@ -72,38 +87,46 @@ public class InputHeightStepGoal extends AppCompatActivity{
             }
         });
 
-        final EditText step = (EditText)findViewById(R.id.stepInput);
-        Button updateStepButton = (Button)findViewById(R.id.updateStep);
+        final EditText goal = findViewById(R.id.stepInput);
+        Button updateStepButton = findViewById(R.id.updateStep);
 
         updateGoalHint();
 
         // let user enter step goal
         updateStepButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Functionality for when the button is clicked
+             * If the goal is not 0, saves the goal into sharedPreferences and
+             * updates according TextViews
+             * Displays a toast message
+             */
             @Override
             public void onClick(View v) {
                 // save user height to file savedHeight
                 SharedPreferences sharePref = getSharedPreferences
                         ("savedStepGoal", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharePref.edit();
-                editor.putString("step", step.getText().toString());
-                editor.apply();
+                if (!goal.getText().toString().equals("0")) {
+                    editor.putString("step", goal.getText().toString());
+                    editor.apply();
+                }
                 TextView displayFirstName = (TextView)findViewById(R.id.enteredStep);
                 String notification = "";
                 try {
-                    int newGoal = Integer.parseInt(step.getText().toString());
-                    Toast.makeText(InputHeightStepGoal.this, "Your step goal is saved",
-                            Toast.LENGTH_LONG).show();
+                    int newGoal = Integer.parseInt(goal.getText().toString());
+                    // Goal is 0 or invalid
                     if (sharePref.getString("step", "").equals("") ||
-                            newGoal <= 1) {
-                        notification = "Please enter a new step goal of at least 2 :)";
-
-                        // clear current preferences
-                        //editor.clear();
-                        //editor.apply();
+                            newGoal <= 0) {
+                        notification = "Please enter a new step goal of at least 1 :)";
+                        Toast.makeText(InputHeightStepGoal.this, "Your step goal is unchanged",
+                                Toast.LENGTH_LONG).show();
                     }
+                    // Valid goal
                     else {
                         notification = "Congrats! Your new step goal is " +
-                                sharePref.getString("step", "0") + " steps";
+                                sharePref.getString("step", "1") + " steps";
+                        Toast.makeText(InputHeightStepGoal.this, "Your step goal is saved",
+                                Toast.LENGTH_LONG).show();
                     }
 
                 } catch (NumberFormatException e) {
@@ -115,17 +138,20 @@ public class InputHeightStepGoal extends AppCompatActivity{
             }
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
+        returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                launchActivity();
+                launchMainActivity();
             }
         });
 
 
     }
 
-    public void launchActivity() {
+    /**
+     * Method to return to the main activity page
+     */
+    public void launchMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
@@ -135,13 +161,15 @@ public class InputHeightStepGoal extends AppCompatActivity{
      * Update the EditText height hint to show the current height
      */
     private void updateHeightHint() {
-        EditText height = (EditText)findViewById(R.id.heightInput);
+        EditText height = findViewById(R.id.heightInput);
         SharedPreferences sharedPreferences = getSharedPreferences("savedHeight", MODE_PRIVATE);
         String savedHeight = sharedPreferences.getString("height", "");
+        // If a valid height was saved, then display the current height as the hint
         if (!savedHeight.equals(""))
         {
             height.setHint(savedHeight);
         }
+        // Invalid height or no height saved
         else
         {
             height.setHint(getString(R.string.heightHint));
@@ -157,10 +185,12 @@ public class InputHeightStepGoal extends AppCompatActivity{
 
         SharedPreferences sharedPreference = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
         String savedStepGoal = sharedPreference.getString("step", "");
+        // If a valid goal was saved, then display the current goal as the hint
         if (!savedStepGoal.equals(""))
         {
             step.setHint(savedStepGoal);
         }
+        // Invalid goal or no goal saved
         else
         {
             step.setHint(getString(R.string.goalHint));
