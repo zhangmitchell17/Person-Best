@@ -69,7 +69,9 @@ public class PastWalksTest {
 
     // Tests if basic layout exists
     @Test
-    public void testInitial() {}
+    public void testInitial() {
+
+    }
 
     // Tests if height is revealed after inputting : - )
     @Test

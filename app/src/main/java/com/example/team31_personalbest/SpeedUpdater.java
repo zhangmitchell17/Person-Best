@@ -3,6 +3,7 @@ package com.example.team31_personalbest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -44,24 +45,23 @@ public class SpeedUpdater extends AsyncTask<String, String, String>{
             }
             SharedPreferences sharedPreferences = c.getSharedPreferences("savedStride", MODE_PRIVATE);
             int strideLength = sharedPreferences.getInt("stride", 0);
+
             // TODO: NEED TO MULTIPLY THIS BY NUMBER OF STEPS TAKEN (replace the 10000)
             SharedPreferences sharedPref = c.getSharedPreferences("walkRunStats", MODE_PRIVATE);
             long numSteps = sharedPref.getLong("walkRunSteps", 0);
             if (numSteps != 0) {
-                mph = (float) (Math.round((numSteps * strideLength * SECONDS_PER_HOUR) / (t.getSeconds() * INCHES_PER_MILE) * 10.0) / 10.0);
+                mph = (float) (Math.round((numSteps * (long) strideLength * SECONDS_PER_HOUR) / (t.getSeconds() * INCHES_PER_MILE) * 10.0) / 10.0);
             }
             else
             {
                 mph = 0;
             }
-            if (Double.parseDouble(speed.getText().toString()) != mph)
-            {
-                publishProgress(("" + mph));
-            }
+            publishProgress(("" + mph));
 
+
+            Log.i("mph: ", String.valueOf(mph));
 
             // Waits for 1 second before each update
-
             try {
                 Thread.sleep(MS_PER_SEC);
             } catch (Exception e) {
@@ -72,25 +72,41 @@ public class SpeedUpdater extends AsyncTask<String, String, String>{
         return resp;
     }
 
+    /**
+     * This method is for pre execution
+     */
     @Override
     protected void onPreExecute() {
         isCancelled = false;
     }
 
+    /**
+     * This method is for post execution
+     * @param result
+     */
     @Override
     protected void onPostExecute(String result) {
     }
 
-    //Update the speedDisplay TextView
+    /**
+     * onProgressUpdate method updates the speedDisplay TextView
+     */
     @Override
     protected void onProgressUpdate(String... text) {
         speed.setText(text[0]);
     }
 
+    /**
+     * cancel method sets isCancelled to true
+     */
     public void cancel() {
         isCancelled = true;
     }
 
+    /**
+     * This method returns the mph
+     * @return
+     */
     public float getMPH() {
         return mph;
     }

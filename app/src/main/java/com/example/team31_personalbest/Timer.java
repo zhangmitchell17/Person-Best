@@ -1,6 +1,7 @@
 package com.example.team31_personalbest;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -49,6 +50,7 @@ public class Timer extends AsyncTask<String, String, String> {
             try {
                 Thread.sleep(MS_PER_SEC);
                 time++;
+                Log.i("timer: ", String.valueOf(time));
             } catch (Exception e) {
                 e.printStackTrace();
                 resp = e.getMessage();
@@ -101,6 +103,8 @@ public class Timer extends AsyncTask<String, String, String> {
         temp = temp % SECS_PER_MIN;
         // Updates seconds
         seconds = temp;
+
+        Log.i("timer value: ", hours + " " + minutes + " " + seconds);
     }
 
     /**
