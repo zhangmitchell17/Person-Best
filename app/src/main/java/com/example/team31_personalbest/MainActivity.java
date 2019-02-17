@@ -125,10 +125,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //fake steps
-        SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharePref.edit();
-        editor.putInt("steps", 100);
 
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
@@ -145,13 +141,7 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
-        Button btnGoToSteps = findViewById(R.id.buttonGoToSteps);
-        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateSteps();
-            }
-        });
+
         timeService = new TimeService();
 
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
