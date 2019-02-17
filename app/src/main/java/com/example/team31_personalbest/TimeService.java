@@ -22,6 +22,9 @@ import java.util.Date;
 
 import androidx.annotation.RequiresApi;
 
+/**
+ * TimeService
+ */
 public class TimeService extends Service {
     static boolean ifPassed = false;
 
@@ -140,9 +143,8 @@ public class TimeService extends Service {
         return super.onStartCommand(intent, flags, startID);
     }
 
-
+    @Override
     public void onDestroy() {
-        //Toast.makeText(TimeService.this, "Service Stopped", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
 
