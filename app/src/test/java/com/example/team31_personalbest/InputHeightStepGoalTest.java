@@ -1,5 +1,6 @@
 package com.example.team31_personalbest;
 
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,8 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-
-
 
 import static org.junit.Assert.assertEquals;
 
