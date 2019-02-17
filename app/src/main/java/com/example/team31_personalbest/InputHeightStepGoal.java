@@ -34,9 +34,7 @@ public class InputHeightStepGoal extends AppCompatActivity{
         // Where the user can input their step goal
         Button returnButton = (Button)findViewById(R.id.backToMain);
 
-
-
-
+        // Perform the click activity on the update height button
         updateHeightButton.setOnClickListener(new View.OnClickListener() {
             /**
              * Functionality for when the button is clicked
@@ -185,7 +183,6 @@ public class InputHeightStepGoal extends AppCompatActivity{
      */
     private void updateGoalHint() {
         EditText step = (EditText)findViewById(R.id.stepInput);
-
         SharedPreferences sharedPreference = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
         String savedStepGoal = sharedPreference.getString("step", "");
         // If a valid goal was saved, then display the current goal as the hint

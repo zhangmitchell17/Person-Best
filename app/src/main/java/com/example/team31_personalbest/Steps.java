@@ -8,6 +8,9 @@ import android.os.IBinder;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * Implement the AsyncTask for performing multitasks at the same time
+ */
 public class Steps extends AsyncTask<String, String, String> {
     private final int MS_PER_SEC = 1000;
 
@@ -22,13 +25,8 @@ public class Steps extends AsyncTask<String, String, String> {
         this.fitnessService = fs;
     }
 
-    //public void cancel() {
-        //isCancelled = true;
-    //}
-
-
     /**
-     *
+     * This method is for the task to do in the background
      */
     @Override
     protected String doInBackground(String... params) {
@@ -50,7 +48,7 @@ public class Steps extends AsyncTask<String, String, String> {
     }
 
     /**
-     * present so that we can extend the class
+     * This method presents so that we can extend the class
      */
     @Override
     protected void onPreExecute() {
@@ -58,7 +56,7 @@ public class Steps extends AsyncTask<String, String, String> {
     }
 
     /**
-     *
+     * Override the onProgressUpdate method
      */
     @Override
     protected void onProgressUpdate(String ... s) {
@@ -67,7 +65,7 @@ public class Steps extends AsyncTask<String, String, String> {
 
 
     /**
-     * present so that we can extend the class
+     * onPostExecute presents so that we can extend the class
      */
     @Override
     protected void onPostExecute(String result) {
