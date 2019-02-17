@@ -104,14 +104,14 @@ public class MainActivity extends AppCompatActivity
         // setting stepDisplay
         stepDisplay = findViewById(R.id.textViewStepMain);
 
-//        Button startButton = findViewById(R.id.buttonStart);
-//        startButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                updateSteps();
-//                launchWalkRunActivity();
-//            }
-//        });
+        Button startButton = findViewById(R.id.buttonStart);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateSteps();
+                launchWalkRunActivity();
+            }
+        });
 
         //fake steps
         SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
@@ -133,13 +133,13 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
-        Button btnGoToSteps = findViewById(R.id.buttonGoToSteps);
-        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateSteps();
-            }
-        });
+//        Button btnGoToSteps = findViewById(R.id.buttonGoToSteps);
+//        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                updateSteps();
+//            }
+//        });
         timeService = new TimeService();
 
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
