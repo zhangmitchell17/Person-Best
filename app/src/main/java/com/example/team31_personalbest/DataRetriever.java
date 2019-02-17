@@ -169,8 +169,8 @@ public class DataRetriever {
 
         DateFormat dateFormat = DateFormat.getDateInstance();
         DateFormat timeFormat = DateFormat.getTimeInstance();
-        Log.e("History", "Range Start: " + dateFormat.format(startTime) + " " + timeFormat.format(startTime));
-        Log.e("History", "Range End: " + dateFormat.format(endTime) + " " + timeFormat.format(endTime));
+        Log.i("History", "Range Start: " + dateFormat.format(startTime) + " " + timeFormat.format(startTime));
+        Log.i("History", "Range End: " + dateFormat.format(endTime) + " " + timeFormat.format(endTime));
 
         // Create a request to aggregate all of dt by day
         DataReadRequest dataReadRequest = new DataReadRequest.Builder()
@@ -187,6 +187,9 @@ public class DataRetriever {
             for (Bucket bucket : dataReadResult.getBuckets()) {
                 buckets.add(bucket);
             }
+        }
+        else {
+            Log.e("Dataset", "No data was read : - (");
         }
         return buckets;
     }
@@ -215,6 +218,10 @@ public class DataRetriever {
         /*
         Requests for regular steps and planned steps respectively
          */
+        DateFormat dateFormat = DateFormat.getDateInstance();
+        DateFormat timeFormat = DateFormat.getTimeInstance();
+        Log.i("History", "Range Start: " + dateFormat.format(startTime) + " " + timeFormat.format(startTime));
+        Log.i("History", "Range End: " + dateFormat.format(endTime) + " " + timeFormat.format(endTime));
 
         //Check how many steps were walked and recorded in the last 7 days
         DataReadRequest dataReadRequest = new DataReadRequest.Builder()
@@ -231,6 +238,9 @@ public class DataRetriever {
             for (DataSet dataSet : dataReadResult.getDataSets()) {
                 dataSets.add(dataSet);
             }
+        }
+        else {
+            Log.e("Dataset", "No data was read : - (");
         }
         return dataSets;
     }

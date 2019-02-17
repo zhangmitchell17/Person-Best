@@ -74,7 +74,7 @@ public class GoogleFitAdapter implements FitnessService {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG, "There was a problem subscribing.");
+                        Log.e(TAG, "There was a problem subscribing.");
                     }
                 });
     }
@@ -111,7 +111,7 @@ public class GoogleFitAdapter implements FitnessService {
                         new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "There was a problem getting the step count.", e);
+                                Log.e(TAG, "There was a problem getting the step count.");
                             }
                         });
 
