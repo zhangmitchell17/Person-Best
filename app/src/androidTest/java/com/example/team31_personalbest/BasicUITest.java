@@ -47,6 +47,7 @@ public class BasicUITest {
 
     @Before
     public void before() throws Exception {
+        MainActivity.isCancelled = true;
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         UiObject mText = mUiDevice.findObject(new UiSelector().textContains("ESQ44"));
         try {
@@ -57,7 +58,7 @@ public class BasicUITest {
     }
 
     @Test
-    public void mainActivityTest2() {
+    public void BasicUITest() {
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.buttonGoToSteps), withText("Your Live Daily Step Count"),
                         childAtPosition(
