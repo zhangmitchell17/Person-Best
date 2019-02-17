@@ -48,7 +48,7 @@ public class BasicUITest {
     @Before
     public void before() throws Exception {
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        UiObject mText = mUiDevice.findObject(new UiSelector().textContains("hoz054@ucsd.edu"));
+        UiObject mText = mUiDevice.findObject(new UiSelector().textContains("ESQ44"));
         try {
             mText.click();
         } catch (UiObjectNotFoundException e) {
