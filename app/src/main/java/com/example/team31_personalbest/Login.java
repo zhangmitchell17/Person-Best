@@ -128,13 +128,12 @@ public class Login extends AppCompatActivity {
     }
 
     /**
-     * updateUI method updates the interface after you login
+     * The updateUI method updates the interface after you login
      * @param account
      */
     public void updateUI(GoogleSignInAccount account) {
         if (account != null) {
             Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_LONG).show();
-            //finish();
         } else {
             Log.w(TAG, "You need to log in again.");
         }

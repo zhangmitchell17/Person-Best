@@ -14,7 +14,6 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     private TextView timeDisplay;
     private Timer t;
     private SpeedUpdater s;
-    //private StepCounter sc;
 
     public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
     private static final String TAG = "WalkRunActivity";
@@ -24,7 +23,6 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     private TextView speedDisplay;
 
     private int stepCnted;
-    //private Steps steps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +34,11 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         SharedPreferences sharedPref = getSharedPreferences("resetSteps", MODE_PRIVATE);
         stepCnted = sharedPref.getInt("steps", -1);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("walkRunStats", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("walkRunSteps", 0);
+        editor.apply();
+
         String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
@@ -44,14 +47,6 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         timeDisplay = findViewById(R.id.textViewTimer);
         t = new Timer(timeDisplay);
         t.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-
-
-//        String fitnessServiceKey = getIntent().getStringExtra(FITNESS_SERVICE_KEY);
-//        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, new WalkRunActivity());
-//        fitnessService.setup();
-//        //StepCounter sc = new StepCounter(stepDisplay, fitnessService);
-//        //sc.execute();
 
         speedDisplay = findViewById(R.id.textViewSpeed);
         s = new SpeedUpdater(this, speedDisplay, t);
@@ -64,9 +59,6 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
                 fitnessService.updateStepCount();
             }
         });
-
-//        steps = new Steps(stepDisplay, fitnessService);
-//        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // Returns back to Home Page after session finished
         btnStop = findViewById(R.id.buttonStop);
@@ -83,9 +75,6 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
                 float mph = s.getMPH();
                 editor.putFloat(nameOfDay + "MPH", mph);
                 editor.apply();
-
-                //editor.putLong(nameOfDay + "Steps", steps);
-                //editor.apply();
 
                 t.cancel();
                 s.cancel();

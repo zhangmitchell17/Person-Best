@@ -33,7 +33,10 @@ import java.util.concurrent.TimeUnit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-
+/**
+ * This file defines the ProgressActivity class which is used to record
+ * the weekly and daily progress of a user
+ */
 public class ProgressActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -57,9 +60,6 @@ public class ProgressActivity extends AppCompatActivity implements
         barChart = findViewById(R.id.graphProgress);
 
         XAxis xAxis = barChart.getXAxis();
-        //xAxis.setCenterAxisLabels(true);
-        //xAxis.setDrawGridLines(false);
-        //xAxis.setValueFormatter(new DateAxisValueFormatter(dayAbbrev));
 
         // Making the x axis labeled by day
         xAxis.setValueFormatter(new IndexAxisValueFormatter(dayAbbrev));

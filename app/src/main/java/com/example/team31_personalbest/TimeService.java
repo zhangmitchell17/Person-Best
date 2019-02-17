@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -22,6 +23,9 @@ import java.util.Date;
 
 import androidx.annotation.RequiresApi;
 
+/**
+ * TimeService class is the Service for tracking time which runs in background
+ */
 public class TimeService extends Service {
     static boolean ifPassed = false;
 
@@ -33,12 +37,18 @@ public class TimeService extends Service {
     public TimeService() {
     }
 
+    /**
+     * This local service class in TimeService class
+     */
     class LocalService extends Binder {
         public TimeService getService() {
             return TimeService.this;
         }
     }
 
+    /**
+     * MyThread class runs the main service
+     */
     final class MyThread implements Runnable {
         int startID;
 
@@ -71,9 +81,9 @@ public class TimeService extends Service {
                     hourStr = hourFormat.format(date);
                     dayStr = dayFormat.format(date);
 
-                    System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
+                    Log.i("timeThread: ",secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
 
-                    if(hourStr.equals("18") && minuteStr.equals("03") && secondStr.equals("00")) {
+                    if(hourStr.equals("12") && minuteStr.equals("0") && secondStr.equals("00")) {
                         setProgressNotificationFlag();
                     }
 
@@ -96,10 +106,12 @@ public class TimeService extends Service {
         }
     }
 
+    /**
+     * This method checks if time is passed 8pm, if so, stores today's steps
+     * running code on a separate thread since DatRetriever has to get data from Historys API
+     * and shouldn't stall the code that calls setProgressNotificationFlag
+     */
     public void setProgressNotificationFlag() {
-        // check if time is passed 8pm, if so, store today's steps
-        // running code on a separate thread since DatRetriever has to get data from Historys API
-        // and shouldn't stall the code that calls setProgressNotificationFlag
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -108,7 +120,10 @@ public class TimeService extends Service {
                 int previousDayStepCount = dr.retrieveYesterdaysSteps();
                 int todayStepCount = getSharedPreferences("resetSteps", MODE_PRIVATE).getInt("steps", 0);
 
-                if(todayStepCount >= (2 * previousDayStepCount)) {
+                Log.i("today day steps: ", String.valueOf(todayStepCount));
+                Log.i("previous day steps: ", String.valueOf(previousDayStepCount));
+
+                if(todayStepCount >= (2 * previousDayStepCount) && previousDayStepCount > 0) {
                     SharedPreferences sharePref = getSharedPreferences("progressNotification", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharePref.edit();
                     editor.putBoolean("makeProgress", true);
@@ -120,19 +135,33 @@ public class TimeService extends Service {
                         @Override
                         public void run() {
                             Toast.makeText(TimeService.this,"You made huge progress compared to yesterday",Toast.LENGTH_SHORT).show();
+                            Log.i("progress toast showed", "");
                         }
                     });
                 }
+
             }
         }).start();
     }
 
+    /**
+     * Override the onBind method
+     * @param intent
+     * @return
+     */
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         return iBinder;
     }
 
+    /**
+     * Override the onStartCommand method
+     * @param intent
+     * @param flags
+     * @param startID
+     * @return
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
         Thread thread = new Thread(new MyThread(startID));
@@ -140,27 +169,12 @@ public class TimeService extends Service {
         return super.onStartCommand(intent, flags, startID);
     }
 
-
+    /**
+     * Override onDestroy method
+     */
+    @Override
     public void onDestroy() {
-        //Toast.makeText(TimeService.this, "Service Stopped", Toast.LENGTH_SHORT).show();
         super.onDestroy();
-    }
-
-    public String getSeconds()
-    {
-        return secondStr;
-    }
-
-    public String getMinutes() {
-        return minuteStr;
-    }
-
-    public String getHours() {
-        return hourStr;
-    }
-
-    public String getDays() {
-        return dayStr;
     }
 
 }
