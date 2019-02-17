@@ -134,7 +134,6 @@ public class Login extends AppCompatActivity {
     public void updateUI(GoogleSignInAccount account) {
         if (account != null) {
             Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_LONG).show();
-            //finish();
         } else {
             Log.w(TAG, "You need to log in again.");
         }

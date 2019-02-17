@@ -12,6 +12,9 @@ import android.widget.Toast;
 
 import static java.lang.Integer.parseInt;
 
+/**
+ * This file is for you to input your step and height goals
+ */
 public class InputHeightStepGoal extends AppCompatActivity{
 
 
