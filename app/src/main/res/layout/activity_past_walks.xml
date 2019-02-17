@@ -19,7 +19,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Day"
+                android:text="@string/Day"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 />
@@ -27,21 +27,21 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Time"
+                android:text="@string/Time"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 />
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Steps"
+                android:text="@string/Steps"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 />
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="MPH"
+                android:text="@string/MPH"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 />
@@ -52,7 +52,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Sun"
+                android:text="@string/Sun"
                 android:textSize="24sp"
                 />
 
@@ -84,7 +84,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Mon"
+                android:text="@string/Mon"
                 android:textSize="24sp"
                 />
 
@@ -116,7 +116,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Tues"
+                android:text="@string/Tues"
                 android:textSize="24sp"
                 />
 
@@ -148,7 +148,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Wedn"
+                android:text="@string/Wedn"
                 android:textSize="24sp"
                 />
 
@@ -180,7 +180,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Thurs"
+                android:text="@string/Thurs"
                 android:textSize="24sp"
                 />
 
@@ -212,7 +212,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Fri"
+                android:text="@string/Fri"
                 android:textSize="24sp"
                 />
 
@@ -244,7 +244,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Sat"
+                android:text="@string/Sat"
                 android:textSize="24sp"
                 />
 
@@ -278,7 +278,7 @@
         android:id="@+id/buttonUpdateWalks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="UPDATE WALKS"
+        android:text="@string/updateWalks"
         android:textSize="36dp"
         android:background="@color/colorBackground"
         android:layout_marginTop="25dp"/>

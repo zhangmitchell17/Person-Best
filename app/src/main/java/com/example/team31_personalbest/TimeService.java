@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
+import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.widget.Toast;
 
 
@@ -22,7 +25,16 @@ public class TimeService extends Service {
 
     private String secondStr, minuteStr, hourStr, dayStr;
 
+    private final IBinder iBinder = new LocalService();
+
+
     public TimeService() {
+    }
+
+    class LocalService extends Binder {
+        public TimeService getService() {
+            return TimeService.this;
+        }
     }
 
     final class MyThread implements Runnable {
@@ -35,11 +47,6 @@ public class TimeService extends Service {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void run() {
-            SharedPreferences sharePref = getSharedPreferences("file", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharePref.edit();
-            editor.putString("name", "John");
-            editor.apply();
-
             synchronized (this) {
                 while(true) {
                     Date date = new Date();
@@ -50,7 +57,7 @@ public class TimeService extends Service {
                     String minute = "mm";
                     DateFormat minuteFormat = new SimpleDateFormat(minute);
 
-                    String hour = "hh";
+                    String hour = "HH";
                     DateFormat hourFormat = new SimpleDateFormat(hour);
 
                     String day = "MMdd";
@@ -64,6 +71,16 @@ public class TimeService extends Service {
 
                     System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
 
+                    if(hourStr.equals("09") && minuteStr.equals("34") && secondStr.equals("20")) {
+                        setProgressNotificationFlag();
+                    }
+
+                    SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
+                    String accomplishmentDate = sharedPref.getString("date", "");
+                    if (!dayStr.equals(accomplishmentDate)) {
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putBoolean("accomplishmentDisplayed", false);
+                    }
                     try {
                         wait(1000);
                     } catch (InterruptedException e) {
@@ -74,22 +91,47 @@ public class TimeService extends Service {
         }
     }
 
+    public void setProgressNotificationFlag() {
+        // check if time is passed 8pm, if so, store today's steps
+        int todayStepCount = getSharedPreferences("resetSteps", MODE_PRIVATE).getInt("steps", 0);
+
+        // TODO: put previous day's step count here
+        int previousDayStepCount = 0;
+
+        if(todayStepCount >= (2 * previousDayStepCount)) {
+            SharedPreferences sharePref = getSharedPreferences("progressNotification", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharePref.edit();
+            editor.putBoolean("makeProgress", true);
+            editor.apply();
+
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    Toast.makeText(TimeService.this,"You made huge progress compared to yesterday",Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return iBinder;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
-        Toast.makeText(TimeService.this, "Service Started", Toast.LENGTH_LONG).show();
         Thread thread = new Thread(new MyThread(startID));
         thread.start();
         return super.onStartCommand(intent, flags, startID);
     }
 
+
     public void onDestroy() {
-        Toast.makeText(TimeService.this, "Service Stopped", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(TimeService.this, "Service Stopped", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
 
@@ -109,4 +151,5 @@ public class TimeService extends Service {
     public String getDays() {
         return dayStr;
     }
+
 }
