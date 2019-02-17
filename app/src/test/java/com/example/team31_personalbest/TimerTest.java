@@ -27,7 +27,6 @@ public class TimerTest {
     @Before
     public void setup() {
         mainActivity = Robolectric.setupActivity(MainActivity.class);
-        shadowActivity = Shadows.shadowOf(mainActivity);
         //controller = Robolectric.buildActivity(MainActivity.class);
         //controller.create();
         startWalkRun = mainActivity.findViewById(R.id.buttonStart);
