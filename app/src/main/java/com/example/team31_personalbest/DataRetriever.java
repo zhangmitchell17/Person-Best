@@ -1,46 +1,29 @@
 package com.example.team31_personalbest;
 
 import android.app.Activity;
-import android.content.Context;
-import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.FitnessOptions;
 import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataSource;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-
-public class DataRetriever implements FitnessService {
-    private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
-    private final String TAG = "DataRetriever";
+public class DataRetriever {
 
     private Activity activity;
     private GoogleApiClient historyClient;
@@ -60,64 +43,62 @@ public class DataRetriever implements FitnessService {
                 .addConnectionCallbacks((GoogleApiClient.ConnectionCallbacks)activity)
                 .enableAutoManage((FragmentActivity) activity, 0, (GoogleApiClient.OnConnectionFailedListener) activity)
                 .build();
-
-        /*
-            if permissions aren't yet granted, request for them, otherwise continue as normal
-         */
-        /*
-        if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(activity),
-                                        (GoogleSignInOptionsExtension)historyClient)) {
-            GoogleSignIn.requestPermissions(
-                    activity, // your activity
-                    GOOGLE_FIT_PERMISSIONS_REQUEST_CODE,
-                    GoogleSignIn.getLastSignedInAccount(activity),
-                    (GoogleSignInOptionsExtension)historyClient);
-        }
-        */
     }
-
-
-/*    private void subscribe() {
-        //check if logged in
-        GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
-        if (lastSignedInAccount == null) {
-            return;
-        }
-
-        *//* subscribing to total steps, *//*
-        Fitness.getRecordingClient(activity, GoogleSignIn.getLastSignedInAccount(activity))
-                .subscribe(DataType.TYPE_STEP_COUNT_CUMULATIVE)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.i(TAG, "Successfully subscribed!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG, "There was a problem subscribing.");
-                    }
-                });
-
-    }*/
-
 
     /**
-     * Necessary to implement FitnessService
+     * pulls todays step data from Google Fit's History API
+     * @return number of steps taken yesterday
      */
-    public void updateStepCount() {
-    }
+    public int retrieveTodaysSteps() {
 
+        Calendar calendar = Calendar.getInstance();
+        // setting today as the last of the days to retrieve data from
+        long endTime = calendar.getTimeInMillis();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        // setting startTime as a week ago from endTime
+        long startTime = calendar.getTimeInMillis();
+
+
+        DataSource dataSource = new DataSource.Builder()
+                .setAppPackageName("com.google.android.gms")
+                .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
+                .setType(DataSource.TYPE_DERIVED)
+                .setStreamName("estimated_steps")
+                .build();
+
+        DataReadRequest dataReadRequest = new DataReadRequest.Builder()
+                .aggregate(dataSource, DataType.AGGREGATE_STEP_COUNT_DELTA)
+                .bucketByTime(1, TimeUnit.DAYS)
+                .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+                .build();
+
+        DataReadResult dataReadResult = Fitness.HistoryApi.readData(historyClient, dataReadRequest)
+                .await(1, TimeUnit.MINUTES);
+
+        //Used for aggregated data
+        if (dataReadResult.getBuckets().size() > 0) {
+
+            for (Bucket bucket : dataReadResult.getBuckets()) {
+                for(DataSet dataSet : bucket.getDataSets()) {
+                    for (DataPoint dp : dataSet.getDataPoints()) {
+                        for(Field field: dp.getDataType().getFields()) {
+                            Log.d("UPS VALUE", dp.getValue(field).asInt() + " steps");
+                            return dp.getValue(field).asInt();
+                        }
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
 
     /**
-     * filling implementation from FitnessService
+     * pulls yesterdays step data from Google Fit's History API
+     * @return number of steps taken yesterday
      */
-    @Override
-    public int getRequestCode() {
-        return GOOGLE_FIT_PERMISSIONS_REQUEST_CODE;
-    }
-
     public int retrieveYesterdaysSteps() {
         List<Bucket> buckets = new ArrayList<>();
 
@@ -164,6 +145,13 @@ public class DataRetriever implements FitnessService {
         return -1;
     }
 
+    /**
+     * functions that retrieves data of type dt from Google Fit's History API for the past week
+     * and returns it in a list
+     * @param dt datatype of the data that you want to request
+     * @param agg datatype of the data that you want dt aggregated into
+     * @return a list of Buckets requested
+     */
     public List<Bucket> retrieveAggregatedData(DataType dt, DataType agg) {
 
         List<Bucket> buckets = new ArrayList<>();
@@ -179,9 +167,10 @@ public class DataRetriever implements FitnessService {
         // setting startTime as a week ago from endTime
         long startTime = calendar.getTimeInMillis();
 
-        /*
-        Requests for regular steps and planned steps respectively
-         */
+        DateFormat dateFormat = DateFormat.getDateInstance();
+        DateFormat timeFormat = DateFormat.getTimeInstance();
+        Log.e("History", "Range Start: " + dateFormat.format(startTime) + " " + timeFormat.format(startTime));
+        Log.e("History", "Range End: " + dateFormat.format(endTime) + " " + timeFormat.format(endTime));
 
         // Create a request to aggregate all of dt by day
         DataReadRequest dataReadRequest = new DataReadRequest.Builder()
@@ -193,25 +182,21 @@ public class DataRetriever implements FitnessService {
         DataReadResult dataReadResult = Fitness.HistoryApi.readData(historyClient, dataReadRequest)
                 .await(1, TimeUnit.MINUTES);
 
-        //Used for aggregated data
+        // adding each bucket to the list
         if (dataReadResult.getBuckets().size() > 0) {
-
             for (Bucket bucket : dataReadResult.getBuckets()) {
-                /*
-                List<DataSet> dataSets = bucket.getDataSets();
-                for (DataSet dataSet : dataSets) {
-                    dataSets.add(dataSet);
-                }
-                */
                 buckets.add(bucket);
             }
         }
         return buckets;
     }
 
-    // should request different types of data
-    //      for the progressChart we should get steps and planned steps per each day
-    //      for other data we should get activity steps, time, and speed
+    /**
+     * functions that retrieves data of type dt for the past week and returns it
+     * in a list
+     * @param dt datatype of the data that you want to request
+     * @return a list of datasets requested
+     */
     public List<DataSet> retrieveData(DataType dt) {
 
         List<DataSet> dataSets = new ArrayList<>();
@@ -230,6 +215,7 @@ public class DataRetriever implements FitnessService {
         /*
         Requests for regular steps and planned steps respectively
          */
+
         //Check how many steps were walked and recorded in the last 7 days
         DataReadRequest dataReadRequest = new DataReadRequest.Builder()
                 .read(dt)
@@ -240,8 +226,8 @@ public class DataRetriever implements FitnessService {
         DataReadResult dataReadResult = Fitness.HistoryApi.readData(historyClient, dataReadRequest)
                 .await(1, TimeUnit.MINUTES);
 
+        // adding each dataset to the list
         if (dataReadResult.getDataSets().size() > 0) {
-            Log.e("History", "Number of returned DataSets: " + dataReadResult.getDataSets().size());
             for (DataSet dataSet : dataReadResult.getDataSets()) {
                 dataSets.add(dataSet);
             }

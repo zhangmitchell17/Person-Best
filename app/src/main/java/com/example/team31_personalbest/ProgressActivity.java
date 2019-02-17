@@ -24,8 +24,11 @@ import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,64 +56,135 @@ public class ProgressActivity extends AppCompatActivity implements
         barChart = findViewById(R.id.graphProgress);
 
         XAxis xAxis = barChart.getXAxis();
-        xAxis.setCenterAxisLabels(true);
-        xAxis.setDrawGridLines(false);
+        //xAxis.setCenterAxisLabels(true);
+        //xAxis.setDrawGridLines(false);
         //xAxis.setValueFormatter(new DateAxisValueFormatter(dayAbbrev));
+
+        // Making the x axis labeled by day
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(dayAbbrev));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawLabels(true);
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setAxisMinimum(-1);
+        xAxis.setAxisMaximum(7);
 
         YAxis leftAxis = barChart.getAxisLeft();
         leftAxis.setDrawGridLines(false);
         leftAxis.setAxisMinimum(0f);
         barChart.getAxisRight().setEnabled(false);
 
-        stepVals = new ArrayList<BarEntry>();
+        stepVals = new ArrayList<>();
 
-
-        /*
-          TODO code that pulls dat from shared preferences for steps and unplanned steps should
-          TODO and fill the ps and ups int arrays that stand for planned steps and unplanned
-          TODO steps respectively
-         */
         dr = new DataRetriever(this);
         dr.setup();
 
+        /* running on a separate thread so that it doesn't stall the activity and crash */
         new Thread(new Runnable() {
-           @Override
-           public void run() {
-              List<Bucket> unplannedSteps = dr.
+            @Override
+            public void run() {
+               /*
+                unplannedSteps contains the data from the past seven days
+                */
+                List<Bucket> unplannedSteps = dr.
                        retrieveAggregatedData(DataType.TYPE_STEP_COUNT_DELTA,
                                DataType.AGGREGATE_STEP_COUNT_DELTA);
-              ups = new ArrayList();
-              for(Bucket b : unplannedSteps) {
-                  for(DataSet ds : b.getDataSets()) {
-                      for (DataPoint dp : ds.getDataPoints()) {
-                          for(Field field: dp.getDataType().getFields()) {
-                              Log.d("UPS VALUE", dp.getValue(field).asInt() + " steps");
-                              ups.add(dp.getValue(field).asInt());
-                          }
-                      }
-                  }
-              }
-               int[] ps = {762, 720, 710, 732, 720, 600, 500};
-               //int[] ups = {612, 264, 523, 498, 100, 55, 173};
+                ups = new ArrayList();
+                DateFormat dateFormat = DateFormat.getDateInstance();
+                DateFormat timeFormat = DateFormat.getTimeInstance();
 
-               // populate BarEntries
-               for (int i = 0; i < ups.size(); i++) {
-                   stepVals.add(new BarEntry(i, new float[]{ps[i], ups.get(i)}));
-               }
+                /*
+                 * only append once sunday is reached since we don't necessary want the past weeks
+                 * data, but the data for this week
+                 */
+                boolean afterSunday = false;
+                Calendar calendar = Calendar.getInstance();
 
-               // making dataset from set
-               BarDataSet set = new BarDataSet(stepVals, "Steps");
-               // labels for the chart legend
-               set.setStackLabels(new String[]{"Planned Steps", "Unplanned Steps"});
-               set.setColors(Color.parseColor("#81dafc"), // pastel green
+                /*
+                 * each nested object only has one object in it besides unplannedSteps itself
+                 * just iterating over to access the innermost object which is Field
+                 */
+                for(Bucket b : unplannedSteps) {
+                    for(DataSet ds : b.getDataSets()) {
+                        Log.e("History", "Data returned for Data type: " + ds.getDataType().getName());
+                        for (DataPoint dp : ds.getDataPoints()) {
+                            calendar.setTimeInMillis(dp.getStartTime(TimeUnit.MILLISECONDS));
+                            if(!afterSunday && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                                afterSunday = true;
+                            }
+                            for(Field field: dp.getDataType().getFields()) {
+                                /*
+                                 * if we haven't reached sunday yet and the day is sunday,
+                                 * set the corresponding boolean to true
+                                 */
+
+                                if(afterSunday) {
+                                    Log.e("History", "Data point:");
+                                    Log.e("History", "\tType: " + dp.getDataType().getName());
+                                    Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+                                    Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+                                    Log.d("UPS VALUE", dp.getValue(field).asInt() + " " + field.getName());
+                                    ups.add(dp.getValue(field).asInt());
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
+                // getting the starting time of the first day of data we retrieve
+                long timeOfFirstDay = unplannedSteps.get(0)
+                        .getDataSets().get(0)
+                        .getDataPoints().get(0)
+                        .getStartTime(TimeUnit.MILLISECONDS);
+
+                // getting the number of the first day we retrieve data for
+                calendar.setTimeInMillis(timeOfFirstDay);
+                int firstDay = calendar.get(Calendar.DAY_OF_WEEK);
+
+
+                /*
+                 * if it never reached sunday then we don't have data for a sunday
+                 * meaning the interval of time for which we have data
+                 * is after the previous sunday and before the current sunday
+                 */
+                if(!afterSunday) {
+                    /*
+                     * so fill the days before the current day with 0
+                     */
+                    for(int i = 1; i <= firstDay; i++) {
+                        ups.add(0, 0);
+                    }
+                }
+
+                // add todays data since retrieve the last weeks data is exclusive of today
+                ups.add(dr.retrieveTodaysSteps());
+
+                /*
+                 * TODO write code to get planned walks run and replace ps with a proper array
+                 */
+                int[] ps = {762, 720, 710, 732, 720, 600, 500};
+
+                // populate BarEntries
+                for (int i = 0; i < ups.size(); i++) {
+                    stepVals.add(new BarEntry(i, new float[]{ps[i], ups.get(i)}));
+                }
+
+                // making dataset from set
+                BarDataSet set = new BarDataSet(stepVals, "Steps");
+
+                // labels for the chart legend
+                set.setStackLabels(new String[]{"Planned Steps", "Unplanned Steps"});
+                set.setColors(Color.parseColor("#81dafc"), // pastel green
                        Color.parseColor(("#77dd77"))); // pastel blue
-               BarData data = new BarData(set);
+                BarData data = new BarData(set);
 
-               barChart.getDescription().setEnabled(false);
-               barChart.setData(data);
+                barChart.getDescription().setEnabled(false);
+                barChart.setData(data);
 
-               barChart.invalidate(); // refresh
-           }
+                barChart.invalidate(); // refresh
+            }
         }).start();
 
 
@@ -135,17 +209,4 @@ public class ProgressActivity extends AppCompatActivity implements
 
     }
 
-}
-
-
-class DateAxisValueFormatter implements IAxisValueFormatter {
-    private String[] vals;
-
-    public DateAxisValueFormatter(String[] values) {
-        this.vals = values;
-    }
-
-    public String getFormattedValue(float value, AxisBase axis) {
-        return vals[(int) value];
-    }
 }

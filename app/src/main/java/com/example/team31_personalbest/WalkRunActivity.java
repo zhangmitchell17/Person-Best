@@ -97,6 +97,11 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
 
     public void setStepCount(long stepCount) {
         stepDisplay.setText(String.valueOf(stepCount - stepCnted));
+        long stepsToDisplay = stepCount - stepCnted;
+        SharedPreferences sharedPreferences = getSharedPreferences("walkRunStats", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("walkRunSteps", stepsToDisplay);
+        editor.apply();
     }
 
 
