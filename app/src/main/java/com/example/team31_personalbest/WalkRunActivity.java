@@ -24,6 +24,8 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     private TextView speedDisplay;
 
     private int stepCnted;
+    private Steps steps;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +64,9 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
                 fitnessService.updateStepCount();
             }
         });
+
+        steps = new Steps(stepDisplay, fitnessService);
+        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // Returns back to Home Page after session finished
         btnStop = findViewById(R.id.buttonStop);

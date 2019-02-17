@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
@@ -53,8 +54,9 @@ public class MainActivity extends AppCompatActivity
     private boolean goalAchievedDisplayed;
 
     private TimeService timeService;
+    private Steps steps;
     private boolean isBound;
-/*
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -68,12 +70,12 @@ public class MainActivity extends AppCompatActivity
             isBound = false;
         }
     };
-*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(loggedIn) {
+        if (!loggedIn) {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail().build();
 
@@ -83,6 +85,8 @@ public class MainActivity extends AppCompatActivity
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
         }
+
+        //if (!loggedIn) { return; }
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -129,13 +133,14 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
-        Button btnGoToSteps = findViewById(R.id.buttonGoToSteps);
-        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateSteps();
-            }
-        });
+//        Button btnGoToSteps = findViewById(R.id.buttonGoToSteps);
+//        btnGoToSteps.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                updateSteps();
+//            }
+//        });
+        timeService = new TimeService();
 
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
@@ -148,6 +153,8 @@ public class MainActivity extends AppCompatActivity
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
 
+        steps = new Steps(stepDisplay, fitnessService);
+        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
         // Bind time service to main activity
@@ -337,6 +344,8 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        System.out.println("onActivityResult called");
+
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == AppCompatActivity.RESULT_OK) {
             // The Task returned from this call is always completed, no need to attach
@@ -347,6 +356,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        System.out.println("handleSignInResult called");
+
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
@@ -363,9 +374,11 @@ public class MainActivity extends AppCompatActivity
 
     public void updateUI(GoogleSignInAccount account) {
         if (account != null) {
+            loggedIn = true;
             Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_LONG);
         } else {
             Log.w(TAG, "You need to log in again.");
+            Toast.makeText(getApplicationContext(), "You need to log in again.", Toast.LENGTH_LONG);
         }
     }
 
@@ -429,7 +442,6 @@ public class MainActivity extends AppCompatActivity
             alert.show();
 
             // Save the date that the accomplishment notification has been set
-            goalAchievedDisplayed = true;
             sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             String currentDate = sharedPref.getString("currentDate", "");
