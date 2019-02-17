@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -84,6 +85,7 @@ public class InputHeightStepGoal extends AppCompatActivity{
                 }
 
                 displayFirstName.setText(notification);
+                Log.i("Notification: ",(String)displayFirstName.getText());
                 updateHeightHint();
             }
         });
@@ -134,6 +136,7 @@ public class InputHeightStepGoal extends AppCompatActivity{
                     notification = "Please enter a new step goal of at least 2 :)";
                 }
                 displayFirstName.setText(notification);
+                Log.i("Notification: ",String.valueOf(displayFirstName.getText()));
                 updateGoalHint();
 
             }
@@ -145,7 +148,6 @@ public class InputHeightStepGoal extends AppCompatActivity{
                 launchMainActivity();
             }
         });
-
 
     }
 
@@ -175,6 +177,7 @@ public class InputHeightStepGoal extends AppCompatActivity{
         {
             height.setHint(getString(R.string.heightHint));
         }
+        Log.i("Height: ", "The input height is "+height.getText());
     }
 
 
@@ -195,5 +198,6 @@ public class InputHeightStepGoal extends AppCompatActivity{
         {
             step.setHint(getString(R.string.goalHint));
         }
+        Log.i("Step Goal: ", "The step goal is "+step.getText());
     }
 }

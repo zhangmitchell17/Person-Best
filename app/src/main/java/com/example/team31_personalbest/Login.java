@@ -128,7 +128,7 @@ public class Login extends AppCompatActivity {
     }
 
     /**
-     * updateUI method updates the interface after you login
+     * The updateUI method updates the interface after you login
      * @param account
      */
     public void updateUI(GoogleSignInAccount account) {

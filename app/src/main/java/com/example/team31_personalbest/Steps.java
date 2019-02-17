@@ -52,7 +52,7 @@ public class Steps extends AsyncTask<String, String, String> {
      */
     @Override
     protected void onPreExecute() {
-        // Doesn't need to to anything before : - )
+        // Doesn't need to to anything before
     }
 
     /**
