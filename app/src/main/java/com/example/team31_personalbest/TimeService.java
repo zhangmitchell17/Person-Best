@@ -23,7 +23,7 @@ import java.util.Date;
 import androidx.annotation.RequiresApi;
 
 /**
- * TimeService
+ * TimeService class is the Service for tracking time which runs in background
  */
 public class TimeService extends Service {
     static boolean ifPassed = false;
@@ -36,12 +36,18 @@ public class TimeService extends Service {
     public TimeService() {
     }
 
+    /**
+     * This local service class in TimeService class
+     */
     class LocalService extends Binder {
         public TimeService getService() {
             return TimeService.this;
         }
     }
 
+    /**
+     * MyThread class runs the main service
+     */
     final class MyThread implements Runnable {
         int startID;
 
@@ -99,10 +105,12 @@ public class TimeService extends Service {
         }
     }
 
+    /**
+     * This method checks if time is passed 8pm, if so, stores today's steps
+     * running code on a separate thread since DatRetriever has to get data from Historys API
+     * and shouldn't stall the code that calls setProgressNotificationFlag
+     */
     public void setProgressNotificationFlag() {
-        // check if time is passed 8pm, if so, store today's steps
-        // running code on a separate thread since DatRetriever has to get data from Historys API
-        // and shouldn't stall the code that calls setProgressNotificationFlag
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -130,12 +138,24 @@ public class TimeService extends Service {
         }).start();
     }
 
+    /**
+     * Override the onBind method
+     * @param intent
+     * @return
+     */
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         return iBinder;
     }
 
+    /**
+     * Override the onStartCommand method
+     * @param intent
+     * @param flags
+     * @param startID
+     * @return
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
         Thread thread = new Thread(new MyThread(startID));
@@ -143,26 +163,12 @@ public class TimeService extends Service {
         return super.onStartCommand(intent, flags, startID);
     }
 
+    /**
+     * Override onDestroy method
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-    public String getSeconds()
-    {
-        return secondStr;
-    }
-
-    public String getMinutes() {
-        return minuteStr;
-    }
-
-    public String getHours() {
-        return hourStr;
-    }
-
-    public String getDays() {
-        return dayStr;
     }
 
 }
