@@ -33,8 +33,9 @@ public class MainActivityElementTests {
     @Test
     public void mainActivityElementTests() {
         MainActivity.loggedIn = true;
+        MainActivity.isCancelled = true;
         ViewInteraction textView = onView(
-                allOf(withId(R.id.stride_length), withText("Your stride length is: 0"),
+                allOf(withId(R.id.stride_length), withText("Your stride length is: 50"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.drawer_layout),
@@ -44,7 +45,7 @@ public class MainActivityElementTests {
         textView.check(matches(isDisplayed()));
 
         ViewInteraction textView2 = onView(
-                allOf(withId(R.id.stride_length), withText("Your stride length is: 0"),
+                allOf(withId(R.id.stride_length), withText("Your stride length is: 50"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.drawer_layout),

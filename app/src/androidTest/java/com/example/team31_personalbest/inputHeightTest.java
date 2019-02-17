@@ -39,6 +39,7 @@ public class inputHeightTest {
     @Test
     public void inputHeightTest() {
         MainActivity.loggedIn = true;
+        MainActivity.isCancelled = true;
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(

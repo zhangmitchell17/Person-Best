@@ -32,6 +32,7 @@ public class dailyStepCountTests {
     @Test
     public void dailyStepCountTests() {
         MainActivity.loggedIn = true;
+        MainActivity.isCancelled = true;
         ViewInteraction button = onView(
                 allOf(withId(R.id.buttonGoToSteps),
                         childAtPosition(

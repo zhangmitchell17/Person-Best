@@ -1,6 +1,7 @@
 package com.example.team31_personalbest;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -70,9 +71,9 @@ public class TimeService extends Service {
                     hourStr = hourFormat.format(date);
                     dayStr = dayFormat.format(date);
 
-                    //System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
+                    System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
 
-                    if(hourStr.equals("17") && minuteStr.equals("22") && secondStr.equals("30")) {
+                    if(hourStr.equals("18") && minuteStr.equals("03") && secondStr.equals("00")) {
                         setProgressNotificationFlag();
                     }
 
@@ -83,6 +84,7 @@ public class TimeService extends Service {
                     if (!dayStr.equals(accomplishmentDate)) {
                         editor.putBoolean("accomplishmentDisplayed", false);
                     }
+
                     editor.apply();
                     try {
                         wait(1000);
@@ -96,8 +98,6 @@ public class TimeService extends Service {
 
     public void setProgressNotificationFlag() {
         // check if time is passed 8pm, if so, store today's steps
-
-
         // running code on a separate thread since DatRetriever has to get data from Historys API
         // and shouldn't stall the code that calls setProgressNotificationFlag
         new Thread(new Runnable() {
@@ -125,8 +125,6 @@ public class TimeService extends Service {
                 }
             }
         }).start();
-
-
     }
 
     @Override

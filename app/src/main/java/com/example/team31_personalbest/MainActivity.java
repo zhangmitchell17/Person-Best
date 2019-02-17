@@ -65,8 +65,9 @@ public class MainActivity extends AppCompatActivity
     private boolean goalAchievedDisplayed;
 
     private TimeService timeService;
-    private Steps steps;
+    public Steps steps;
     private boolean isBound;
+    public static boolean isCancelled = false;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -155,9 +156,10 @@ public class MainActivity extends AppCompatActivity
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
 
-        steps = new Steps(stepDisplay, fitnessService);
-        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+        if(isCancelled) {
+            steps = new Steps(stepDisplay, fitnessService);
+            steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
 
         // Bind time service to main activity
         Intent intent = new Intent(MainActivity.this, TimeService.class);

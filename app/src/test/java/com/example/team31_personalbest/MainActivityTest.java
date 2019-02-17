@@ -1,12 +1,15 @@
 package com.example.team31_personalbest;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.widget.Button;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.Robolectric;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -51,4 +54,21 @@ public class MainActivityTest {
         assertEquals(sharePref.getInt("steps", -1), 100);
     }
 
+    @Test
+    public void testSetStepCountTo1000() {
+        SharedPreferences sharePref = activity.getSharedPreferences("setStepCount", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharePref.edit();
+        editor.putInt("steps", 1000);
+        editor.apply();
+        controller.resume();
+        assertEquals(sharePref.getInt("steps", -1), 1000);
+    }
+
+    @Test
+    public void testStartWalkRunButtonStartWalkRunActivity() {
+        Button button = activity.findViewById(R.id.buttonStart);
+        button.performClick();
+        Intent intent = Shadows.shadowOf(activity).peekNextStartedActivity();
+        assertEquals(WalkRunActivity.class.getCanonicalName(), intent.getComponent().getClassName());
+    }
 }
