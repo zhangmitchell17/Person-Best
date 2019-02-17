@@ -393,7 +393,6 @@ public class MainActivity extends AppCompatActivity
         goalAchievedDisplayed = sharedPref.getBoolean("accomplishmentDisplayed", false);
         // Only display it if the step count is greater than the step goal and the notification has not been displayed yet
         if (stepCount >= stepGoal && !goalAchievedDisplayed) {
-            goalAchievedDisplayed = true;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Achievement Notification");
             final int newStepGoal = (stepGoal * 1.10 > stepGoal + 500) ? stepGoal + 500 :
@@ -430,9 +429,14 @@ public class MainActivity extends AppCompatActivity
             alert.show();
 
             // Save the date that the accomplishment notification has been set
+            goalAchievedDisplayed = true;
             sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("date", timeService.getDays());
+            String currentDate = sharedPref.getString("currentDate", "");
+            editor.putString("date", currentDate);
+            System.out.println("date" + currentDate);
+            editor.putBoolean("accomplishmentDisplayed", true);
+            editor.apply();
         }
 
 

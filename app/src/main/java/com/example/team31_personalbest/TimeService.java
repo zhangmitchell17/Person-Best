@@ -69,18 +69,22 @@ public class TimeService extends Service {
                     hourStr = hourFormat.format(date);
                     dayStr = dayFormat.format(date);
 
-                    System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
+                    //System.out.println(secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
 
                     if(hourStr.equals("09") && minuteStr.equals("34") && secondStr.equals("20")) {
                         setProgressNotificationFlag();
                     }
 
                     SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
                     String accomplishmentDate = sharedPref.getString("date", "");
+                    //System.out.println("accomplishmentDate: " + accomplishmentDate);
+                    editor.putString("currentDate", dayStr);
+                    //System.out.println("day: " + dayStr + " | " + accomplishmentDate);
                     if (!dayStr.equals(accomplishmentDate)) {
-                        SharedPreferences.Editor editor = sharedPref.edit();
                         editor.putBoolean("accomplishmentDisplayed", false);
                     }
+                    editor.apply();
                     try {
                         wait(1000);
                     } catch (InterruptedException e) {
