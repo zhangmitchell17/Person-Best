@@ -5,6 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -69,9 +72,28 @@ public class PastWalksActivity extends AppCompatActivity {
         int currentDayIndex = indexOfWeek(currentDayOfWeek);
         //String currentMonthDayYear = getMonthDayYear(date);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("WalkRunStats", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("WalkRunStatsDate", MODE_PRIVATE);
         Map<String, ?> allEntries = sharedPreferences.getAll();
 
+        TableLayout table = findViewById(R.id.tableLayout);
+
+        /*
+        TableRow row = new TableRow(this);
+        TableLayout.LayoutParams tableRowParams=
+                new TableLayout.LayoutParams
+                        (TableLayout.LayoutParams.MATCH_PARENT,TableLayout.LayoutParams.MATCH_PARENT);
+        tableRowParams.setMargins(0, 20, 0, 0);
+        row.setLayoutParams(tableRowParams);
+
+
+        TextView AAAAA = new TextView(this);
+        AAAAA.setText("LOLOLOLOLOLOL");
+        TableRow.LayoutParams prms = new TableRow.LayoutParams(100, TableRow.LayoutParams.WRAP_CONTENT);
+//        AAAAA.setLayoutParams(new TableRow.LayoutParams(100, TableRow.LayoutParams.WRAP_CONTENT));
+        AAAAA.setTextSize(20);
+        row.addView(AAAAA, prms);
+        table.addView(row);
+*/
 
         // Iterate through every SharedPreference key (date and time of run)
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
@@ -80,51 +102,74 @@ public class PastWalksActivity extends AppCompatActivity {
             int indexWeek = 0;
             for (int i = 0; i <= currentDayIndex; i++)
             {
-                if (key.equals(getMonthDayYear(getPreviousDate(i).toString())))
-                {
+                if (getMonthDayYear(key).equals(getMonthDayYear(getPreviousDate(i).toString()))) {
                     thisWeek = true;
                     indexWeek = currentDayIndex - i;
                 }
             }
             HashSet<String> value = (HashSet<String>) entry.getValue();
             // Only set information relevant from this week (Beginning on Sundays)
+
+
+
+
             if (thisWeek)
             {
+                TableRow row = new TableRow(this);
+                TableLayout.LayoutParams tableRowParams=
+                        new TableLayout.LayoutParams
+                                (TableLayout.LayoutParams.WRAP_CONTENT,TableLayout.LayoutParams.WRAP_CONTENT);
+                tableRowParams.setMargins(0, 0, 0, 0);
+                row.setLayoutParams(tableRowParams);
+
+
+                TextView dayOfWeek = new TextView(this);
+                dayOfWeek.setText(Constants.WEEKDAY[indexWeek]);
+                TableRow.LayoutParams prm = new TableRow.LayoutParams(300, TableRow.LayoutParams.WRAP_CONTENT);
+
+                dayOfWeek.setTextSize(20);
+                row.addView(dayOfWeek, prm);
                 // Iterate through every information saved for this run
-                for (String s : value) {
-                    int y = -1;
-                    // Get the index of either the time, steps, or mph information
-                    for (int x = 0; x < TIME_STEPS_MPH.length; x++) {
+                for (int x = 0; x < TIME_STEPS_MPH.length; x++) {
+                    for (String s : value) {
                         if (s.substring(0, s.indexOf(":")).equals(TIME_STEPS_MPH[x])) {
-                            y = x;
+                            // If information gotten was time, steps, or mph, display it accordingly
+                            String valueToInput = s.substring(s.indexOf(":") + 2);
+                            if (x == 0) {
+                                int temp = (int) Integer.parseInt(valueToInput);
+                                // Updates hours
+                                int hours = temp / Constants.SECS_PER_HOUR;
+                                temp = temp % Constants.SECS_PER_HOUR;
+                                // Updates minutes
+                                int minutes = temp / Constants.SECS_PER_MIN;
+                                temp = temp % Constants.SECS_PER_MIN;
+                                // Updates seconds
+                                int seconds = temp;
+                                valueToInput = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+                            }
+                            // Get the id of the TextView to be set
+
+                            TextView edit = new TextView(this);
+                            edit.setText(valueToInput);
+                            TableRow.LayoutParams prms = new TableRow.LayoutParams(300, TableRow.LayoutParams.WRAP_CONTENT);
+
+                            //edit.setLayoutParams(new FrameLayout.LayoutParams(100, FrameLayout.LayoutParams.WRAP_CONTENT));
+                            edit.setTextSize(20);
+                            row.addView(edit, prms);
                         }
-                    }
-                    // If information gotten was time, steps, or mph, display it accordingly
-                    if (y != -1) {
-                        String valueToInput = s.substring(s.indexOf(":") + 2);
-                        String identifier = "" + Constants.WEEKDAY_LOWER[indexWeek] + TIME_STEPS_MPH[y];
-                        if (y == 0) {
-                            int temp = (int) Integer.parseInt(valueToInput);
-                            // Updates hours
-                            int hours = temp / Constants.SECS_PER_HOUR;
-                            temp = temp % Constants.SECS_PER_HOUR;
-                            // Updates minutes
-                            int minutes = temp / Constants.SECS_PER_MIN;
-                            temp = temp % Constants.SECS_PER_MIN;
-                            // Updates seconds
-                            int seconds = temp;
-                            valueToInput = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-                        }
-                        // Get the id of the TextView to be set
-                        int resId = getResources().getIdentifier(identifier, "id", getPackageName());
-                        TextView edit = findViewById(resId);
-                        edit.setText(valueToInput);
                     }
                 }
+                table.addView(row);
             }
+
         }
 
 
+
+
+
+
+        /*
         // Set the rest of the days later on this week (should all be 0)
         for (int i = currentDayIndex + 1; i < Constants.WEEKDAY.length; i++)
         {
@@ -135,6 +180,7 @@ public class PastWalksActivity extends AppCompatActivity {
                 edit.setText("0");
             }
         }
+        */
 
     }
 }

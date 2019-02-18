@@ -108,6 +108,11 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
 
         editor.putStringSet(stats.date, set);
         editor.apply();
+
+        SharedPreferences sharedPreferences = MainActivity.mainActivity.getSharedPreferences("WalkRunStatsDate", MODE_PRIVATE);
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.putStringSet(stats.date, set);
+        edit.apply();
     }
 
     public void setStepCount(long stepCount) {
