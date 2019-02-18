@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.HashSet;
+
 public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     private Button btnStop;
     private Button btnUpdate;
@@ -79,9 +81,26 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
                 t.cancel();
                 s.cancel();
 
+                // store steps, speed, seconds
+                String step = stepDisplay.getText().toString();
+                WalkRunStats stats = new WalkRunStats(String.valueOf(mph), step, String.valueOf(seconds));
+                storeToSharePref(stats);
                 finish();
             }
         });
+    }
+
+    public void storeToSharePref(WalkRunStats stats) {
+        SharedPreferences sharePref = MainActivity.mainActivity.getSharedPreferences("WalkRunStats", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharePref.edit();
+        HashSet<String> set = new HashSet<String>();
+
+        set.add("speed: " + stats.speed);
+        set.add("steps: " + stats.steps);
+        set.add("totalTime: " + stats.totalTime);
+
+        editor.putStringSet(stats.date, set);
+        editor.apply();
     }
 
     public void setStepCount(long stepCount) {
