@@ -213,30 +213,32 @@ public class ProgressActivity extends AppCompatActivity implements
 
                 /* post processing ups data
                  */
+                if(upsDataPoints.size() > 0) {
 
-                // getting the starting time of the first day of data we retrieve
-                long timeOfFirstDay = upsDataPoints.get(0)
-                        .getStartTime(TimeUnit.MILLISECONDS);
+                    // getting the starting time of the first day of data we retrieve
+                    long timeOfFirstDay = upsDataPoints.get(0)
+                            .getStartTime(TimeUnit.MILLISECONDS);
 
-                // getting the number of the first day we retrieve data for
-                calendar.setTimeInMillis(timeOfFirstDay);
-                int firstDay = calendar.get(Calendar.DAY_OF_WEEK);
+                    // getting the number of the first day we retrieve data for
+                    calendar.setTimeInMillis(timeOfFirstDay);
+                    int firstDay = calendar.get(Calendar.DAY_OF_WEEK);
 
-                if(firstDay == Calendar.SUNDAY) {
-                    ups.clear();
-                }
+                    if (firstDay == Calendar.SUNDAY) {
+                        ups.clear();
+                    }
 
-                /*
-                 * if it never reached sunday then we don't have data for a sunday
-                 * meaning the interval of time for which we have data
-                 * is after the previous sunday and before the current sunday
-                 */
-                if(!afterSunday) {
                     /*
-                     * so fill the days before the current day with 0
+                     * if it never reached sunday then we don't have data for a sunday
+                     * meaning the interval of time for which we have data
+                     * is after the previous sunday and before the current sunday
                      */
-                    for(int i = 1; i <= firstDay; i++) {
-                        ups.add(0, 0);
+                    if (!afterSunday) {
+                        /*
+                         * so fill the days before the current day with 0
+                         */
+                        for (int i = 1; i <= firstDay; i++) {
+                            ups.add(0, 0);
+                        }
                     }
                 }
 
