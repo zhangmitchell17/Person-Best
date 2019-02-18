@@ -70,55 +70,48 @@ public class PastWalksActivity extends AppCompatActivity {
             if (thisWeek)
             {
                 for (String s : value) {
-                    int y = 0;
+                    int y = -1;
                     for (int x = 0; x < TIME_STEPS_MPH.length; x++) {
-                        if(s.substring(0, s.indexOf(":")).equals(TIME_STEPS_MPH[x]))
-                        {
+                        if (s.substring(0, s.indexOf(":")).equals(TIME_STEPS_MPH[x])) {
                             y = x;
                         }
                     }
-                    String identifier = "" + Constants.WEEKDAY_LOWER[indexWeek] + TIME_STEPS_MPH[y];
-                    String valueToInput = s.substring(s.indexOf(":") + 1);
-                    int resId = getResources().getIdentifier(identifier, "id", getPackageName());
-                    TextView edit = findViewById(resId);
-                    edit.setText(valueToInput);
+                    if (y != -1) {
+                        String valueToInput = s.substring(s.indexOf(":") + 2);
+                        String identifier = "" + Constants.WEEKDAY_LOWER[indexWeek] + TIME_STEPS_MPH[y];
+                        if (y == 0) {
+                            int temp = (int) Integer.parseInt(valueToInput);
+                            // Updates hours
+                            int hours = temp / Constants.SECS_PER_HOUR;
+                            temp = temp % Constants.SECS_PER_HOUR;
+                            // Updates minutes
+                            int minutes = temp / Constants.SECS_PER_MIN;
+                            temp = temp % Constants.SECS_PER_MIN;
+                            // Updates seconds
+                            int seconds = temp;
+                            valueToInput = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+                        }
+                        int resId = getResources().getIdentifier(identifier, "id", getPackageName());
+                        TextView edit = findViewById(resId);
+                        edit.setText(valueToInput);
+                    }
                 }
             }
         }
-        /*
+
 
         for (int i = currentDayIndex + 1; i < Constants.WEEKDAY.length; i++)
         {
             for (int x = 0; x < TIME_STEPS_MPH.length; x++) {
-                String identifier = "" + Constants.WEEKDAY[i] + TIME_STEPS_MPH[x];
+                System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||||||||| " + x);
+                String identifier = "" + Constants.WEEKDAY_LOWER[i] + TIME_STEPS_MPH[x];
+                System.out.println("identifier: " + identifier);
                 int resId = getResources().getIdentifier(identifier, "id", getPackageName());
                 TextView edit = findViewById(resId);
                 edit.setText("0");
             }
         }
-        */
 
-
-/*
-        updateWalks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int x = 0; x < Constants.WEEKDAY_LOWER.length; x++) {
-                    SharedPreferences sharedPreferences = getSharedPreferences("savedWalks", MODE_PRIVATE);
-                    for (int y = 0; y < TIME_STEPS_MPH.length; y++) {
-                        String identifier = "" + Constants.WEEKDAY_LOWER[x] + TIME_STEPS_MPH[y];
-                        int resID = getResources().getIdentifier(identifier, "id", getPackageName());
-                        TextView edit = findViewById(resID);
-                        if (y == 0 || y == 2) {
-                            edit.setText("" + sharedPreferences.getInt(identifier, 0));
-                        } else {
-                            edit.setText(sharedPreferences.getString(identifier, "0"));
-                        }
-                    }
-                }
-            }
-        });
-        */
     }
 }
 
