@@ -24,11 +24,15 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     private TextView stepDisplay;
     private TextView speedDisplay;
 
+    private boolean isRunning;
+    private Thread thread;
     private int stepCnted;
 
+    //private Steps steps;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isRunning = true;
         setContentView(R.layout.content_walk_run);
 
         stepDisplay = findViewById(R.id.textViewSteps);
@@ -55,12 +59,25 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         s.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         btnUpdate = findViewById(R.id.button_update_steps);
+
+//        thread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while(isRunning) {
+//                    fitnessService.updateStepCount();
+//                }
+//            }
+//        });
+        //thread.start();
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fitnessService.updateStepCount();
             }
         });
+
+//        steps = new Steps(stepDisplay, fitnessService);
+//        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // Returns back to Home Page after session finished
         btnStop = findViewById(R.id.buttonStop);
@@ -85,6 +102,8 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
 
                 t.cancel();
                 s.cancel();
+                isRunning = false;
+                //thread.();
 
                 // store steps, speed, seconds
                 String step = stepDisplay.getText().toString();
