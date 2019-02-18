@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity
     private boolean goalAchievedDisplayed;
 
     private TimeService timeService;
-    public Steps steps;
+    //public Steps steps;
     private boolean isBound;
     public static boolean isCancelled = false;
 
@@ -137,10 +137,14 @@ public class MainActivity extends AppCompatActivity
         fitnessService.setup();
         Log.i(TAG, "fitness Service: " + fitnessService.toString());
 
-        if(!isCancelled) {
-            steps = new Steps(stepDisplay, fitnessService);
-            steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
+
+        Button btnUpdate = findViewById(R.id.button_update_steps_main);
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fitnessService.updateStepCount();
+            }
+        });
 
         // Bind time service to main activity
         Intent intent = new Intent(MainActivity.this, TimeService.class);
