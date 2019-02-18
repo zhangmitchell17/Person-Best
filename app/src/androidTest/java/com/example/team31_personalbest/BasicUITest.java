@@ -60,7 +60,7 @@ public class BasicUITest {
     @Test
     public void BasicUITest() {
         ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.buttonGoToSteps), withText("Your Live Daily Step Count"),
+                allOf(withId(R.id.button_update_steps_main), withText("update steps"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.drawer_layout),

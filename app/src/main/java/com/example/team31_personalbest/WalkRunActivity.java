@@ -60,15 +60,6 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
 
         btnUpdate = findViewById(R.id.button_update_steps);
 
-//        thread = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while(isRunning) {
-//                    fitnessService.updateStepCount();
-//                }
-//            }
-//        });
-        //thread.start();
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,26 +67,11 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
             }
         });
 
-//        steps = new Steps(stepDisplay, fitnessService);
-//        steps.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
         // Returns back to Home Page after session finished
         btnStop = findViewById(R.id.buttonStop);
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                long seconds = t.getSeconds();
-                String nameOfDay = "";
-                SharedPreferences sharedPreferences = getSharedPreferences("savedWalks", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putLong(nameOfDay + "Time", seconds);
-                editor.apply();
-
-                float mph = s.getMPH();
-                editor.putFloat(nameOfDay + "MPH", mph);
-                editor.apply();
-                */
 
                 long seconds = t.getSeconds();
                 float mph = s.getMPH();
