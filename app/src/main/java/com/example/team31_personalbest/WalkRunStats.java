@@ -39,7 +39,6 @@ public class WalkRunStats {
         // Feb 17 2019
         this.monthDayYear = date.substring(date.indexOf(" ") + 1, indexOfEnd) + " " + date.substring(date.length() - 4);
 
-
     }
 
     public void storeToSharePref() {

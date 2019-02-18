@@ -77,24 +77,6 @@ public class PastWalksActivity extends AppCompatActivity {
 
         TableLayout table = findViewById(R.id.tableLayout);
 
-        /*
-        TableRow row = new TableRow(this);
-        TableLayout.LayoutParams tableRowParams=
-                new TableLayout.LayoutParams
-                        (TableLayout.LayoutParams.MATCH_PARENT,TableLayout.LayoutParams.MATCH_PARENT);
-        tableRowParams.setMargins(0, 20, 0, 0);
-        row.setLayoutParams(tableRowParams);
-
-
-        TextView AAAAA = new TextView(this);
-        AAAAA.setText("LOLOLOLOLOLOL");
-        TableRow.LayoutParams prms = new TableRow.LayoutParams(100, TableRow.LayoutParams.WRAP_CONTENT);
-//        AAAAA.setLayoutParams(new TableRow.LayoutParams(100, TableRow.LayoutParams.WRAP_CONTENT));
-        AAAAA.setTextSize(20);
-        row.addView(AAAAA, prms);
-        table.addView(row);
-*/
-
         // Iterate through every SharedPreference key (date and time of run)
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             boolean thisWeek = false;
@@ -109,9 +91,6 @@ public class PastWalksActivity extends AppCompatActivity {
             }
             HashSet<String> value = (HashSet<String>) entry.getValue();
             // Only set information relevant from this week (Beginning on Sundays)
-
-
-
 
             if (thisWeek)
             {
@@ -166,24 +145,6 @@ public class PastWalksActivity extends AppCompatActivity {
             }
 
         }
-
-
-
-
-
-
-        /*
-        // Set the rest of the days later on this week (should all be 0)
-        for (int i = currentDayIndex + 1; i < Constants.WEEKDAY.length; i++)
-        {
-            for (int x = 0; x < TIME_STEPS_MPH.length; x++) {
-                String identifier = "" + Constants.WEEKDAY_LOWER[i] + TIME_STEPS_MPH[x];
-                int resId = getResources().getIdentifier(identifier, "id", getPackageName());
-                TextView edit = findViewById(resId);
-                edit.setText("0");
-            }
-        }
-        */
 
     }
 }

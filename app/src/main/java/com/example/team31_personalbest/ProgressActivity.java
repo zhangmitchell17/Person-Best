@@ -262,18 +262,6 @@ public class ProgressActivity extends AppCompatActivity implements
                 /* assumes that for every day that unplanned steps are made, there
                  * are planned steps
                  */
-                /*
-
-                cal = getMostRecentSunday();
-                for(int i = 0; i < 7; i++) {
-                    String s = day.format(cal.getTime());
-                    if(plannedStepsPerDay.containsKey(s)) {
-                        ps.add(plannedStepsPerDay.get(s));
-                    } else {
-                        ps.add(0);
-                    }
-                    cal.add(Calendar.DAY_OF_WEEK, 1);
-                }
 
                 /*
                  * if plannedStepsPerDay has data for today, then add it to ps
@@ -319,11 +307,6 @@ public class ProgressActivity extends AppCompatActivity implements
                 barChart.invalidate(); // refresh
             }
         }).start();
-
-
-
-
-
 
     }
 
