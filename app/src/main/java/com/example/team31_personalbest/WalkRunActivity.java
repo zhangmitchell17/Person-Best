@@ -98,7 +98,7 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     public void storeToSharePref(WalkRunStats stats) {
         SharedPreferences sharePref = MainActivity.mainActivity.getSharedPreferences("WalkRunStats", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharePref.edit();
-        HashSet<String> set = new HashSet<String>();
+        HashSet<String> set = new HashSet<>();
 
         set.add("Time: " + stats.totalTime);
         set.add("MPH: " + stats.speed);
