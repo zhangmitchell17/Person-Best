@@ -103,9 +103,7 @@ public class PastWalksActivity extends AppCompatActivity {
         for (int i = currentDayIndex + 1; i < Constants.WEEKDAY.length; i++)
         {
             for (int x = 0; x < TIME_STEPS_MPH.length; x++) {
-                System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||||||||| " + x);
                 String identifier = "" + Constants.WEEKDAY_LOWER[i] + TIME_STEPS_MPH[x];
-                System.out.println("identifier: " + identifier);
                 int resId = getResources().getIdentifier(identifier, "id", getPackageName());
                 TextView edit = findViewById(resId);
                 edit.setText("0");

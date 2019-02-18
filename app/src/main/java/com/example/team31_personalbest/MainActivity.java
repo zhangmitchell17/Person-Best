@@ -370,7 +370,7 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        System.out.println("onActivityResult called");
+        //System.out.println("onActivityResult called");
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == AppCompatActivity.RESULT_OK) {
@@ -387,7 +387,7 @@ public class MainActivity extends AppCompatActivity
      * @param completedTask
      */
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        System.out.println("handleSignInResult called");
+        //System.out.println("handleSignInResult called");
 
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);

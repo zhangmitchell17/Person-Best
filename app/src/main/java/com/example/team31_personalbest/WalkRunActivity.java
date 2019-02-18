@@ -100,9 +100,11 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         SharedPreferences.Editor editor = sharePref.edit();
         HashSet<String> set = new HashSet<String>();
 
-        set.add("speed: " + stats.speed);
-        set.add("steps: " + stats.steps);
-        set.add("totalTime: " + stats.totalTime);
+        set.add("Time: " + stats.totalTime);
+        set.add("MPH: " + stats.speed);
+        set.add("Steps: " + stats.steps);
+        set.add("dayOfWeek: " + stats.dayOfWeek);
+        set.add("monthDayYear: " + stats.monthDayYear);
 
         editor.putStringSet(stats.monthDayYear, set);
         editor.apply();
