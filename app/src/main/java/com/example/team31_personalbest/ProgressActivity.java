@@ -57,6 +57,10 @@ public class ProgressActivity extends AppCompatActivity implements
     private final String[] dayAbbrev = { "Sun", "Mon", "Tues",
             "Wed", "Thu", "Fri", "Sat"};
 
+    private static final String[] TIME_STEPS_MPH = {"Time", "Steps", "MPH"};
+
+    private final int STEPS_IDX = 1;
+
     DataRetriever dr;
     List<Integer> ups;
     List<DataPoint> upsDataPoints;
@@ -160,8 +164,11 @@ public class ProgressActivity extends AppCompatActivity implements
                 Map<String, Integer> plannedStepsPerDay = new HashMap<>();
 
                 /* populating plannedStepsPerDay */
+                Log.i("SIZE_OF_SP", "SharedPref size : " + keys.size());
                 for(Map.Entry<String,?> entry : keys.entrySet()){
                     Log.d("PROG_ACT_SDF","key in sharedprefss: " + entry.getKey());
+
+                    HashSet<String> values = (HashSet<String>) entry.getValue();
                     try {
                         Calendar cal = Calendar.getInstance();
                         Date date = sdf.parse(entry.getKey());
@@ -173,10 +180,27 @@ public class ProgressActivity extends AppCompatActivity implements
                                 plannedStepsPerDay.get(dayDate) :
                                 0;
 
-                        //plannedStepsPerDay.put(dayDate, count + (int)entry.getValue());
+                        int moreSteps = 0;
+                        // loop that iterates through the hash set given by the key
+                        Log.i("SIZE_OF_VALUES", "values.size = " + values.size());
+                        for(String s : values) {
+                            int index = -1;
+                            // each string in the hash set starts with either time
+                            // steps, or mph, so iterate until we find which identifer it
+                            // starts with
+                            Log.i("VALUE_IN_VALUES", "values.s = " + s);
+                            if (s.substring(0, s.indexOf(":")).equals("steps")) {
+
+                                moreSteps = Integer.parseInt(s.substring(s.indexOf(":") + 2));
+                                Log.i("MORE_STEPS", "moreSteps = " + moreSteps);
+                            }
+                        }
+
+                        plannedStepsPerDay.put(dayDate, count + moreSteps);
 
                     } catch (Exception e) {
                         Log.e("PROG_ACT_SDF","String cannot be parsed so its not a date");
+                        e.printStackTrace();
                     }
                 }
 
@@ -214,22 +238,54 @@ public class ProgressActivity extends AppCompatActivity implements
 
                 /* post processing ps data */
                 List<Integer> ps = new ArrayList<>();
+                /*
+                 * print all keys in plannedstepsperday
+                 */
+                Log.i("PROGRESS_KEYS",plannedStepsPerDay.keySet().toString());
+
                 /* for dates that are in upsdatapoints, then check if they exist in maps, and
                  * then populate the corresponding
                  * things in ps
                  */
+                Calendar cal = Calendar.getInstance();
+                String key;
+
                 for(DataPoint dp : upsDataPoints) {
-                    // if the day exists in the map, then add it to ps
-                    Calendar cal = Calendar.getInstance();
                     cal.setTimeInMillis(dp.getStartTime(TimeUnit.MILLISECONDS));
-                    String key = day.format(cal.getTime());
+                    key = day.format(cal.getTime());
+                    // if the day exists in the map, then add it to ps
+                    Log.i("DEBUG", "first dp in upsDataPoints is on " + key);
                     if(plannedStepsPerDay.containsKey(key)) {
                         ps.add(plannedStepsPerDay.get(key));
                     }
                 }
 
+                /*
+                 * if plannedStepsPerDay has data for today, then add it to ps
+                 */
+                cal.setTimeInMillis(System.currentTimeMillis());
+                key = day.format(cal.getTime());
+                if(plannedStepsPerDay.containsKey(key)) {
+                    Log.i("PROGRESS_VALUE", "plannedStepsPerDay.get(key): "+plannedStepsPerDay.get(key));
+                    ps.add(plannedStepsPerDay.get(key));
+                }
+
+                Log.i("PROGRESS", "printing values in ps");
+                for(Integer i : ps) {
+                    Log.i("PROGRESS", "Value is " + i);
+                }
+
+                int oldPSSize = ps.size();
+                for(int j = 0; j < 7-oldPSSize; j++) {
+                    ps.add(0);
+                }
+                int oldUPSSize = ups.size();
+                for(int k = 0; k < 7-oldUPSSize; k++) {
+                    ups.add(0);
+                }
+
                 // populate BarEntries
-                for (int i = 0; i < ups.size(); i++) {
+                for (int i = 0; i < 7; i++) {
                     stepVals.add(new BarEntry(i, new float[]{ps.get(i), ups.get(i)}));
                 }
 

@@ -106,7 +106,7 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         set.add("dayOfWeek: " + stats.dayOfWeek);
         set.add("monthDayYear: " + stats.monthDayYear);
 
-        editor.putStringSet(stats.monthDayYear, set);
+        editor.putStringSet(stats.date, set);
         editor.apply();
     }
 

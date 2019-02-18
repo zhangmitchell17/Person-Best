@@ -33,8 +33,10 @@ public class WalkRunStats {
 
         Date day = new Date();
         this.date = day.toString();
+        // Sun
         this.dayOfWeek = date.substring(0, date.indexOf(" "));
         int indexOfEnd = date.indexOf(" ", date.indexOf(" ", date.indexOf(" ") + 1) +1);
+        // Feb 17 2019
         this.monthDayYear = date.substring(date.indexOf(" ") + 1, indexOfEnd) + " " + date.substring(date.length() - 4);
 
 
