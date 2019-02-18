@@ -146,6 +146,9 @@ public class PastWalksActivity extends AppCompatActivity {
                                 // Updates seconds
                                 int seconds = temp;
                                 valueToInput = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+                            } else if(x == 2) {
+                                float speed = Float.parseFloat(valueToInput);
+                                valueToInput = String.format("%.2f", speed);
                             }
                             // Get the id of the TextView to be set
 
