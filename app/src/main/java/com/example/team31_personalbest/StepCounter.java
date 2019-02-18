@@ -43,7 +43,7 @@ public class StepCounter extends AsyncTask<String, String, String> {
             Log.i("current Step: ", String.valueOf(currStep));
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(Constants.MS_PER_SEC);
             } catch (Exception e) {
                 e.printStackTrace();
                 resp = e.getMessage();

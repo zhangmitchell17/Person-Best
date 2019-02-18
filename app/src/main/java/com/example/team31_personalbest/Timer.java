@@ -11,9 +11,6 @@ import org.w3c.dom.Text;
  * to continuously update the timer text on WalkRunActivity
  */
 public class Timer extends AsyncTask<String, String, String> {
-    private final int SECS_PER_HOUR = 3600;
-    private final int SECS_PER_MIN = 60;
-    private final int MS_PER_SEC = 1000;
 
     private String resp;
     private boolean isCancelled;
@@ -48,7 +45,7 @@ public class Timer extends AsyncTask<String, String, String> {
             publishProgress(getTime());
             // Waits for 1 second before each update
             try {
-                Thread.sleep(MS_PER_SEC);
+                Thread.sleep(Constants.MS_PER_SEC);
                 time++;
                 Log.i("timer: ", String.valueOf(time));
             } catch (Exception e) {
@@ -96,11 +93,11 @@ public class Timer extends AsyncTask<String, String, String> {
     public void updateTime() {
         int temp = (int) time;
         // Updates hours
-        hours = temp / SECS_PER_HOUR;
-        temp = temp % SECS_PER_HOUR;
+        hours = temp / Constants.SECS_PER_HOUR;
+        temp = temp % Constants.SECS_PER_HOUR;
         // Updates minutes
-        minutes = temp / SECS_PER_MIN;
-        temp = temp % SECS_PER_MIN;
+        minutes = temp / Constants.SECS_PER_MIN;
+        temp = temp % Constants.SECS_PER_MIN;
         // Updates seconds
         seconds = temp;
 

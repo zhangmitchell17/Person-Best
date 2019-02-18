@@ -18,6 +18,8 @@ public class WalkRunStats {
     String date;
     String steps;
     String totalTime;
+    String dayOfWeek;
+    String monthDayYear;
 
     /**
      * Contruct a walkRunStas object
@@ -29,8 +31,13 @@ public class WalkRunStats {
         this.steps = steps;
         this.totalTime = totalTime;
 
-        Date date = new Date();
-        this.date = date.toString();
+        Date day = new Date();
+        this.date = day.toString();
+        this.dayOfWeek = date.substring(0, date.indexOf(" "));
+        int indexOfEnd = date.indexOf(" ", date.indexOf(" ", date.indexOf(" ") + 1) +1);
+        this.monthDayYear = date.substring(date.indexOf(" ") + 1, indexOfEnd) + " " + date.substring(date.length() - 4);
+
+
     }
 
     public void storeToSharePref() {
@@ -38,9 +45,11 @@ public class WalkRunStats {
         SharedPreferences.Editor editor = sharePref.edit();
         HashSet<String> set = new HashSet<String>();
 
-        set.add("speed: " + speed);
-        set.add("steps: " + steps);
-        set.add("totalTime: " + totalTime);
+        set.add("Time: " + totalTime);
+        set.add("Steps: " + steps);
+        set.add("MPH: " + speed);
+        set.add("dayOfWeek: " + dayOfWeek);
+        set.add("monthDayYear: " + monthDayYear);
 
         editor.putStringSet(date, set);
         editor.apply();

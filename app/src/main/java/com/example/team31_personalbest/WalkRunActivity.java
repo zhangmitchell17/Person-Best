@@ -67,6 +67,7 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
                 long seconds = t.getSeconds();
                 String nameOfDay = "";
                 SharedPreferences sharedPreferences = getSharedPreferences("savedWalks", MODE_PRIVATE);
@@ -77,6 +78,10 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
                 float mph = s.getMPH();
                 editor.putFloat(nameOfDay + "MPH", mph);
                 editor.apply();
+                */
+
+                long seconds = t.getSeconds();
+                float mph = s.getMPH();
 
                 t.cancel();
                 s.cancel();
@@ -95,12 +100,13 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         SharedPreferences.Editor editor = sharePref.edit();
         HashSet<String> set = new HashSet<String>();
 
-        set.add("speed: " + stats.speed);
-        set.add("steps: " + stats.steps);
-        set.add("totalTime: " + stats.totalTime);
+        set.add("Time: " + stats.totalTime);
+        set.add("MPH: " + stats.speed);
+        set.add("Steps: " + stats.steps);
+        set.add("dayOfWeek: " + stats.dayOfWeek);
+        set.add("monthDayYear: " + stats.monthDayYear);
 
-
-        editor.putStringSet(stats.date, set);
+        editor.putStringSet(stats.monthDayYear, set);
         editor.apply();
     }
 

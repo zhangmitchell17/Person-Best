@@ -12,7 +12,6 @@ import android.widget.Toast;
  * Implement the AsyncTask for performing multitasks at the same time
  */
 public class Steps extends AsyncTask<String, String, String> {
-    private final int MS_PER_SEC = 1000;
 
     private TextView stepDisplay;
     private FitnessService fitnessService;
@@ -38,7 +37,7 @@ public class Steps extends AsyncTask<String, String, String> {
             publishProgress();
             // Waits for 1 second before each update
             try {
-                Thread.sleep(MS_PER_SEC);
+                Thread.sleep(Constants.MS_PER_SEC);
             } catch (Exception e) {
                 e.printStackTrace();
                 resp = e.getMessage();
