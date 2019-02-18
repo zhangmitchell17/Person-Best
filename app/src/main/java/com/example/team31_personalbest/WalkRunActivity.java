@@ -99,6 +99,7 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         set.add("steps: " + stats.steps);
         set.add("totalTime: " + stats.totalTime);
 
+
         editor.putStringSet(stats.date, set);
         editor.apply();
     }

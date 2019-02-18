@@ -1,5 +1,6 @@
 package com.example.team31_personalbest;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,9 +26,19 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 
 import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
@@ -138,6 +149,40 @@ public class ProgressActivity extends AppCompatActivity implements
                     }
                 }
 
+                /*
+                 * TODO write code to get planned walks run and replace ps with a proper array
+                 */
+                SharedPreferences sharedPrefs = MainActivity.mainActivity.getSharedPreferences("WalkRunStats", MODE_PRIVATE);
+                Map<String,?> keys = sharedPrefs.getAll();
+
+                SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+                SimpleDateFormat day = new SimpleDateFormat("MM-dd-yyyy");
+                Map<String, Integer> plannedStepsPerDay = new HashMap<>();
+
+                /* populating plannedStepsPerDay */
+                for(Map.Entry<String,?> entry : keys.entrySet()){
+                    Log.d("PROG_ACT_SDF","key in sharedprefss: " + entry.getKey());
+                    try {
+                        Calendar cal = Calendar.getInstance();
+                        Date date = sdf.parse(entry.getKey());
+                        cal.setTime(date);
+                        String dayDate = day.format(cal.getTime());
+
+                        /* code to add steps to proper day */
+                        int count = plannedStepsPerDay.containsKey(dayDate) ?
+                                plannedStepsPerDay.get(dayDate) :
+                                0;
+
+                        //plannedStepsPerDay.put(dayDate, count + (int)entry.getValue());
+
+                    } catch (Exception e) {
+                        Log.e("PROG_ACT_SDF","String cannot be parsed so its not a date");
+                    }
+                }
+
+                /* post processing ups data
+                 */
+
                 // getting the starting time of the first day of data we retrieve
                 long timeOfFirstDay = upsDataPoints.get(0)
                         .getStartTime(TimeUnit.MILLISECONDS);
@@ -149,7 +194,6 @@ public class ProgressActivity extends AppCompatActivity implements
                 if(firstDay == Calendar.SUNDAY) {
                     ups.clear();
                 }
-
 
                 /*
                  * if it never reached sunday then we don't have data for a sunday
@@ -168,14 +212,25 @@ public class ProgressActivity extends AppCompatActivity implements
                 // add todays data since retrieve the last weeks data is exclusive of today
                 ups.add(dr.retrieveTodaysSteps());
 
-                /*
-                 * TODO write code to get planned walks run and replace ps with a proper array
+                /* post processing ps data */
+                List<Integer> ps = new ArrayList<>();
+                /* for dates that are in upsdatapoints, then check if they exist in maps, and
+                 * then populate the corresponding
+                 * things in ps
                  */
-                int[] ps = {762, 720, 710, 732, 720, 600, 500, 0};
+                for(DataPoint dp : upsDataPoints) {
+                    // if the day exists in the map, then add it to ps
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(dp.getStartTime(TimeUnit.MILLISECONDS));
+                    String key = day.format(cal.getTime());
+                    if(plannedStepsPerDay.containsKey(key)) {
+                        ps.add(plannedStepsPerDay.get(key));
+                    }
+                }
 
                 // populate BarEntries
                 for (int i = 0; i < ups.size(); i++) {
-                    stepVals.add(new BarEntry(i, new float[]{ps[i], ups.get(i)}));
+                    stepVals.add(new BarEntry(i, new float[]{ps.get(i), ups.get(i)}));
                 }
 
                 // making dataset from set
