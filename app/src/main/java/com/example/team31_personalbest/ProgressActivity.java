@@ -44,6 +44,8 @@ import java.util.concurrent.TimeUnit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import static com.example.team31_personalbest.Constants.*;
+
 /**
  * This file defines the ProgressActivity class which is used to record
  * the weekly and daily progress of a user
@@ -64,7 +66,6 @@ public class ProgressActivity extends AppCompatActivity implements
     DataRetriever dr;
     List<Integer> ups;
     List<DataPoint> upsDataPoints;
-    List<BarEntry> stepVals;
     BarChart barChart;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,24 +74,6 @@ public class ProgressActivity extends AppCompatActivity implements
 
         // making the barchart from the view
         barChart = findViewById(R.id.graphProgress);
-
-        XAxis xAxis = barChart.getXAxis();
-
-        // Making the x axis labeled by day
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(dayAbbrev));
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawLabels(true);
-        xAxis.setDrawGridLines(false);
-        xAxis.setDrawAxisLine(true);
-        xAxis.setAxisMinimum(-1);
-        xAxis.setAxisMaximum(7);
-
-        YAxis leftAxis = barChart.getAxisLeft();
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setAxisMinimum(0f);
-        barChart.getAxisRight().setEnabled(false);
-
-        stepVals = new ArrayList<>();
 
         dr = new DataRetriever(this);
         dr.setup();
@@ -104,18 +87,11 @@ public class ProgressActivity extends AppCompatActivity implements
                 */
                 List<Bucket> unplannedSteps = dr.
                        retrieveAggregatedData(DataType.TYPE_STEP_COUNT_DELTA,
-                               DataType.AGGREGATE_STEP_COUNT_DELTA);
+                               DataType.AGGREGATE_STEP_COUNT_DELTA, Calendar.DAY_OF_YEAR, DAYS_PER_WEEK-1);
                 ups = new ArrayList();
                 upsDataPoints = new ArrayList<>();
                 DateFormat dateFormat = DateFormat.getDateInstance();
                 DateFormat timeFormat = DateFormat.getTimeInstance();
-
-                /*
-                 * only append once sunday is reached since we don't necessary want the past weeks
-                 * data, but the data for this week
-                 */
-                boolean afterSunday = false;
-                Calendar calendar = Calendar.getInstance();
 
                 /*
                  * each nested object only has one object in it besides unplannedSteps itself
@@ -125,28 +101,18 @@ public class ProgressActivity extends AppCompatActivity implements
                     for(DataSet ds : b.getDataSets()) {
                         Log.e("History", "Data returned for Data type: " + ds.getDataType().getName());
                         for (DataPoint dp : ds.getDataPoints()) {
-                            calendar.setTimeInMillis(dp.getStartTime(TimeUnit.MILLISECONDS));
-                            if(!afterSunday && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-                                afterSunday = true;
-                            }
-                            if(afterSunday) {
-                                upsDataPoints.add(dp);
-                            }
                             for(Field field: dp.getDataType().getFields()) {
                                 /*
                                  * if we haven't reached sunday yet and the day is sunday,
                                  * set the corresponding boolean to true
                                  */
+                                Log.e("History", "Data point:");
+                                Log.e("History", "\tType: " + dp.getDataType().getName());
+                                Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+                                Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+                                Log.d("UPS VALUE", dp.getValue(field).asInt() + " " + field.getName());
+                                ups.add(dp.getValue(field).asInt());
 
-                                if(afterSunday) {
-                                    Log.e("History", "Data point:");
-                                    Log.e("History", "\tType: " + dp.getDataType().getName());
-                                    Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-                                    Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-                                    Log.d("UPS VALUE", dp.getValue(field).asInt() + " " + field.getName());
-                                    ups.add(dp.getValue(field).asInt());
-
-                                }
                             }
                         }
                     }
@@ -211,36 +177,6 @@ public class ProgressActivity extends AppCompatActivity implements
                     }
                 }
 
-                /* post processing ups data
-                 */
-                if(upsDataPoints.size() > 0) {
-
-                    // getting the starting time of the first day of data we retrieve
-                    long timeOfFirstDay = upsDataPoints.get(0)
-                            .getStartTime(TimeUnit.MILLISECONDS);
-
-                    // getting the number of the first day we retrieve data for
-                    calendar.setTimeInMillis(timeOfFirstDay);
-                    int firstDay = calendar.get(Calendar.DAY_OF_WEEK);
-
-                    if (firstDay == Calendar.SUNDAY) {
-                        ups.clear();
-                    }
-
-                    /*
-                     * if it never reached sunday then we don't have data for a sunday
-                     * meaning the interval of time for which we have data
-                     * is after the previous sunday and before the current sunday
-                     */
-                    if (!afterSunday) {
-                        /*
-                         * so fill the days before the current day with 0
-                         */
-                        for (int i = 1; i <= firstDay; i++) {
-                            ups.add(0, 0);
-                        }
-                    }
-                }
 
                 // add todays data since retrieve the last weeks data is exclusive of today
                 ups.add(dr.retrieveTodaysSteps());
@@ -287,24 +223,11 @@ public class ProgressActivity extends AppCompatActivity implements
                     ups.add(0);
                 }
 
-                // populate BarEntries
-                for (int i = 0; i < 7; i++) {
-                    stepVals.add(new BarEntry(i, new float[]{ps.get(i), ups.get(i)}));
-                }
+                Log.i("UPS_SIZE", "ups size is " + ups.size());
+                Log.i("PS_SIZE", "ps size is " + ps.size());
 
-                // making dataset from set
-                BarDataSet set = new BarDataSet(stepVals, "Steps");
-
-                // labels for the chart legend
-                set.setStackLabels(new String[]{"Planned Steps", "Unplanned Steps"});
-                set.setColors(Color.parseColor("#81dafc"), // pastel green
-                       Color.parseColor(("#77dd77"))); // pastel blue
-                BarData data = new BarData(set);
-
-                barChart.getDescription().setEnabled(false);
-                barChart.setData(data);
-
-                barChart.invalidate(); // refresh
+                ProgressChart pc = new ProgressChart(barChart, ups, ps, ups.size(), WEEKDAY_LOWER_SHORTENED);
+                pc.setup();
             }
         }).start();
 
