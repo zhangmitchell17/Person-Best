@@ -64,8 +64,6 @@ public class ProgressActivity extends AppCompatActivity implements
     private final int STEPS_IDX = 1;
 
     DataRetriever dr;
-    List<Integer> ups;
-    List<DataPoint> upsDataPoints;
     BarChart barChart;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,39 +86,13 @@ public class ProgressActivity extends AppCompatActivity implements
                 List<Bucket> unplannedSteps = dr.
                        retrieveAggregatedData(DataType.TYPE_STEP_COUNT_DELTA,
                                DataType.AGGREGATE_STEP_COUNT_DELTA, Calendar.DAY_OF_YEAR, DAYS_PER_WEEK-1);
-                ups = new ArrayList();
-                upsDataPoints = new ArrayList<>();
-                DateFormat dateFormat = DateFormat.getDateInstance();
-                DateFormat timeFormat = DateFormat.getTimeInstance();
+                AggregateData ad = new AggregateData(unplannedSteps);
+                List<Integer> ups = ad.toIntList();
+                List<String> strList = ad.getDateList();
+                String[] dateLabels = new String[strList.size()+1];
+                dateLabels = strList.toArray(dateLabels);
 
-                /*
-                 * each nested object only has one object in it besides unplannedSteps itself
-                 * just iterating over to access the innermost object which is Field
-                 */
-                for(Bucket b : unplannedSteps) {
-                    for(DataSet ds : b.getDataSets()) {
-                        Log.e("History", "Data returned for Data type: " + ds.getDataType().getName());
-                        for (DataPoint dp : ds.getDataPoints()) {
-                            for(Field field: dp.getDataType().getFields()) {
-                                /*
-                                 * if we haven't reached sunday yet and the day is sunday,
-                                 * set the corresponding boolean to true
-                                 */
-                                Log.e("History", "Data point:");
-                                Log.e("History", "\tType: " + dp.getDataType().getName());
-                                Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-                                Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-                                Log.d("UPS VALUE", dp.getValue(field).asInt() + " " + field.getName());
-                                ups.add(dp.getValue(field).asInt());
 
-                            }
-                        }
-                    }
-                }
-
-                /*
-                 * TODO write code to get planned walks run and replace ps with a proper array
-                 */
                 SharedPreferences sharedPrefs = MainActivity.mainActivity.getSharedPreferences("WalkRunStatsDate", MODE_PRIVATE);
                 Map<String,?> keys = sharedPrefs.getAll();
 
@@ -179,6 +151,7 @@ public class ProgressActivity extends AppCompatActivity implements
 
 
                 // add todays data since retrieve the last weeks data is exclusive of today
+                dateLabels[dateLabels.length-1] = (new SimpleDateFormat(MONTH_DAY_FMT)).format(new Date());
                 ups.add(dr.retrieveTodaysSteps());
 
                 /* post processing ps data */
@@ -214,6 +187,7 @@ public class ProgressActivity extends AppCompatActivity implements
                     Log.i("PROGRESS", "Value is " + i);
                 }
 
+                // filling in zeroes where we hvae no data
                 int oldPSSize = ps.size();
                 for(int j = 0; j < 7-oldPSSize; j++) {
                     ps.add(0);
@@ -226,7 +200,7 @@ public class ProgressActivity extends AppCompatActivity implements
                 Log.i("UPS_SIZE", "ups size is " + ups.size());
                 Log.i("PS_SIZE", "ps size is " + ps.size());
 
-                ProgressChart pc = new ProgressChart(barChart, ups, ps, ups.size(), WEEKDAY_LOWER_SHORTENED);
+                ProgressChart pc = new ProgressChart(barChart, ups, ps, ups.size(), dateLabels);
                 pc.setup();
             }
         }).start();

@@ -16,6 +16,8 @@ public class Constants {
     public static final String PASTEL_GREEN = "#81dafc";
     public static final String PASTEL_BLUE = "#77dd77";
 
+    public static final String MONTH_DAY_FMT = "MM/dd";
+
 
     public static final int SECS_PER_HOUR = 3600;
     public static final int SECS_PER_MIN = 60;
