@@ -1,4 +1,4 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2;
 
 /**
  * This file defines necessary constants like WEEKDAY or WEEKDAY_LOWER

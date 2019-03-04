@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.example.team31_personalbest"
+        applicationId "com.example.team31_personalbest_ms2"
         minSdkVersion 18
         targetSdkVersion 28
         versionCode 1
@@ -56,4 +56,3 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
-

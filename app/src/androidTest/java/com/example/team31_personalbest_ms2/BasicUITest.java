@@ -1,4 +1,4 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2;
 
 
 import android.support.test.InstrumentationRegistry;

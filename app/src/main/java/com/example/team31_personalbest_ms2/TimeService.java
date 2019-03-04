@@ -1,7 +1,5 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,9 +14,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
 
 import androidx.annotation.RequiresApi;

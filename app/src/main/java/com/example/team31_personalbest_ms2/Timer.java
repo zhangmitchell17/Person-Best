@@ -1,10 +1,8 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2;
 
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 /**
  * Clock class is an AsyncTask that offloads a timer task onto a thread

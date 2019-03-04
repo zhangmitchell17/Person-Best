@@ -1,14 +1,9 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2;
 
 import android.content.SharedPreferences;
-import android.icu.text.DateFormat;
-import android.icu.text.SimpleDateFormat;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
 
 import static android.content.Context.MODE_PRIVATE;
 

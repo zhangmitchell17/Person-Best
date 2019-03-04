@@ -1,6 +1,5 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2;
 
-import android.app.Activity;
 import android.util.Log;
 
 import java.util.HashMap;
