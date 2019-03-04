@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.team31_personalbest_ms2">
+    package="com.example.team31_personalbest_ms2v2">
 
     <application
         android:allowBackup="true"
@@ -11,13 +11,13 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.team31_personalbest_ms2.friendsListActivity"></activity>
-        <activity android:name="com.example.team31_personalbest_ms2.PastWalksActivity" />
+        <activity android:name=".friendsListActivity"></activity>
+        <activity android:name=".PastWalksActivity" />
 
-        <service android:name="com.example.team31_personalbest_ms2.TimeService" />
+        <service android:name=".TimeService" />
 
         <activity
-            android:name="com.example.team31_personalbest_ms2.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -28,18 +28,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.team31_personalbest_ms2.ProgressActivity"
+            android:name=".ProgressActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.example.team31_personalbest_ms2.WalkRunActivity"
+            android:name=".WalkRunActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.example.team31_personalbest_ms2.InputHeightStepGoal"
+            android:name=".InputHeightStepGoal"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.example.team31_personalbest_ms2.Login"
+            android:name=".Login"
             android:screenOrientation="portrait" />
-        <activity android:name="com.example.team31_personalbest_ms2.StepCountActivity" />
+        <activity android:name=".StepCountActivity" />
     </application>
 
 </manifest>
