@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity
         FirebaseApp.initializeApp(this);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         User user = new User("hongyu", "hoz054");
-        db.collection("users").document("123").set(user);
+        db.collection("users").add(user);//.document("123").set(user);
 
         mainActivity = this;
         if (!loggedIn) {
