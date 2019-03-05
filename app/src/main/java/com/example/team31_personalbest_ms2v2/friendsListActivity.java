@@ -11,6 +11,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -21,21 +24,32 @@ import static android.support.constraint.Constraints.TAG;
 public class friendsListActivity extends AppCompatActivity {
     String friendEmail;
     Button addFriendButton;
+    String currentUserEmail;
+    String currentUserName;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends_list);
+
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            this.currentUserEmail = acct.getEmail();
+            this.currentUserName = acct.getDisplayName();
+        }
+
+
+        System.out.println(this.currentUserEmail);
+        System.out.println(this.currentUserName);
+
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
 
-        Toast.makeText(getApplicationContext(),"Sueccessfully send friend invitation", Toast.LENGTH_LONG).show();
         // when user click add friend button show dialog
         addFriendButton = findViewById(R.id.addFriend);
         addFriendButton.setOnClickListener((v -> {
             showDialog();
-
         }));
     }
 
@@ -52,6 +66,7 @@ public class friendsListActivity extends AppCompatActivity {
 
         // Set up the input for email
         final EditText inputEmail = new EditText(this);
+
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         inputEmail.setInputType(InputType.TYPE_CLASS_TEXT);
         inputEmail.setHint("Friend's Email");
@@ -66,14 +81,34 @@ public class friendsListActivity extends AppCompatActivity {
 
                 // check if such friends exists in database
                 userExists(friendEmail, new IListener() {
+                    // success, add this friend to user's friend base
                     @Override
                     public void success() {
-                        Toast.makeText(getApplicationContext(),"Sueccessfully send friend invitation", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(),"Successfully send friend invitation", Toast.LENGTH_LONG).show();
+
+                        // TODO: implementation to add friends
+                        db = FirebaseFirestore.getInstance();
+
+                        // reference of friend's document
+                        DocumentReference docRef = db.collection("users").document(friendEmail);
+
+                        // add friends object to a user
+                        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                User user = documentSnapshot.toObject(User.class);
+
+                                // TODO: get user current email/name
+                                db.collection("Friends").document(currentUserEmail).
+                                        collection("personalFriends").document(user.email).set(user);
+                            }
+                        });
                     }
 
+                    // faliure, show toast
                     @Override
                     public void faliure() {
-
+                        Toast.makeText(getApplicationContext(),"No such user exists", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -116,8 +151,10 @@ public class friendsListActivity extends AppCompatActivity {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    listener.success();
                 } else {
                     Log.d(TAG, "No such document");
+                    listener.faliure();
                 }
             } else {
                 Log.d(TAG, "get failed with ", task.getException());
