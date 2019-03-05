@@ -1,4 +1,4 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2v2;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
@@ -32,6 +31,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -83,6 +84,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        User user = new User("hongyu", "hoz054");
+        db.collection("users").add(user);//.document("123").set(user);
 
         mainActivity = this;
         if (!loggedIn) {
@@ -283,6 +288,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * launchPastWalksActivity Launches the activity showing the past week's walks/runs
+     */
+    public void launchFriendsListActivity() {
+        Intent intent = new Intent(this, friendsListActivity.class);
+        startActivity(intent);
+    }
+
+    /**
      * Override the onBackPressed method from super class
      */
     @Override
@@ -346,6 +359,7 @@ public class MainActivity extends AppCompatActivity
             launchPastWalksActivity();
 
         } else if (id == R.id.nav_slideshow) {
+            launchFriendsListActivity();
 
         } else if (id == R.id.nav_manage) {
 

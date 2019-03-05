@@ -1,10 +1,9 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2v2;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;

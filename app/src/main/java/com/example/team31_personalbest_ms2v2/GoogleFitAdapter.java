@@ -1,4 +1,4 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2v2;
 
 import android.app.Activity;
 import android.content.Context;
