@@ -37,16 +37,5 @@
         android:textSize="20dp"
         />
 
-    <Button
-        android:id="@+id/friend1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:width="300dp"
-        android:height="50dp"
-        android:gravity="center_horizontal"
-        android:text="Hongyu Zou hoz054@ucsd.edu"
-        android:layout_marginTop="10dp"
-        />
-
 </LinearLayout>
 </ScrollView>

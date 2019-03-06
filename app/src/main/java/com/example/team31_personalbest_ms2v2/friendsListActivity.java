@@ -1,11 +1,13 @@
 package com.example.team31_personalbest_ms2v2;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -15,12 +17,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import static android.support.constraint.Constraints.TAG;
 
@@ -60,7 +69,39 @@ public class friendsListActivity extends AppCompatActivity {
             showDialog();
         }));
 
+        // asyncrnously add friends to each other
+        final CollectionReference docRef = db.collection("users").
+                document(currentUserEmail).collection("Friends");
+        final Context context = this;
+
+        docRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "listen:error", e);
+                    return;
+                }
+
+                for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
+                    switch (dc.getType()) {
+                        case ADDED:
+                            Log.d(TAG, "Friend: " + dc.getDocument().getData());
+                            User friend  = dc.getDocument().toObject(User.class);
+
+                            // add friend label to the friend list
+                            Button newFriend = new Button(context);
+                            newFriend.setVisibility(View.VISIBLE);
+                            newFriend.setText(friend.name + " " + friend.email);
+                            LinearLayout linearLayout = findViewById(R.id.linearLayout);
+                            linearLayout.addView(newFriend);
+
+                            break;
+                    }
+                }
+            }
+        });
     }
+
 
     /**
      * Show the input for friends name and email for user to add friends
@@ -120,8 +161,7 @@ public class friendsListActivity extends AppCompatActivity {
 
     /**
      * Add a user to the database
-     * @param name name of the user
-     * @param email email of the user
+     * @param user name of the user
      */
     public void addUser(User user) {
         db.collection("users").document(user.email).set(user);
@@ -162,7 +202,7 @@ public class friendsListActivity extends AppCompatActivity {
 
     /**
      * Add friends to existing user
-     * @param email email of the user
+     * @param user email of the user
      * @param friend friend object
      */
     public void addFriends(User user, User friend) {
@@ -174,13 +214,6 @@ public class friendsListActivity extends AppCompatActivity {
         db.collection("users").document(friend.email).
                 collection("Friends").
                 document(user.email).set(user);
-
-        // add friend label to the friend list
-        Button newFriend = new Button(this);
-        newFriend.setText(friend.name + " " + friend.email);
-        LinearLayout linearLayout = findViewById(R.id.linearLayout);
-        linearLayout.addView(newFriend);
-
     }
 
     /**
