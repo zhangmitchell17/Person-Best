@@ -19,6 +19,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static android.support.constraint.Constraints.TAG;
 
 public class friendsListActivity extends AppCompatActivity {
@@ -26,31 +29,37 @@ public class friendsListActivity extends AppCompatActivity {
     Button addFriendButton;
     String currentUserEmail;
     String currentUserName;
+    User user;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    /**
+     * Set up the firebase and insert current user info to the database
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends_list);
 
+        // get current user account information
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
         if (acct != null) {
             this.currentUserEmail = acct.getEmail();
             this.currentUserName = acct.getDisplayName();
         }
 
-
-        System.out.println(this.currentUserEmail);
-        System.out.println(this.currentUserName);
-
+        // add current user to the users database
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
+        this.user = new User(currentUserName, currentUserEmail);
+        addUser(user);
 
         // when user click add friend button show dialog
         addFriendButton = findViewById(R.id.addFriend);
         addFriendButton.setOnClickListener((v -> {
             showDialog();
         }));
+
     }
 
     /**
@@ -84,31 +93,17 @@ public class friendsListActivity extends AppCompatActivity {
                     // success, add this friend to user's friend base
                     @Override
                     public void success() {
-                        Toast.makeText(getApplicationContext(),"Successfully send friend invitation", Toast.LENGTH_LONG).show();
-
-                        // TODO: implementation to add friends
-                        db = FirebaseFirestore.getInstance();
-
-                        // reference of friend's document
-                        DocumentReference docRef = db.collection("users").document(friendEmail);
-
-                        // add friends object to a user
-                        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                User user = documentSnapshot.toObject(User.class);
-
-                                // TODO: get user current email/name
-                                db.collection("Friends").document(currentUserEmail).
-                                        collection("personalFriends").document(user.email).set(user);
-                            }
-                        });
+                        Toast.makeText(getApplicationContext(),
+                                "Successfully send friend invitation", Toast.LENGTH_LONG).show();
+                        // TODO: store friends invitation on database
+                        sendInvitation(currentUserEmail, friendEmail);
                     }
 
                     // faliure, show toast
                     @Override
                     public void faliure() {
-                        Toast.makeText(getApplicationContext(),"No such user exists", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(),"No such user exists",
+                                       Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -128,10 +123,41 @@ public class friendsListActivity extends AppCompatActivity {
      * @param name name of the user
      * @param email email of the user
      */
-    public void addUser(String name, String email) {
-        // add user to database
-        User user = new User(name, email);
+    public void addUser(User user) {
         db.collection("users").document(user.email).set(user);
+    }
+
+    public void sendInvitation(String userEmail, String friendEmail) {
+        Map<String, Object> invitation = new HashMap<>();
+        invitation.put("friendEmail", friendEmail);
+
+        DocumentReference docRef = db.collection("users").
+                document(friendEmail);
+
+        // check if such user exists
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User friend = documentSnapshot.toObject(User.class);
+
+                invitationExists(friendEmail, new IListener() {
+                    @Override
+                    public void success() {
+                        addFriends(user, friend);
+                        Toast.makeText(getApplicationContext(),"You and " + friend.name + " become friends",
+                                Toast.LENGTH_LONG).show();
+                    }
+
+                    // not find double ended invitation, do not add friends, just send invitation
+                    @Override
+                    public void faliure() {
+                        db.collection("users").document(friendEmail).
+                                collection("Invitation").document(userEmail).
+                                set(user);
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -139,11 +165,29 @@ public class friendsListActivity extends AppCompatActivity {
      * @param email email of the user
      * @param friend friend object
      */
-    public void addFriends(String email, User friend) {
-        // add user to friends list
-        db.collection("friends").document(email).set(friend);
+    public void addFriends(User user, User friend) {
+        // reference of friend's document
+        db.collection("users").document(user.email).
+                collection("Friends").
+                document(friend.email).set(friend);
+
+        db.collection("users").document(friend.email).
+                collection("Friends").
+                document(user.email).set(user);
+
+        // add friend label to the friend list
+        Button newFriend = new Button(this);
+        newFriend.setText(friend.name + " " + friend.email);
+        LinearLayout linearLayout = findViewById(R.id.linearLayout);
+        linearLayout.addView(newFriend);
+
     }
 
+    /**
+     * Check if user exist in the database
+     * @param email
+     * @param listener
+     */
     public void userExists(String email, IListener listener) {
         DocumentReference docRef = db.collection("users").document(email);
         docRef.get().addOnCompleteListener(task -> {
@@ -162,5 +206,28 @@ public class friendsListActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Check if a invitation from friends already exists in your database
+     * @param friendEmail
+     * @param listener
+     */
+    public void invitationExists(String friendEmail, IListener listener) {
+        DocumentReference docRef = db.collection("users").document(currentUserEmail).
+                collection("Invitation").document(friendEmail);
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    listener.success();
+                } else {
+                    Log.d(TAG, "No such document");
+                    listener.faliure();
+                }
+            } else {
+                Log.d(TAG, "get failed with ", task.getException());
+            }
+        });
+    }
 
 }
