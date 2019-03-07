@@ -3,6 +3,7 @@ package com.example.team31_personalbest_ms2v2;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
@@ -95,6 +96,11 @@ public class friendsListActivity extends AppCompatActivity {
                             LinearLayout linearLayout = findViewById(R.id.linearLayout);
                             linearLayout.addView(newFriend);
 
+                            // when user click friends button redirects to the friends info
+                            newFriend.setOnClickListener((v -> {
+                                startProgressActivity(friend.email);
+                            }));
+
                             break;
                     }
                 }
@@ -102,6 +108,12 @@ public class friendsListActivity extends AppCompatActivity {
         });
     }
 
+    public void startProgressActivity(String friendEmail) {
+        //TODO: ADD FRIENDS PROGRESS ACTIVITY INTENT HERE(Replace the mainactivity.class)
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("Email", friendEmail);
+        startActivity(intent);
+    }
 
     /**
      * Show the input for friends name and email for user to add friends
@@ -136,7 +148,6 @@ public class friendsListActivity extends AppCompatActivity {
                     public void success() {
                         Toast.makeText(getApplicationContext(),
                                 "Successfully send friend invitation", Toast.LENGTH_LONG).show();
-                        // TODO: store friends invitation on database
                         sendInvitation(currentUserEmail, friendEmail);
                     }
 
@@ -262,5 +273,4 @@ public class friendsListActivity extends AppCompatActivity {
             }
         });
     }
-
 }
