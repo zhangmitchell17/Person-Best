@@ -8,6 +8,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.HashSet;
 
 public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
@@ -28,6 +33,11 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     private Thread thread;
     private int stepCnted;
 
+    private String currentUserEmail;
+    private String currentUserName;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    User user;
+
     //private Steps steps;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +46,19 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         setContentView(R.layout.content_walk_run);
 
         stepDisplay = findViewById(R.id.textViewSteps);
+
+        // User's current account
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            this.currentUserEmail = acct.getEmail();
+            this.currentUserName = acct.getDisplayName();
+        }
+
+        // add current user to the users database
+        FirebaseApp.initializeApp(this);
+        db = FirebaseFirestore.getInstance();
+        this.user = new User(currentUserName, currentUserEmail);
+        addUser(user);
 
         SharedPreferences sharedPref = getSharedPreferences("resetSteps", MODE_PRIVATE);
         stepCnted = sharedPref.getInt("steps", -1);
@@ -85,9 +108,19 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
                 String step = stepDisplay.getText().toString();
                 WalkRunStats stats = new WalkRunStats(String.valueOf(mph), step, String.valueOf(seconds));
                 storeToSharePref(stats);
+
+                db.collection("users").document(user.email).
+                        collection("WalkRuns").
+                        document("Walk at " + String.valueOf(System.currentTimeMillis())).
+                        set(stats);
+
                 finish();
             }
         });
+    }
+
+    public void addUser(User user) {
+        db.collection("users").document(user.email).set(user);
     }
 
     public void storeToSharePref(WalkRunStats stats) {

@@ -27,6 +27,10 @@ android {
             includeAndroidResources = true
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 repositories {
@@ -53,6 +57,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.7'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.firebase:firebase-messaging:17.4.0'
+    testImplementation "org.robolectric:shadows-multidex:4.0.1"
 }
 
 apply plugin: 'com.google.gms.google-services'
