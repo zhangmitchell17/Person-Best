@@ -72,7 +72,7 @@ public class friendsListActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void faliure() {
+                    public void failure() {
 
                     }
                 });
