@@ -84,11 +84,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        User user = new User("hongyu", "hoz054");
-        db.collection("users").add(user);//.document("123").set(user);
-
         mainActivity = this;
         if (!loggedIn) {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
