@@ -11,7 +11,7 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".friendsListActivity"></activity>
+        <activity android:name=".FriendsListActivity"></activity>
         <activity android:name=".PastWalksActivity" />
 
         <service android:name=".TimeService" />

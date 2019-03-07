@@ -32,10 +32,14 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +52,8 @@ public class MainActivity extends AppCompatActivity
                    IStepActivity,
                    GoogleApiClient.ConnectionCallbacks,
                    GoogleApiClient.OnConnectionFailedListener {
+
+    String TAG2 = MainActivity.class.getSimpleName();
 
     public static Activity mainActivity;
     private String fitnessServiceKey = "GOOGLE_FIT";
@@ -66,6 +72,8 @@ public class MainActivity extends AppCompatActivity
     //public Steps steps;
     private boolean isBound;
     public static boolean isCancelled = false;
+
+    CollectionReference notifications;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -96,6 +104,14 @@ public class MainActivity extends AppCompatActivity
             startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
         }
 
+        FirebaseApp.initializeApp(this);
+        subscribeToNotificationsTopic("notifications1");
+
+        notifications = FirebaseFirestore.getInstance()
+                .collection("Notifications")
+                .document("notifications1")
+                .collection("notification");
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -106,6 +122,8 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        //sendNotification("YOU MADE IT");
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -286,7 +304,7 @@ public class MainActivity extends AppCompatActivity
      * launchPastWalksActivity Launches the activity showing the past week's walks/runs
      */
     public void launchFriendsListActivity() {
-        Intent intent = new Intent(this, friendsListActivity.class);
+        Intent intent = new Intent(this, FriendsListActivity.class);
         startActivity(intent);
     }
 
@@ -524,6 +542,30 @@ public class MainActivity extends AppCompatActivity
     public void onConnected(@Nullable Bundle bundle) {
         Log.e("HistoryAPI", "onConnected");
 
+    }
+
+    private void subscribeToNotificationsTopic(String documentKey) {
+        FirebaseMessaging.getInstance().subscribeToTopic(documentKey)
+                .addOnCompleteListener(task -> {
+                            String msg = "Subscribed to notifications";
+                            if (!task.isSuccessful()) {
+                                msg = "Subscribe to notifications failed";
+                            }
+                            Log.d(TAG2, msg);
+                            Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        }
+                );
+    }
+
+    private void sendNotification(String message) {
+        Map<String, String> newMessage = new HashMap<>();
+        newMessage.put("text", message);
+
+        notifications.add(newMessage).addOnSuccessListener(result -> {
+            Log.e(TAG2, "Successfully sent notification");
+        }).addOnFailureListener(error -> {
+            Log.e(TAG2, error.getLocalizedMessage());
+        });
     }
 
 }
