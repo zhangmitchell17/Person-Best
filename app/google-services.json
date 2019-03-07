@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "993671371585-debvrbgo6ehe3roue7tpvfro6oa1qg12.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.team31_personalbest_ms2v2",
+            "certificate_hash": "7eeaa5c82644c0e8251dd40fdd50d1de0ccf84ba"
+          }
+        },
+        {
           "client_id": "993671371585-77cese75n7dsmvsbmk2lejomo0nfgkt7.apps.googleusercontent.com",
           "client_type": 3
         }
