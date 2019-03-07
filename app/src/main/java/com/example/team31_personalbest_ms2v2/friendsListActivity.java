@@ -200,7 +200,7 @@ public class friendsListActivity extends AppCompatActivity {
 
                     // not find double ended invitation, do not add friends, just send invitation
                     @Override
-                    public void faliure() {
+                    public void failure() {
                         db.collection("users").document(friendEmail).
                                 collection("Invitation").document(userEmail).
                                 set(user);
@@ -241,7 +241,7 @@ public class friendsListActivity extends AppCompatActivity {
                     listener.success();
                 } else {
                     Log.d(TAG, "No such document");
-                    listener.faliure();
+                    listener.failure();
                 }
             } else {
                 Log.d(TAG, "get failed with ", task.getException());
@@ -265,7 +265,7 @@ public class friendsListActivity extends AppCompatActivity {
                     listener.success();
                 } else {
                     Log.d(TAG, "No such document");
-                    listener.faliure();
+                    listener.failure();
                 }
             } else {
                 Log.d(TAG, "get failed with ", task.getException());
