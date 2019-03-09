@@ -24,10 +24,12 @@ import java.util.Map;
 class ChatActivity extends AppCompatActivity {
     String TAG = MainActivity.class.getSimpleName();
 
-    String COLLECTION_KEY = "chats";
-    String DOCUMENT_KEY = "chat1";
-    String MESSAGES_KEY = "messages";
-    String FROM_KEY = "from";
+    String USERS_KEY = "users";
+    //String DOCUMENT_KEY = "chat1";
+    String CHAT_KEY = "Chats";
+    String FRIENDS_KEY = "Friends";
+    String INVITATIONS_KEY = "Invitations";
+    //String FROM_KEY = "from";
     String TEXT_KEY = "text";
     String TIMESTAMP_KEY = "timestamp";
 
@@ -43,9 +45,11 @@ class ChatActivity extends AppCompatActivity {
         SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
 
         FirebaseApp.initializeApp(this);
-        from = sharedpreferences.getString(FROM_KEY, null);
 
-        setupChat();
+        CollectionReference users = FirebaseFirestore.getInstance().collection(USERS_KEY);
+        //from = sharedpreferences.getString(FROM_KEY, null);
+
+        //setupChat();
 
         fireBaseAdapter = new FireBaseAdapter(chat);
         initMessageUpdateListener();
@@ -53,7 +57,7 @@ class ChatActivity extends AppCompatActivity {
 
         findViewById(R.id.btn_send).setOnClickListener(view -> sendMessage());
 
-        EditText nameView = findViewById((R.id.user_name));
+        TextView nameView = findViewById((R.id.friend_name));
         nameView.setText(from);
         nameView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -74,7 +78,7 @@ class ChatActivity extends AppCompatActivity {
 
     private void setupChat() {
         chat = FirebaseFirestore.getInstance()
-                .collection(COLLECTION_KEY)
+                .collection(USERS_KEY)
                 .document(DOCUMENT_KEY)
                 .collection(MESSAGES_KEY);
     }
