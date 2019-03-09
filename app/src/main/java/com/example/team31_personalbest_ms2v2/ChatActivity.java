@@ -21,7 +21,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.HashMap;
 import java.util.Map;
 
-class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
     String TAG = MainActivity.class.getSimpleName();
 
     String USERS_KEY = "users";
@@ -41,15 +41,16 @@ class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_chat);
         SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
 
         FirebaseApp.initializeApp(this);
 
         CollectionReference users = FirebaseFirestore.getInstance().collection(USERS_KEY);
         //from = sharedpreferences.getString(FROM_KEY, null);
+        from = getIntent().getStringExtra("Email");
 
-        //setupChat();
+        setupChat();
 
         fireBaseAdapter = new FireBaseAdapter(chat);
         initMessageUpdateListener();
@@ -59,28 +60,28 @@ class ChatActivity extends AppCompatActivity {
 
         TextView nameView = findViewById((R.id.friend_name));
         nameView.setText(from);
-        nameView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                from = s.toString();
-                sharedpreferences.edit().putString(FROM_KEY, from).apply();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+//        nameView.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                //from = s.toString();
+//                //sharedpreferences.edit().putString(FROM_KEY, from).apply();
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//            }
+//        });
     }
 
     private void setupChat() {
         chat = FirebaseFirestore.getInstance()
                 .collection(USERS_KEY)
-                .document(DOCUMENT_KEY)
-                .collection(MESSAGES_KEY);
+                .document(FRIENDS_KEY)
+                .collection(CHAT_KEY);
     }
 
     private void sendMessage() {
@@ -92,7 +93,7 @@ class ChatActivity extends AppCompatActivity {
         EditText messageView = findViewById(R.id.text_message);
 
         Map<String, String> newMessage = new HashMap<>();
-        newMessage.put(FROM_KEY, from);
+        //newMessage.put(FROM_KEY, from);
         newMessage.put(TEXT_KEY, messageView.getText().toString());
 
         chat.add(newMessage).addOnSuccessListener(result -> {

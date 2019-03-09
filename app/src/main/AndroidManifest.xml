@@ -13,6 +13,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".friendsListActivity"></activity>
         <activity android:name=".PastWalksActivity" />
+        <activity android:name="ChatActivity"/>
 
         <service android:name=".TimeService" />
 
