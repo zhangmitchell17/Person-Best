@@ -14,6 +14,8 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.data.Bucket;
@@ -21,6 +23,9 @@ import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -55,8 +60,11 @@ public class ProgressActivity extends AppCompatActivity implements
 
     private final int STEPS_IDX = 1;
 
-    DataRetriever dr;
-    BarChart barChart;
+    private DataRetriever dr;
+    private BarChart barChart;
+    private FirebaseFirestore db;
+    private CollectionReference plannedWalks;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +73,21 @@ public class ProgressActivity extends AppCompatActivity implements
         // making the barchart from the view
         barChart = findViewById(R.id.graphProgress);
 
+        // TODO initialize firebase
+        FirebaseApp.initializeApp(this);
+        db = FirebaseFirestore.getInstance();
+
+        String email = "";
+
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            email = acct.getEmail();
+        }
+
+        plannedWalks = db.collection("users")
+                         .document(email)
+                         .collection("WalkRuns");
+
         dr = new DataRetriever(this);
         dr.setup();
 
@@ -72,6 +95,7 @@ public class ProgressActivity extends AppCompatActivity implements
         new Thread(new Runnable() {
             @Override
             public void run() {
+                // TODO replace following code to populate ups with things from cloud
                /*
                 unplannedSteps contains the data from the past seven days
                 */
@@ -92,6 +116,8 @@ public class ProgressActivity extends AppCompatActivity implements
                 SimpleDateFormat day = new SimpleDateFormat("MM-dd-yyyy");
                 Map<String, Integer> plannedStepsPerDay = new HashMap<>();
 
+
+                // TODO replace following code to populate ps with things from cloud
                 /* populating plannedStepsPerDay */
                 Log.i("SIZE_OF_SP", "SharedPref size : " + keys.size());
                 /*
@@ -148,6 +174,8 @@ public class ProgressActivity extends AppCompatActivity implements
 
                 /* post processing ps data */
                 List<Integer> ps = new ArrayList<>();
+
+
                 /*
                  * print all keys in plannedstepsperday
                  */

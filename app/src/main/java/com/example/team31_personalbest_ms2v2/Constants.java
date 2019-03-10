@@ -1,7 +1,7 @@
 package com.example.team31_personalbest_ms2v2;
 
 /**
- * This file defines constants
+ * This file defines necessary constants like WEEKDAY or WEEKDAY_LOWER
  */
 public class Constants {
     public static final String[] WEEKDAY = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};

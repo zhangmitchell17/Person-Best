@@ -3,19 +3,43 @@ package com.example.team31_personalbest_ms2v2;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+
+import static android.support.constraint.Constraints.TAG;
 
 public class PastWalksActivity extends AppCompatActivity {
 
     private static final String[] TIME_STEPS_MPH = {"Time", "Steps", "MPH"};
 
-    /**
+    FirebaseFirestore db;
+    CollectionReference walks;
+
+    String currentUserEmail = "test@ucsd.edu";
+    String currentUserName = "test";
+
+    TableLayout table;
+
+
+    /** 
      * Gets the day of the week index, with Sunday as 0 and Saturday as 6
      * @param day This is the string of the day of the week
      * @return the index of the day of the week, with Sunday as 0 and Saturday as 6
@@ -62,87 +86,101 @@ public class PastWalksActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_walks);
 
-        // Get information about the current date
-        Date day = new Date();
-        String date = day.toString();
-        String currentDayOfWeek = date.substring(0, date.indexOf(" "));
-        int currentDayIndex = indexOfWeek(currentDayOfWeek);
-        //String currentMonthDayYear = getMonthDayYear(date);
-
-        SharedPreferences sharedPreferences = getSharedPreferences("WalkRunStatsDate", MODE_PRIVATE);
-        Map<String, ?> allEntries = sharedPreferences.getAll();
-
-        TableLayout table = findViewById(R.id.tableLayout);
-
-        // Iterate through every SharedPreference key (date and time of run)
-        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            boolean thisWeek = false;
-            String key = entry.getKey();
-            int indexWeek = 0;
-            for (int i = 0; i <= currentDayIndex; i++)
-            {
-                if (getMonthDayYear(key).equals(getMonthDayYear(getPreviousDate(i).toString()))) {
-                    thisWeek = true;
-                    indexWeek = currentDayIndex - i;
-                }
-            }
-            HashSet<String> value = (HashSet<String>) entry.getValue();
-            // Only set information relevant from this week (Beginning on Sundays)
-
-            if (thisWeek)
-            {
-                TableRow row = new TableRow(this);
-                TableLayout.LayoutParams tableRowParams=
-                        new TableLayout.LayoutParams
-                                (TableLayout.LayoutParams.WRAP_CONTENT,TableLayout.LayoutParams.WRAP_CONTENT);
-                tableRowParams.setMargins(0, 0, 0, 0);
-                row.setLayoutParams(tableRowParams);
-
-
-                TextView dayOfWeek = new TextView(this);
-                dayOfWeek.setText(Constants.WEEKDAY[indexWeek]);
-                TableRow.LayoutParams prm = new TableRow.LayoutParams(300, TableRow.LayoutParams.WRAP_CONTENT);
-
-                dayOfWeek.setTextSize(20);
-                row.addView(dayOfWeek, prm);
-                // Iterate through every information saved for this run
-                for (int x = 0; x < TIME_STEPS_MPH.length; x++) {
-                    for (String s : value) {
-                        if (s.substring(0, s.indexOf(":")).equals(TIME_STEPS_MPH[x])) {
-                            // If information gotten was time, steps, or mph, display it accordingly
-                            String valueToInput = s.substring(s.indexOf(":") + 2);
-                            if (x == 0) {
-                                int temp = (int) Integer.parseInt(valueToInput);
-                                // Updates hours
-                                int hours = temp / Constants.SECS_PER_HOUR;
-                                temp = temp % Constants.SECS_PER_HOUR;
-                                // Updates minutes
-                                int minutes = temp / Constants.SECS_PER_MIN;
-                                temp = temp % Constants.SECS_PER_MIN;
-                                // Updates seconds
-                                int seconds = temp;
-                                valueToInput = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-                            } else if(x == 2) {
-                                float speed = Float.parseFloat(valueToInput);
-                                valueToInput = String.format("%.2f", speed);
-                            }
-                            // Get the id of the TextView to be set
-
-                            TextView edit = new TextView(this);
-                            edit.setText(valueToInput);
-                            TableRow.LayoutParams prms = new TableRow.LayoutParams(300, TableRow.LayoutParams.WRAP_CONTENT);
-
-                            //edit.setLayoutParams(new FrameLayout.LayoutParams(100, FrameLayout.LayoutParams.WRAP_CONTENT));
-                            edit.setTextSize(20);
-                            row.addView(edit, prms);
-                        }
-                    }
-                }
-                table.addView(row);
-            }
-
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            this.currentUserEmail = acct.getEmail();
+            this.currentUserName = acct.getDisplayName();
         }
 
+        FirebaseApp.initializeApp(this);
+        db = FirebaseFirestore.getInstance();
+
+        walks = db.collection("users")
+                .document(currentUserEmail)
+                .collection("WalkRuns");
+
+        table = findViewById(R.id.tableLayout);
+
+        initWalkRunUpdateListener();
+
+    }
+
+    private void addToTable(QueryDocumentSnapshot document) {
+        TableRow row = new TableRow(this);
+        TableLayout.LayoutParams tableRowParams=
+                new TableLayout.LayoutParams
+                        (TableLayout.LayoutParams.WRAP_CONTENT,TableLayout.LayoutParams.WRAP_CONTENT);
+        tableRowParams.setMargins(0, 0, 0, 0);
+        row.setLayoutParams(tableRowParams);
+
+        // Iterate through every information saved for this run
+        String totalTime = (String) document.get("totalTime");
+        int temp = (int) Integer.parseInt(totalTime);
+        // Updates hours
+        int hours = temp / Constants.SECS_PER_HOUR;
+        temp = temp % Constants.SECS_PER_HOUR;
+        // Updates minutes
+        int minutes = temp / Constants.SECS_PER_MIN;
+        temp = temp % Constants.SECS_PER_MIN;
+        // Updates seconds
+        int seconds = temp;
+        String time = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
+        String speed = String.format("%.2f", document.get("speed"));
+
+        String steps = (String) document.get("steps");
+
+        String dayOfWeek = (String) document.get("dayOfWeek");
+
+
+        TextView dayView = new TextView(this);
+        TextView timeView = new TextView(this);
+        TextView stepsView = new TextView(this);
+        TextView speedView = new TextView(this);
+
+        dayView.setText(dayOfWeek);
+        dayView.setTextSize(20);
+
+        timeView.setText(time);
+        timeView.setTextSize(20);
+
+        stepsView.setText(steps);
+        stepsView.setTextSize(20);
+
+        speedView.setText(speed);
+        speedView.setTextSize(20);
+
+        TableRow.LayoutParams prms = new TableRow.LayoutParams(300, TableRow.LayoutParams.WRAP_CONTENT);
+
+        row.addView(dayView, prms);
+        row.addView(timeView, prms);
+        row.addView(stepsView, prms);
+        row.addView(speedView, prms);
+
+        table.addView(row);
+    }
+
+    private void initWalkRunUpdateListener() {
+        walks.orderBy("monthDayYear", Query.Direction.DESCENDING)
+                .addSnapshotListener((newChatSnapShot, error) -> {
+                    if (error != null) {
+                        Log.e(TAG, error.getLocalizedMessage());
+                        return;
+                    }
+
+                    if (newChatSnapShot != null && !newChatSnapShot.isEmpty()) {
+                        List<DocumentChange> documentChanges = newChatSnapShot.getDocumentChanges();
+                        documentChanges.forEach(change -> {
+                            QueryDocumentSnapshot document = change.getDocument();
+                            for (int i = 0; i < 6; i++) {
+                                if (getMonthDayYear(getPreviousDate(i).toString()) == document.get("monthDayYear")) {
+                                    addToTable(document);
+                                    break;
+                                }
+                            }
+                        });
+                    }
+                });
     }
 }
 
