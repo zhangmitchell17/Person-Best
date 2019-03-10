@@ -50,9 +50,10 @@ public class FriendListTest {
     @Before
     public void init() {
         friendsListActivity = Mockito.mock(friendsListActivity.class);
-        mockFriendsListActivity = Robolectric.setupActivity(MockFriendsListActivity.class);
+        //mockFriendsListActivity = Robolectric.setupActivity(MockFriendsListActivity.class);
     }
 
+    /*
     @Test
     public void testAddPeople() {
         mockFriendsListActivity.addUser();
@@ -68,6 +69,7 @@ public class FriendListTest {
         });
 
     }
+    */
 
     @Test
     public void testUserInit() {
