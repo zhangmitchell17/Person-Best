@@ -37,8 +37,8 @@ import static android.support.constraint.Constraints.TAG;
 public class friendsListActivity extends AppCompatActivity {
     String friendEmail;
     Button addFriendButton;
-    String currentUserEmail;
-    String currentUserName;
+    String currentUserEmail = "test@ucsd.edu";
+    String currentUserName = "test";
     User user;
     FirebaseFirestore db;
 
