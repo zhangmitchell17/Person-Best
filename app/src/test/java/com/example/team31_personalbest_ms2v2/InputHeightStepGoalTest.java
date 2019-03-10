@@ -1,7 +1,6 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2v2;
 
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,9 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import static android.content.Context.MODE_PRIVATE;
 import static org.junit.Assert.assertEquals;

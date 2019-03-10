@@ -1,10 +1,6 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2v2;
 import android.content.SharedPreferences;
-import android.view.View;
 
-import com.example.team31_personalbest.MainActivity;
-
-import org.apache.tools.ant.Main;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.Robolectric;

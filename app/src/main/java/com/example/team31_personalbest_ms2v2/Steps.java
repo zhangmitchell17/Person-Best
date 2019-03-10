@@ -1,12 +1,7 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2v2;
 
-import android.app.IntentService;
-import android.app.Service;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.IBinder;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Implement the AsyncTask for performing multitasks at the same time
