@@ -52,7 +52,7 @@ public class BasicUITest {
     public void before() throws Exception {
         MainActivity.isCancelled = true;
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        UiObject mText = mUiDevice.findObject(new UiSelector().textContains("login"));
+        UiObject mText = mUiDevice.findObject(new UiSelector().textContains("cloudtestlabaccounts.com"));
         try {
             mText.click();
         } catch (UiObjectNotFoundException e) {
