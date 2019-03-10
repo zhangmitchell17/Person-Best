@@ -1,4 +1,4 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2v2;
 
 import android.util.Log;
 
@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.example.team31_personalbest.Constants.*;
+import static com.example.team31_personalbest_ms2v2.Constants.*;
 
 public class AggregateData {
     List<Bucket> aggData;

@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import static com.example.team31_personalbest.Constants.*;
+import static com.example.team31_personalbest_ms2v2.Constants.*;
 
 /**
  * This file defines the ProgressActivity class which is used to record

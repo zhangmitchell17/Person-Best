@@ -1,4 +1,4 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2v2;
 
 import android.graphics.Color;
 
@@ -13,7 +13,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.team31_personalbest.Constants.*;
+import static com.example.team31_personalbest_ms2v2.Constants.*;
 
 /**
  * class that creates a stylized barchart

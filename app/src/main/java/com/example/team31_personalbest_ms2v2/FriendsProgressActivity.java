@@ -1,4 +1,4 @@
-package com.example.team31_personalbest;
+package com.example.team31_personalbest_ms2v2;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,10 +19,9 @@ public class FriendsProgressActivity extends AppCompatActivity {
 
         // getting friend info to get data from cloud
         Bundle b = getIntent().getExtras();
-        int value = -1;
+        String value;
         if(b!=null) {
-            // TODO replace "temporaryKey" with proper key when they are done with friends list
-            value = b.getInt("temporaryKey");
+            value = b.getString("Email");
         }
 
         bc = findViewById(R.id.barChartFriends);
@@ -30,7 +29,7 @@ public class FriendsProgressActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                // TODO get data from cloud
+                // TODO get data from cloud via the 'value' variable
                 List<Integer> unplannedSteps = new ArrayList<>();
                 List<Integer> plannedSteps = new ArrayList<>();
                 String[] labels = new String[unplannedSteps.size()];

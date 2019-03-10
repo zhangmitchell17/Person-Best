@@ -109,8 +109,7 @@ public class friendsListActivity extends AppCompatActivity {
     }
 
     public void startProgressActivity(String friendEmail) {
-        //TODO: ADD FRIENDS PROGRESS ACTIVITY INTENT HERE(Replace the mainactivity.class)
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, FriendsProgressActivity.class);
         intent.putExtra("Email", friendEmail);
         startActivity(intent);
     }

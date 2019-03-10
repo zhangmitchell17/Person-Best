@@ -153,16 +153,6 @@ public class MainActivity extends AppCompatActivity
         startService(intent);
     }
 
-
-    /**
-     * This method launch the StepCountActivity
-     */
-    public void launchStepCountActivity() {
-        Intent intent = new Intent(this, StepCountActivity.class);
-        intent.putExtra(StepCountActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
-        startActivity(intent);
-    }
-
     /**
      * onStart() method sets the initial behavior
      */
