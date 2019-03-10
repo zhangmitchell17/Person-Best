@@ -37,10 +37,10 @@ import static android.support.constraint.Constraints.TAG;
 public class FriendsListActivity extends AppCompatActivity {
     String friendEmail;
     Button addFriendButton;
-    String currentUserEmail;
-    String currentUserName;
+    String currentUserEmail = "test@ucsd.edu";
+    String currentUserName = "test";
     User user;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseFirestore db;
 
     /**
      * Set up the firebase and insert current user info to the database
@@ -62,12 +62,13 @@ public class FriendsListActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
         this.user = new User(currentUserName, currentUserEmail);
+
         addUser(user);
 
         // when user click add friend button show dialog
         addFriendButton = findViewById(R.id.addFriend);
         addFriendButton.setOnClickListener((v -> {
-            showDialog();
+            showDialog(new AlertDialog.Builder(this));
         }));
 
         // asyncrnously add friends to each other
@@ -118,10 +119,9 @@ public class FriendsListActivity extends AppCompatActivity {
     /**
      * Show the input for friends name and email for user to add friends
      */
-    public void showDialog() {
+    public void showDialog(AlertDialog.Builder builder) {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Friend");
 
         builder.setView(layout);
@@ -151,10 +151,11 @@ public class FriendsListActivity extends AppCompatActivity {
                         sendInvitation(currentUserEmail, friendEmail);
                     }
 
-                    // faliure, show toast
+                    // failure, show toast
                     @Override
                     public void failure() {
-
+                        Toast.makeText(getApplicationContext(),"No such user exists",
+                                       Toast.LENGTH_LONG).show();
                     }
                 });
             }

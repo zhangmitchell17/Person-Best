@@ -40,4 +40,5 @@
     <string name="updateWalks">UPDATE WALKS</string>
     <string name="personBest">Person Best</string>
     <string name="team31">Team 31</string>
+    <string name="title_activity_mock_friends_list">MockFriendsListActivity</string>
 </resources>
