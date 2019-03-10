@@ -1,6 +1,8 @@
 package com.example.team31_personalbest_ms2v2;
 
 
+import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
@@ -55,7 +57,9 @@ public class BasicUITest {
             mText.click();
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
+
         }
+
     }
 
     @Test
