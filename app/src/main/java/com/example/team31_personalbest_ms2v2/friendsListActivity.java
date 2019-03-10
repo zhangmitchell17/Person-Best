@@ -98,7 +98,7 @@ public class friendsListActivity extends AppCompatActivity {
 
                             // when user click friends button redirects to the friends info
                             newFriend.setOnClickListener((v -> {
-                                launchChatActivity(friend.email);
+                                launchChatActivity(friend.getName(),currentUserName);
                             }));
 
                             break;
@@ -115,9 +115,12 @@ public class friendsListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void launchChatActivity(String friendEmail) {
+    public void launchChatActivity(String friendName, String userName) {
         Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("Email", friendEmail);
+        Bundle extraNames = new Bundle();
+        extraNames.putString("FRIEND_NAME",friendName);
+        extraNames.putString("USER_NAME",userName);
+        intent.putExtras(extraNames);
         startActivity(intent);
     }
 

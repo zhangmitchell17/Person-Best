@@ -21,30 +21,30 @@ import java.util.Map;
 import static android.content.ContentValues.TAG;
 
 public class FireBaseAdapter {
-    String COLLECTION_KEY = "chats";
-    String DOCUMENT_KEY = "chat1";
-    String MESSAGES_KEY = "messages";
-    String FROM_KEY = "from";
-    String TEXT_KEY = "text";
+    String CHAT_KEY = "Chats";
+    String fromKey;
+    String textKey;
     String TIMESTAMP_KEY = "timestamp";
 
     CollectionReference chat;
-
-    public FireBaseAdapter(CollectionReference chat) {
+    public FireBaseAdapter(CollectionReference chat, String fromKey, String textKey) {
         this.chat = chat;
+        this.fromKey = fromKey;
+        this.textKey = textKey;
     }
 
     public void initMessageUpdateListener(ChatListener listener) {
           chat.orderBy(TIMESTAMP_KEY, Query.Direction.ASCENDING).addSnapshotListener((newChatSnapShot, error) -> {
-
+              //System.out.println("Listener working!");
+              if (newChatSnapShot == null || !newChatSnapShot.isEmpty()) System.out.println("Here is a HUUUUUUUUUGE error.");
                 if (newChatSnapShot != null && !newChatSnapShot.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     List<DocumentChange> documentChanges = newChatSnapShot.getDocumentChanges();
                     documentChanges.forEach(change -> {
                         QueryDocumentSnapshot document = change.getDocument();
-                        sb.append(document.get(FROM_KEY));
+                        sb.append(document.get(fromKey));
                         sb.append(":\n");
-                        sb.append(document.get(TEXT_KEY));
+                        sb.append(document.get(textKey));
                         sb.append("\n");
                         sb.append("---\n");
                     });
@@ -53,13 +53,14 @@ public class FireBaseAdapter {
                 }
 
                 if(error != null) {
+                    //System.out.println("An error happened during showing string.");
                     listener.error("error");
                 }
           });
     }
 
     public void subscribeToNotificationsTopic(ChatListener listener, FirebaseMessaging messaging) {
-        messaging.subscribeToTopic(DOCUMENT_KEY)
+        messaging.subscribeToTopic(CHAT_KEY)
                 .addOnCompleteListener(task -> {
                             String msg = "Subscribed to notifications";
 

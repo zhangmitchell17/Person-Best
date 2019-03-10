@@ -24,17 +24,17 @@ import java.util.Map;
 public class ChatActivity extends AppCompatActivity {
     String TAG = MainActivity.class.getSimpleName();
 
-    String USERS_KEY = "users";
     //String DOCUMENT_KEY = "chat1";
-    String CHAT_KEY = "Chats";
-    String FRIENDS_KEY = "Friends";
-    String INVITATIONS_KEY = "Invitations";
-    //String FROM_KEY = "from";
+    String CHATS_KEY = "Chats";
+    String thisChatKey;
+    String FROM_KEY = "from";
     String TEXT_KEY = "text";
+    String MESSAGE_KEY = "messages";
     String TIMESTAMP_KEY = "timestamp";
 
     CollectionReference chat;
     String from;
+    String to;
     FireBaseAdapter fireBaseAdapter;
 
     @Override
@@ -42,24 +42,34 @@ public class ChatActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
+        //SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
 
         FirebaseApp.initializeApp(this);
 
-        CollectionReference users = FirebaseFirestore.getInstance().collection(USERS_KEY);
+        //CollectionReference users = FirebaseFirestore.getInstance().collection(USERS_KEY);
         //from = sharedpreferences.getString(FROM_KEY, null);
-        from = getIntent().getStringExtra("Email");
+
+        Bundle extraNames = getIntent().getExtras();
+        from = extraNames.getString("USER_NAME");
+        to = extraNames.getString("FRIEND_NAME");
+        System.out.println(from + " && " + to);
+
+        if (from.compareTo(to) > 0) {
+            thisChatKey = CHATS_KEY + " between " + from + " and " + to;
+        } else {
+            thisChatKey = CHATS_KEY + " between " + to + " and " + from;
+        }
 
         setupChat();
 
-        fireBaseAdapter = new FireBaseAdapter(chat);
+        fireBaseAdapter = new FireBaseAdapter(chat, FROM_KEY, TEXT_KEY);
         initMessageUpdateListener();
         subscribeToNotificationsTopic();
 
         findViewById(R.id.btn_send).setOnClickListener(view -> sendMessage());
 
         TextView nameView = findViewById((R.id.friend_name));
-        nameView.setText(from);
+        nameView.setText(to);
 //        nameView.addTextChangedListener(new TextWatcher() {
 //            @Override
 //            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -79,21 +89,22 @@ public class ChatActivity extends AppCompatActivity {
 
     private void setupChat() {
         chat = FirebaseFirestore.getInstance()
-                .collection(USERS_KEY)
-                .document(FRIENDS_KEY)
-                .collection(CHAT_KEY);
+                .collection(CHATS_KEY)
+                .document(thisChatKey)
+                .collection(MESSAGE_KEY);
+        //if (chat == null) System.out.println("Chat is null! Can't chat with friend!");
     }
 
     private void sendMessage() {
-        if (from == null || from.isEmpty()) {
-            Toast.makeText(this, "Enter your name", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        if (from == null || from.isEmpty()) {
+//            Toast.makeText(this, "Enter your name", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
         EditText messageView = findViewById(R.id.text_message);
 
         Map<String, String> newMessage = new HashMap<>();
-        //newMessage.put(FROM_KEY, from);
+        newMessage.put(FROM_KEY, from);
         newMessage.put(TEXT_KEY, messageView.getText().toString());
 
         chat.add(newMessage).addOnSuccessListener(result -> {
@@ -104,6 +115,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void initMessageUpdateListener() {
+        //System.out.println("MessageUpdate Called!");
         fireBaseAdapter.initMessageUpdateListener(new ChatListener() {
             @Override
             public void success(String string) {
@@ -133,5 +145,10 @@ public class ChatActivity extends AppCompatActivity {
         }, FirebaseMessaging.getInstance());
     }
 }
+
+
+
+
+
 
 
