@@ -20,6 +20,13 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".friendsListActivity" />
         <activity android:name=".PastWalksActivity" />
+        <activity android:name="ChatActivity"/>
+        <service android:name="MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
 
         <service android:name=".TimeService" />
 
