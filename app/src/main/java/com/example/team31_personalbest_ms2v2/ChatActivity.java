@@ -43,14 +43,8 @@ public class ChatActivity extends AppCompatActivity {
 
         FirebaseApp.initializeApp(this);
 
-
-        Bundle extraNames = getIntent().getExtras();
-        from = extraNames.getString("USER_NAME");
-        to = extraNames.getString("FRIEND_NAME");
-        System.out.println(from + " && " + to);
-
-        //setupDocumentKey();
-
+        getFromAndTo();
+        setupDocumentKey();
         setupChat();
 
         fireBaseAdapter = new FireBaseAdapter(chat, DOCUMENT_KEY, FROM_KEY, TEXT_KEY);
@@ -62,6 +56,13 @@ public class ChatActivity extends AppCompatActivity {
         TextView nameView = findViewById((R.id.friend_name));
         nameView.setText(to);
 
+    }
+
+    private void getFromAndTo() {
+        Bundle extraNames = getIntent().getExtras();
+        from = extraNames.getString("USER_NAME");
+        to = extraNames.getString("FRIEND_NAME");
+        //System.out.println(from + " && " + to);
     }
 
     private void setupDocumentKey() {
