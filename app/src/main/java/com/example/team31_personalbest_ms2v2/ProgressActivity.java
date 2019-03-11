@@ -1,42 +1,30 @@
 package com.example.team31_personalbest_ms2v2;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.data.Bucket;
-import com.google.android.gms.fitness.data.DataPoint;
-import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.data.Field;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +38,7 @@ import static com.example.team31_personalbest_ms2v2.Constants.*;
 public class ProgressActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
+    private Activity act = this;
     private final String[] dayNames = { "Sunday", "Monday", "Tuesday",
             "Wednesday", "Thursday", "Friday", "Saturday"};
 
@@ -114,59 +103,11 @@ public class ProgressActivity extends AppCompatActivity implements
 
                 SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
                 SimpleDateFormat day = new SimpleDateFormat("MM-dd-yyyy");
-                Map<String, Integer> plannedStepsPerDay = new HashMap<>();
 
-
-                // TODO replace following code to populate ps with things from cloud
-                /* populating plannedStepsPerDay */
-                Log.i("SIZE_OF_SP", "SharedPref size : " + keys.size());
-                /*
-                 * for loop to loop through all entries of sharedpreferences
-                 */
-                for(Map.Entry<String,?> entry : keys.entrySet()){
-                    Log.d("PROG_ACT_SDF","key in sharedprefss: " + entry.getKey());
-
-                    HashSet<String> values = (HashSet<String>) entry.getValue();
-                    /* try catch to see if the date is parseable */
-                    try {
-                        // seeing if the key is parseable
-                        Date date = sdf.parse(entry.getKey());
-
-                        // making another string out of it with another format
-                        // specified by "day"
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(date);
-                        String dayDate = day.format(cal.getTime());
-
-                        // code to add steps to proper day
-                        int count = plannedStepsPerDay.containsKey(dayDate) ?
-                                plannedStepsPerDay.get(dayDate) :
-                                0;
-
-                        // variable to hold new steps for the planned walk/run
-                        int moreSteps = 0;
-
-                        // loop that iterates through the hash set given by the key
-                        for(String s : values) {
-                            int index = -1;
-                            Log.i("VALUE_IN_VALUES", "values.s = " + s);
-                            // each string in the hash set starts with either time
-                            // steps, or mph, so iterate until we find which identifer it
-                            // starts with
-                            if (s.substring(0, s.indexOf(":")).equals("Steps")) {
-                                moreSteps = Integer.parseInt(s.substring(s.indexOf(":") + 2));
-                                Log.i("MORE_STEPS", "moreSteps = " + moreSteps);
-                            }
-                        }
-
-                        plannedStepsPerDay.put(dayDate, count + moreSteps);
-
-                    } catch (Exception e) {
-                        Log.e("PROG_ACT_SDF","String cannot be parsed so its not a date");
-                        e.printStackTrace();
-                    }
-                }
-
+                //getting planned walks urns from cloud
+                CloudDataRetriever cdr = new CloudDataRetriever(act);
+                HashMap<String, HashMap<String, Integer>> map = cdr.parseData(DAYS_PER_WEEK);
+                Map<String, Integer> plannedStepsPerDay = map.get("plannedWalksRuns");
 
                 // add todays data since retrieve the last weeks data is exclusive of today
                 dateLabels[dateLabels.length-1] = (new SimpleDateFormat(MONTH_DAY_FMT)).format(new Date());
@@ -175,11 +116,12 @@ public class ProgressActivity extends AppCompatActivity implements
                 /* post processing ps data */
                 List<Integer> ps = new ArrayList<>();
 
+                // TODO transfer data from plannedStepsPerDay into ps
 
                 /*
                  * print all keys in plannedstepsperday
                  */
-                Log.i("PROGRESS_KEYS",plannedStepsPerDay.keySet().toString());
+                Log.i("PROGRESS_KEYS", plannedStepsPerDay.keySet().toString());
 
                 /* for dates that are in upsdatapoints, then check if they exist in maps, and
                  * then populate the corresponding
@@ -187,20 +129,28 @@ public class ProgressActivity extends AppCompatActivity implements
                  */
                 Calendar cal = Calendar.getInstance();
                 String key;
-
-                /* assumes that for every day that unplanned steps are made, there
-                 * are planned steps
-                 */
-
-                /*
-                 * if plannedStepsPerDay has data for today, then add it to ps
-                 */
-                cal.setTimeInMillis(System.currentTimeMillis());
-                key = day.format(cal.getTime());
-                if(plannedStepsPerDay.containsKey(key)) {
-                    Log.i("PROGRESS_VALUE", "plannedStepsPerDay.get(key): "+plannedStepsPerDay.get(key));
-                    ps.add(plannedStepsPerDay.get(key));
+                SimpleDateFormat aggFormat = new SimpleDateFormat(MONTH_DAY_FMT);
+                SimpleDateFormat cloudFormat = new SimpleDateFormat("MMM dd yyyy");
+                for(String s : dateLabels) {
+                    try {
+                        cal.setTime(aggFormat.parse(s));
+                    } catch (Exception e) {
+                        Log.e(this.getClass().getSimpleName(),
+                                "LABEL FROM AGG DATA WAS INCORRECTLY FORMATTED");
+                    }
+                    ps.add(plannedStepsPerDay.get(cloudFormat.format(cal)));
                 }
+                // TODO COMMENTED OUT BECAUSE CLOUD SHOULD GATHER DATA FOR TODAY INCLUSIVE
+                // TODO DELETE IF THIS IS THE CASE
+//                /*
+//                 * if plannedStepsPerDay has data for today, then add it to ps
+//                 */
+//                cal.setTimeInMillis(System.currentTimeMillis());
+//                key = day.format(cal.getTime());
+//                if(plannedStepsPerDay.containsKey(key)) {
+//                    Log.i("PROGRESS_VALUE", "plannedStepsPerDay.get(key): "+plannedStepsPerDay.get(key));
+//                    ps.add(plannedStepsPerDay.get(key));
+//                }
 
                 Log.i("PROGRESS", "printing values in ps");
                 for(Integer i : ps) {
@@ -240,14 +190,6 @@ public class ProgressActivity extends AppCompatActivity implements
     public void onConnected(@Nullable Bundle bundle) {
         Log.e("HistoryAPI", "onConnected");
 
-    }
-
-    public Calendar getMostRecentSunday() {
-        Calendar cal = Calendar.getInstance();
-        while(cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
-            cal.add(Calendar.DAY_OF_YEAR, -1);
-        }
-        return cal;
     }
 
 }
