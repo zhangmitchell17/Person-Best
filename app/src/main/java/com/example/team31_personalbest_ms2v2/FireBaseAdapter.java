@@ -21,34 +21,39 @@ import java.util.Map;
 import static android.content.ContentValues.TAG;
 
 public class FireBaseAdapter {
-    String CHAT_KEY = "Chats";
-    String fromKey;
-    String textKey;
+    String DOCUMENT_KEY = "chat1";
+    String FROM_KEY = "from";
+    String TEXT_KEY = "to";
     String TIMESTAMP_KEY = "timestamp";
 
     CollectionReference chat;
-    public FireBaseAdapter(CollectionReference chat, String fromKey, String textKey) {
+    public FireBaseAdapter(CollectionReference chat, String DOCUMENT_KEY, String FROM_KEY, String TEXT_KEY) {
         this.chat = chat;
-        this.fromKey = fromKey;
-        this.textKey = textKey;
+        //this.DOCUMENT_KEY = DOCUMENT_KEY;
+        //this.FROM_KEY = FROM_KEY;
+        //this.TEXT_KEY = TEXT_KEY;
     }
 
     public void initMessageUpdateListener(ChatListener listener) {
+        //System.out.println("Yo.");
           chat.orderBy(TIMESTAMP_KEY, Query.Direction.ASCENDING).addSnapshotListener((newChatSnapShot, error) -> {
               //System.out.println("Listener working!");
-              if (newChatSnapShot == null || !newChatSnapShot.isEmpty()) System.out.println("Here is a HUUUUUUUUUGE error.");
+              //if (newChatSnapShot == null || newChatSnapShot.isEmpty()) System.out.println("Here is a HUUUUUUUUUGE error.");
+              //if (newChatSnapShot == null) System.out.println("newChatSnapShot is NUULLLL!");
+              //if (newChatSnapShot.isEmpty()) System.out.println("newChatSnapShot is EMMPPTTYYY!");
                 if (newChatSnapShot != null && !newChatSnapShot.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     List<DocumentChange> documentChanges = newChatSnapShot.getDocumentChanges();
                     documentChanges.forEach(change -> {
                         QueryDocumentSnapshot document = change.getDocument();
-                        sb.append(document.get(fromKey));
+                        sb.append(document.get(FROM_KEY));
                         sb.append(":\n");
-                        sb.append(document.get(textKey));
+                        sb.append(document.get(TEXT_KEY));
                         sb.append("\n");
                         sb.append("---\n");
                     });
-
+//                    System.out.println("Here's a message.");
+//                    System.out.println(sb);
                     listener.success(sb.toString());
                 }
 
@@ -60,7 +65,7 @@ public class FireBaseAdapter {
     }
 
     public void subscribeToNotificationsTopic(ChatListener listener, FirebaseMessaging messaging) {
-        messaging.subscribeToTopic(CHAT_KEY)
+        messaging.subscribeToTopic(DOCUMENT_KEY)
                 .addOnCompleteListener(task -> {
                             String msg = "Subscribed to notifications";
 

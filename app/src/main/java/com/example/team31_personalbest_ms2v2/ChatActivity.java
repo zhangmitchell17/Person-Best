@@ -24,13 +24,11 @@ import java.util.Map;
 public class ChatActivity extends AppCompatActivity {
     String TAG = MainActivity.class.getSimpleName();
 
-    //String DOCUMENT_KEY = "chat1";
-    String CHATS_KEY = "Chats";
-    String thisChatKey;
+    String COLLECTION_KEY = "Chats";
+    String DOCUMENT_KEY = "chat1";
     String FROM_KEY = "from";
     String TEXT_KEY = "text";
     String MESSAGE_KEY = "messages";
-    String TIMESTAMP_KEY = "timestamp";
 
     CollectionReference chat;
     String from;
@@ -42,27 +40,20 @@ public class ChatActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        //SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
 
         FirebaseApp.initializeApp(this);
 
-        //CollectionReference users = FirebaseFirestore.getInstance().collection(USERS_KEY);
-        //from = sharedpreferences.getString(FROM_KEY, null);
 
         Bundle extraNames = getIntent().getExtras();
         from = extraNames.getString("USER_NAME");
         to = extraNames.getString("FRIEND_NAME");
         System.out.println(from + " && " + to);
 
-        if (from.compareTo(to) > 0) {
-            thisChatKey = CHATS_KEY + " between " + from + " and " + to;
-        } else {
-            thisChatKey = CHATS_KEY + " between " + to + " and " + from;
-        }
+        //setupDocumentKey();
 
         setupChat();
 
-        fireBaseAdapter = new FireBaseAdapter(chat, FROM_KEY, TEXT_KEY);
+        fireBaseAdapter = new FireBaseAdapter(chat, DOCUMENT_KEY, FROM_KEY, TEXT_KEY);
         initMessageUpdateListener();
         subscribeToNotificationsTopic();
 
@@ -70,36 +61,28 @@ public class ChatActivity extends AppCompatActivity {
 
         TextView nameView = findViewById((R.id.friend_name));
         nameView.setText(to);
-//        nameView.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                //from = s.toString();
-//                //sharedpreferences.edit().putString(FROM_KEY, from).apply();
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//            }
-//        });
+
+    }
+
+    private void setupDocumentKey() {
+        if (from.compareTo(to) > 0) {
+            DOCUMENT_KEY = COLLECTION_KEY + " between " + from + " and " + to;
+        } else {
+            DOCUMENT_KEY = COLLECTION_KEY + " between " + to + " and " + from;
+        }
+
+        DOCUMENT_KEY = DOCUMENT_KEY.replace(" ", "_");
     }
 
     private void setupChat() {
         chat = FirebaseFirestore.getInstance()
-                .collection(CHATS_KEY)
-                .document(thisChatKey)
+                .collection(COLLECTION_KEY)
+                .document(DOCUMENT_KEY)
                 .collection(MESSAGE_KEY);
         //if (chat == null) System.out.println("Chat is null! Can't chat with friend!");
     }
 
     private void sendMessage() {
-//        if (from == null || from.isEmpty()) {
-//            Toast.makeText(this, "Enter your name", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
 
         EditText messageView = findViewById(R.id.text_message);
 
