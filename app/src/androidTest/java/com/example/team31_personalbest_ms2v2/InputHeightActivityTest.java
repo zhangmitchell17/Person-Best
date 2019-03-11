@@ -50,7 +50,6 @@ public class InputHeightActivityTest {
 
     @Before
     public void before() throws Exception {
-        MainActivity.isCancelled = true;
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         UiObject mText = mUiDevice.findObject(new UiSelector().textContains("cloudtestlabaccounts.com"));
         try {
@@ -64,16 +63,6 @@ public class InputHeightActivityTest {
 
     @Test
     public void BasicUITest() {
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.button_update_steps_main), withText("update steps"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.drawer_layout),
-                                        1),
-                                3),
-                        isDisplayed()));
-        appCompatButton.perform(click());
-
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
