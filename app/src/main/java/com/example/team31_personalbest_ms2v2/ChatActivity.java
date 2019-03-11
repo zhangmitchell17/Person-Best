@@ -25,7 +25,7 @@ public class ChatActivity extends AppCompatActivity {
     String TAG = MainActivity.class.getSimpleName();
 
     String COLLECTION_KEY = "Chats";
-    String DOCUMENT_KEY = "chat1";
+    String DOCUMENT_KEY;
     String FROM_KEY = "from";
     String TEXT_KEY = "text";
     String MESSAGE_KEY = "messages";
