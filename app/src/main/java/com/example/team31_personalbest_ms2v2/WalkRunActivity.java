@@ -74,21 +74,12 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
 
         // Makes a timer, makes the async task for it, and begins it
         timeDisplay = findViewById(R.id.textViewTimer);
-        t = new Timer(timeDisplay);
+        t = new Timer(timeDisplay, fitnessService);
         t.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         speedDisplay = findViewById(R.id.textViewSpeed);
         s = new SpeedUpdater(this, speedDisplay, t);
         s.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        btnUpdate = findViewById(R.id.button_update_steps);
-
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fitnessService.updateStepCount();
-            }
-        });
 
         // Returns back to Home Page after session finished
         btnStop = findViewById(R.id.buttonStop);
@@ -102,7 +93,6 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
                 t.cancel();
                 s.cancel();
                 isRunning = false;
-                //thread.();
 
                 // store steps, speed, seconds
                 String step = stepDisplay.getText().toString();

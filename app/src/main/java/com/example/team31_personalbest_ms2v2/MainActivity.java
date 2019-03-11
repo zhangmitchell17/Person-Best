@@ -1,13 +1,18 @@
 package com.example.team31_personalbest_ms2v2;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -50,7 +55,6 @@ public class MainActivity extends AppCompatActivity
                    GoogleApiClient.OnConnectionFailedListener {
 
     public static Activity mainActivity;
-    private String fitnessServiceKey = "GOOGLE_FIT";
 
     private static final String TAG = "SignIn";
 
@@ -60,12 +64,14 @@ public class MainActivity extends AppCompatActivity
     public static boolean loggedIn = false;
 
     private FitnessService fitnessService;
+    private String fitnessServiceKey = "GOOGLE_FIT";
+
     private boolean goalAchievedDisplayed;
 
     private TimeService timeService;
     //public Steps steps;
     private boolean isBound;
-    public static boolean isCancelled = false;
+    public DataUpdateReceiver dataUpdateReceiver;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -80,6 +86,24 @@ public class MainActivity extends AppCompatActivity
             isBound = false;
         }
     };
+
+    // observer of time thread
+    private class DataUpdateReceiver extends BroadcastReceiver {
+
+        FitnessService fitnessService2;
+
+        DataUpdateReceiver(FitnessService fitnessService) {
+            this.fitnessService2 = fitnessService;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction() == Intent.ACTION_EDIT) {
+                System.out.println("hehe");
+                fitnessService2.updateStepCount();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,8 +147,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        timeService = new TimeService();
-
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
             @Override
@@ -137,22 +159,17 @@ public class MainActivity extends AppCompatActivity
         fitnessService.setup();
         Log.i(TAG, "fitness Service: " + fitnessService.toString());
 
-
-        Button btnUpdate = findViewById(R.id.button_update_steps_main);
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fitnessService.updateStepCount();
-            }
-        });
+        // update step real time
+        dataUpdateReceiver = new DataUpdateReceiver(this.fitnessService);
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_EDIT);
+        registerReceiver(dataUpdateReceiver, intentFilter);
 
         // Bind time service to main activity
         Intent intent = new Intent(MainActivity.this, TimeService.class);
+
         Log.i(TAG, "Time Service: " + intent.toString());
-        //bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         startService(intent);
     }
-
 
     /**
      * This method launch the StepCountActivity

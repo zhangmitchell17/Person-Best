@@ -46,7 +46,6 @@ public class FriendListActivityTest {
 
     @Before
     public void before() throws Exception {
-        MainActivity.isCancelled = true;
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         UiObject mText = mUiDevice.findObject(new UiSelector().textContains("cloudtestlabaccounts.com"));
         try {
