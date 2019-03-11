@@ -29,18 +29,13 @@ public class FireBaseAdapter {
     CollectionReference chat;
     public FireBaseAdapter(CollectionReference chat, String DOCUMENT_KEY, String FROM_KEY, String TEXT_KEY) {
         this.chat = chat;
-        //this.DOCUMENT_KEY = DOCUMENT_KEY;
-        //this.FROM_KEY = FROM_KEY;
-        //this.TEXT_KEY = TEXT_KEY;
+        this.DOCUMENT_KEY = DOCUMENT_KEY;
+        this.FROM_KEY = FROM_KEY;
+        this.TEXT_KEY = TEXT_KEY;
     }
 
     public void initMessageUpdateListener(ChatListener listener) {
-        //System.out.println("Yo.");
           chat.orderBy(TIMESTAMP_KEY, Query.Direction.ASCENDING).addSnapshotListener((newChatSnapShot, error) -> {
-              //System.out.println("Listener working!");
-              //if (newChatSnapShot == null || newChatSnapShot.isEmpty()) System.out.println("Here is a HUUUUUUUUUGE error.");
-              //if (newChatSnapShot == null) System.out.println("newChatSnapShot is NUULLLL!");
-              //if (newChatSnapShot.isEmpty()) System.out.println("newChatSnapShot is EMMPPTTYYY!");
                 if (newChatSnapShot != null && !newChatSnapShot.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     List<DocumentChange> documentChanges = newChatSnapShot.getDocumentChanges();
@@ -58,7 +53,6 @@ public class FireBaseAdapter {
                 }
 
                 if(error != null) {
-                    //System.out.println("An error happened during showing string.");
                     listener.error("error");
                 }
           });
