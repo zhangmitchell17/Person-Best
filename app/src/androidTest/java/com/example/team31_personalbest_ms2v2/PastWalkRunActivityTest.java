@@ -13,6 +13,7 @@ import android.view.ViewParent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,11 +25,8 @@ import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
-import static android.support.test.espresso.action.ViewActions.replaceText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -39,35 +37,36 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class BasicUITest {
+public class PastWalkRunActivityTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+
     UiDevice mUiDevice;
 
     @Before
     public void before() throws Exception {
-        MainActivity.isCancelled = true;
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        UiObject mText = mUiDevice.findObject(new UiSelector().textContains("ESQ44"));
+        UiObject mText = mUiDevice.findObject(new UiSelector().textContains("cloudtestlabaccounts.com"));
         try {
             mText.click();
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
+
         }
+
     }
 
     @Test
-    public void BasicUITest() {
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.button_update_steps_main), withText("update steps"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.drawer_layout),
-                                        1),
-                                3),
-                        isDisplayed()));
-        appCompatButton.perform(click());
+    public void pastWalkRunActivityTest() {
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
@@ -86,93 +85,78 @@ public class BasicUITest {
                                 childAtPosition(
                                         withId(R.id.nav_view),
                                         0)),
-                        1),
+                        3),
                         isDisplayed()));
         navigationMenuItemView.perform(click());
 
-        ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.heightInput),
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction textView = onView(
+                allOf(withText("Day"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(android.R.id.content),
+                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
                                         0),
                                 0),
                         isDisplayed()));
-        appCompatEditText.perform(replaceText("123"), closeSoftKeyboard());
+        textView.check(matches(isDisplayed()));
 
-        ViewInteraction appCompatButton2 = onView(
-                allOf(withId(R.id.updateHeight), withText("Update Height"),
+        ViewInteraction textView2 = onView(
+                allOf(withText("Day"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(android.R.id.content),
+                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
+                                        0),
+                                0),
+                        isDisplayed()));
+        textView2.check(matches(isDisplayed()));
+
+        ViewInteraction textView3 = onView(
+                allOf(withText("Time"),
+                        childAtPosition(
+                                childAtPosition(
+                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
+                                        0),
+                                1),
+                        isDisplayed()));
+        textView3.check(matches(isDisplayed()));
+
+        ViewInteraction textView4 = onView(
+                allOf(withText("Steps"),
+                        childAtPosition(
+                                childAtPosition(
+                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
                                         0),
                                 2),
                         isDisplayed()));
-        appCompatButton2.perform(click());
+        textView4.check(matches(isDisplayed()));
 
-        ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.stepInput),
+        ViewInteraction textView5 = onView(
+                allOf(withText("MPH"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatEditText2.perform(replaceText("123"), closeSoftKeyboard());
-
-        ViewInteraction appCompatEditText3 = onView(
-                allOf(withId(R.id.stepInput), withText("123"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatEditText3.perform(pressImeActionButton());
-
-        ViewInteraction appCompatButton3 = onView(
-                allOf(withId(R.id.updateStep), withText("Update Step Goal"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
+                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
                                         0),
                                 3),
                         isDisplayed()));
-        appCompatButton3.perform(click());
+        textView5.check(matches(withText("MPH")));
 
-        ViewInteraction appCompatButton4 = onView(
-                allOf(withId(R.id.backToMain), withText("Go to main page"),
+        ViewInteraction textView6 = onView(
+                allOf(withText("MPH"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(android.R.id.content),
+                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
                                         0),
-                                6),
+                                3),
                         isDisplayed()));
-        appCompatButton4.perform(click());
-
-        ViewInteraction appCompatImageButton2 = onView(
-                allOf(withContentDescription("Open navigation drawer"),
-                        childAtPosition(
-                                allOf(withId(R.id.toolbar),
-                                        childAtPosition(
-                                                withClassName(is("android.support.design.widget.AppBarLayout")),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton2.perform(click());
-
-        ViewInteraction navigationMenuItemView2 = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.design_navigation_view),
-                                childAtPosition(
-                                        withId(R.id.nav_view),
-                                        0)),
-                        3),
-                        isDisplayed()));
-        navigationMenuItemView2.perform(click());
-
-        pressBack();
-
+        textView6.check(matches(withText("MPH")));
     }
 
     private static Matcher<View> childAtPosition(

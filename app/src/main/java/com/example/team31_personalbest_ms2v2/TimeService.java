@@ -11,12 +11,16 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 
 import java.util.Date;
 
 import androidx.annotation.RequiresApi;
+
+import static android.support.constraint.Constraints.TAG;
 
 /**
  * TimeService class is the Service for tracking time which runs in background
@@ -26,11 +30,9 @@ public class TimeService extends Service {
 
     private String secondStr, minuteStr, hourStr, dayStr;
 
+    private String fitnessServiceKey = "GOOGLE_FIT";
     private final IBinder iBinder = new LocalService();
-
-
-    public TimeService() {
-    }
+    FitnessService fitnessService;
 
     /**
      * This local service class in TimeService class
@@ -56,6 +58,9 @@ public class TimeService extends Service {
         public void run() {
             synchronized (this) {
                 while(true) {
+
+                    sendBroadcast(new Intent(Intent.ACTION_EDIT));
+
                     Date date = new Date();
 
                     String second = "ss";
