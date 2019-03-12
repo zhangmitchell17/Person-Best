@@ -112,9 +112,9 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction() == Intent.ACTION_EDIT) {
-                System.out.println("update steps");
                 fitnessService.updateStepCount();
                 sendStepsToCloud();
+                Log.i("BoardCast: ", "received boardcast");
             }
         }
     }
