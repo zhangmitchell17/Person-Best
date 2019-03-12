@@ -346,6 +346,9 @@ public class MainActivity extends AppCompatActivity
     public void launchWalkRunActivity() {
         Intent intent = new Intent(this, WalkRunActivity.class);
         intent.putExtra(WalkRunActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
+        TextView strideText = findViewById(R.id.stride_length);
+        String text = strideText.getText().toString();
+        intent.putExtra("stride", text);
         startActivity(intent);
     }
 

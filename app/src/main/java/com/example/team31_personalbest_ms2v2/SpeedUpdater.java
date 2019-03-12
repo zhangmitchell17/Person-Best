@@ -13,6 +13,7 @@ public class SpeedUpdater extends AsyncTask<String, String, String>{
     private TextView speed;
     private Context c;
     private Timer t;
+    private int stride;
     private boolean isCancelled;
     private float mph;
 
@@ -22,11 +23,12 @@ public class SpeedUpdater extends AsyncTask<String, String, String>{
     private static final long INCHES_PER_MILE = 63360;
 
     // Initialize values
-    public SpeedUpdater (Context c, TextView text, Timer timer)
+    public SpeedUpdater (Context c, TextView text, Timer timer, int stride)
     {
         this.c = c;
         this.speed = text;
         this.t = timer;
+        this.stride = stride;
     }
 
     /**
@@ -43,8 +45,9 @@ public class SpeedUpdater extends AsyncTask<String, String, String>{
             if(isCancelled) {
                 break;
             }
-            SharedPreferences sharedPreferences = c.getSharedPreferences("savedStride", MODE_PRIVATE);
-            int strideLength = sharedPreferences.getInt("stride", 0);
+            //SharedPreferences sharedPreferences = c.getSharedPreferences("savedStride", MODE_PRIVATE);
+            int strideLength = this.stride;//sharedPreferences.getInt("stride", 0);
+            Log.i("stride length is: " , String.valueOf(strideLength));
 
             // TODO: NEED TO MULTIPLY THIS BY NUMBER OF STEPS TAKEN (replace the 10000)
             SharedPreferences sharedPref = c.getSharedPreferences("walkRunStats", MODE_PRIVATE);
