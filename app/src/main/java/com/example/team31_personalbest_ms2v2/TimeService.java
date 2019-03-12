@@ -30,9 +30,7 @@ public class TimeService extends Service {
 
     private String secondStr, minuteStr, hourStr, dayStr;
 
-    private String fitnessServiceKey = "GOOGLE_FIT";
     private final IBinder iBinder = new LocalService();
-    FitnessService fitnessService;
 
     /**
      * This local service class in TimeService class

@@ -41,6 +41,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.security.auth.Subject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,6 +77,10 @@ public class MainActivity extends AppCompatActivity
     private boolean isBound;
     public DataUpdateReceiver dataUpdateReceiver;
 
+    public String currentUserEmail;
+    public String currentUserName;
+
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -90,17 +98,23 @@ public class MainActivity extends AppCompatActivity
     // observer of time thread
     private class DataUpdateReceiver extends BroadcastReceiver {
 
-        FitnessService fitnessService2;
+        FitnessService fitnessService;
 
         DataUpdateReceiver(FitnessService fitnessService) {
-            this.fitnessService2 = fitnessService;
+            this.fitnessService = fitnessService;
         }
 
+        /**
+         * When receive boradcast from timer, update steps and send it to cloud
+         * @param context
+         * @param intent
+         */
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction() == Intent.ACTION_EDIT) {
-                System.out.println("hehe");
-                fitnessService2.updateStepCount();
+                System.out.println("update steps");
+                fitnessService.updateStepCount();
+                sendStepsToCloud();
             }
         }
     }
@@ -147,6 +161,13 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // store user info
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            this.currentUserEmail = acct.getEmail();
+            this.currentUserName = acct.getDisplayName();
+        }
+
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
             @Override
@@ -155,6 +176,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // start real time step count
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
         Log.i(TAG, "fitness Service: " + fitnessService.toString());
@@ -169,6 +191,27 @@ public class MainActivity extends AppCompatActivity
 
         Log.i(TAG, "Time Service: " + intent.toString());
         startService(intent);
+    }
+
+    /**
+     * Send current user data to cloud
+     */
+    public void sendStepsToCloud() {
+        TextView view = findViewById(R.id.textViewStepMain);
+        String steps = view.getText().toString();
+        Log.i("Cloud steps: ", ("Steps to the cloud: " + steps));
+
+        FirebaseApp.initializeApp(this);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, String> dailyStepCnt = new HashMap();
+        dailyStepCnt.put("steps", steps);
+        String date = new SimpleDateFormat("MM-dd-yyyy").
+                format(Calendar.getInstance().getTime());
+
+
+        db.collection("users").document(this.currentUserEmail).
+                collection("steps").document(date).set(dailyStepCnt);
     }
 
     /**

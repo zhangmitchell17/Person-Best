@@ -14,6 +14,8 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * This is a google find adapter adapt IStepActivity to the FitnessService interface
@@ -21,7 +23,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 public class GoogleFitAdapter implements FitnessService {
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
     private final String TAG = "GoogleFitAdapter";
-
     private IStepActivity stepActivity;
 
     /**
@@ -51,6 +52,7 @@ public class GoogleFitAdapter implements FitnessService {
             updateStepCount();
             startRecording();
         }
+
     }
 
     /**
