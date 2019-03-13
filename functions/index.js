@@ -14,6 +14,18 @@ exports.addTimeStamp = functions.firestore
      return "snap was null or empty";
    });
 
+exports.addTimeStamp2 = functions.firestore
+  .document('users/{userId}/WalkRuns/{walkRunId}')
+  .onCreate((snap, context) => {
+    if (snap) {
+      return snap.ref.update({
+                  timestamp: admin.firestore.FieldValue.serverTimestamp()
+              });
+    }
+
+    return "snap was null or empty";
+  });
+
 exports.sendChatNotifications = functions.firestore
    .document('chats/{chatId}/messages/{messageId}')
    .onCreate((snap, context) => {

@@ -60,10 +60,14 @@ public class FriendsListActivity extends AppCompatActivity {
 
         // add current user to the users database
         FirebaseApp.initializeApp(this);
+
         db = FirebaseFirestore.getInstance();
+
+        /*
         this.user = new User(currentUserName, currentUserEmail);
 
         addUser(user);
+        */
 
         // when user click add friend button show dialog
         addFriendButton = findViewById(R.id.addFriend);
