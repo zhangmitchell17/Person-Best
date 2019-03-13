@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity
 
     public String currentUserEmail = "test@ucsd.edu";
     public String currentUserName = "test";
+    User user;
     public FirebaseFirestore db;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -457,6 +458,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * Add a user to the database
+     * @param user name of the user
+     */
+    public void addUser(User user) {
+        db.collection("users").document(user.email).set(user);
+    }
+
+    /**
      * Override the onActivityResult method from super class
      * handle the sign in result of the task
      * @param requestCode
@@ -472,6 +481,8 @@ public class MainActivity extends AppCompatActivity
         if (acct != null) {
             this.currentUserEmail = acct.getEmail();
             this.currentUserName = acct.getDisplayName();
+            this.user = new User(currentUserName, currentUserEmail);
+            addUser(user);
             launchInputHeightStepGoalActivity();
         }
 
