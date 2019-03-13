@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity
             if(intent.getAction() == Intent.ACTION_EDIT) {
                 fitnessService.updateStepCount();
                 sendStepsToCloud(db);
+
                 Log.i("BoardCast: ", "received boardcast");
             }
         }
@@ -287,6 +288,7 @@ public class MainActivity extends AppCompatActivity
         grabUserStrideGoalFromCloud("stride", findViewById(R.id.stride_length));
         grabUserStrideGoalFromCloud("goal", findViewById(R.id.step_count));
     }
+
 
     /**
      * updateStepCountAndStride() method // stores current height and
@@ -470,6 +472,7 @@ public class MainActivity extends AppCompatActivity
         if (acct != null) {
             this.currentUserEmail = acct.getEmail();
             this.currentUserName = acct.getDisplayName();
+            launchInputHeightStepGoalActivity();
         }
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
