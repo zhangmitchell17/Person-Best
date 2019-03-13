@@ -28,16 +28,21 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -57,9 +62,9 @@ import static java.lang.Integer.parseInt;
 // used to create timer and reset step at beginning of day
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-                   IStepActivity,
-                   GoogleApiClient.ConnectionCallbacks,
-                   GoogleApiClient.OnConnectionFailedListener {
+        IStepActivity,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     String TAG2 = MainActivity.class.getSimpleName();
 
@@ -80,6 +85,11 @@ public class MainActivity extends AppCompatActivity
     private TimeService timeService;
     //public Steps steps;
     private boolean isBound;
+    public DataUpdateReceiver dataUpdateReceiver;
+
+    public String currentUserEmail = "test@ucsd.edu";
+    public String currentUserName = "test";
+    public FirebaseFirestore db;
     public DataUpdateReceiver dataUpdateReceiver;
 
     public String currentUserEmail;
@@ -119,9 +129,9 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction() == Intent.ACTION_EDIT) {
-                System.out.println("update steps");
                 fitnessService.updateStepCount();
-                sendStepsToCloud();
+                sendStepsToCloud(db);
+                Log.i("BoardCast: ", "received boardcast");
             }
         }
     }
@@ -139,6 +149,13 @@ public class MainActivity extends AppCompatActivity
 
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, AppCompatActivity.RESULT_OK);
+        }
+
+        // store user info
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            this.currentUserEmail = acct.getEmail();
+            this.currentUserName = acct.getDisplayName();
         }
 
         FirebaseApp.initializeApp(this);
@@ -160,7 +177,6 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -177,13 +193,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        // store user info
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-        if (acct != null) {
-            this.currentUserEmail = acct.getEmail();
-            this.currentUserName = acct.getDisplayName();
-        }
+        // init firebase firestore
+        this.db = FirebaseFirestore.getInstance();
 
+
+        // init fitness service
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
             @Override
@@ -210,33 +224,42 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * When user start using new phone or re download the app, he should get goal/step from cloud
+     */
+    public void grabUserStrideGoalFromCloud(String type, TextView view) {
+         DocumentReference docRef = db.collection("users").
+                document(currentUserEmail).collection("HeightAndGoal").document(type);
+
+        // grabe user stride and
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Object stride = documentSnapshot.get(type);
+                if (type.equals("stride")) {
+                    view.setText("Your " + type + " length is: " + stride);
+                } else {
+                    view.setText("Your step " + type + " is: " + stride);
+                }
+            }
+        });
+    }
+
+    /**
      * Send current user data to cloud
      */
-    public void sendStepsToCloud() {
+    public void sendStepsToCloud(FirebaseFirestore db) {
         TextView view = findViewById(R.id.textViewStepMain);
         String steps = view.getText().toString();
         Log.i("Cloud steps: ", ("Steps to the cloud: " + steps));
 
-        FirebaseApp.initializeApp(this);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, String> dailyStepCnt = new HashMap();
         dailyStepCnt.put("steps", steps);
         String date = new SimpleDateFormat("MM-dd-yyyy").
                 format(Calendar.getInstance().getTime());
 
-
         db.collection("users").document(this.currentUserEmail).
                 collection("steps").document(date).set(dailyStepCnt);
-    }
-
-    /**
-     * This method launch the StepCountActivity
-     */
-    public void launchStepCountActivity() {
-        Intent intent = new Intent(this, StepCountActivity.class);
-        intent.putExtra(StepCountActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
-        startActivity(intent);
     }
 
     /**
@@ -279,6 +302,9 @@ public class MainActivity extends AppCompatActivity
 
         updateSteps();
 
+        // restore cloud goal and steps
+        grabUserStrideGoalFromCloud("stride", findViewById(R.id.stride_length));
+        grabUserStrideGoalFromCloud("goal", findViewById(R.id.step_count));
     }
 
     /**
@@ -339,6 +365,9 @@ public class MainActivity extends AppCompatActivity
     public void launchWalkRunActivity() {
         Intent intent = new Intent(this, WalkRunActivity.class);
         intent.putExtra(WalkRunActivity.FITNESS_SERVICE_KEY, fitnessServiceKey);
+        TextView strideText = findViewById(R.id.stride_length);
+        String text = strideText.getText().toString();
+        intent.putExtra("stride", text);
         startActivity(intent);
     }
 
@@ -456,7 +485,12 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        //System.out.println("onActivityResult called");
+        // store user info
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            this.currentUserEmail = acct.getEmail();
+            this.currentUserName = acct.getDisplayName();
+        }
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == AppCompatActivity.RESULT_OK) {
@@ -473,7 +507,6 @@ public class MainActivity extends AppCompatActivity
      * @param completedTask
      */
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        //System.out.println("handleSignInResult called");
 
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
@@ -531,7 +564,7 @@ public class MainActivity extends AppCompatActivity
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Achievement Notification");
             final int newStepGoal = (stepGoal * 1.10 > stepGoal + 500) ? stepGoal + 500 :
-                                                                         (int) (stepGoal * 1.10);
+                    (int) (stepGoal * 1.10);
             builder.setMessage("Good Job! You have achieved your step goal. Would you like accept our a new step goal of: " + newStepGoal);
             // Yes button sets the recommended step goal
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {

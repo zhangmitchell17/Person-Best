@@ -54,7 +54,6 @@
             android:name=".Login"
             android:screenOrientation="portrait" />
         <activity android:name=".StepCountActivity" />
-
     </application>
 
 </manifest>
