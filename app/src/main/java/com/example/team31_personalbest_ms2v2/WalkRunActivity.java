@@ -73,12 +73,15 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         fitnessService.setup();
 
         // Makes a timer, makes the async task for it, and begins it
+        String stride =getIntent().getStringExtra("stride");
+        String strideLength = stride.substring(stride.indexOf(":") + 2);
         timeDisplay = findViewById(R.id.textViewTimer);
         t = new Timer(timeDisplay, fitnessService);
         t.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         speedDisplay = findViewById(R.id.textViewSpeed);
-        s = new SpeedUpdater(this, speedDisplay, t);
+        System.out.println("strideLength is: " + strideLength);
+        s = new SpeedUpdater(this, speedDisplay, t, Integer.parseInt(strideLength));
         s.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // Returns back to Home Page after session finished
