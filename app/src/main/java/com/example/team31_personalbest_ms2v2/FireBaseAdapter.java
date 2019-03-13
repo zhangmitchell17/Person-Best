@@ -21,22 +21,21 @@ import java.util.Map;
 import static android.content.ContentValues.TAG;
 
 public class FireBaseAdapter {
-    String COLLECTION_KEY = "chats";
     String DOCUMENT_KEY = "chat1";
-    String MESSAGES_KEY = "messages";
     String FROM_KEY = "from";
     String TEXT_KEY = "text";
     String TIMESTAMP_KEY = "timestamp";
 
     CollectionReference chat;
-
-    public FireBaseAdapter(CollectionReference chat) {
+    public FireBaseAdapter(CollectionReference chat, String DOCUMENT_KEY, String FROM_KEY, String TEXT_KEY) {
         this.chat = chat;
+        this.DOCUMENT_KEY = DOCUMENT_KEY;
+        this.FROM_KEY = FROM_KEY;
+        this.TEXT_KEY = TEXT_KEY;
     }
 
     public void initMessageUpdateListener(ChatListener listener) {
           chat.orderBy(TIMESTAMP_KEY, Query.Direction.ASCENDING).addSnapshotListener((newChatSnapShot, error) -> {
-
                 if (newChatSnapShot != null && !newChatSnapShot.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     List<DocumentChange> documentChanges = newChatSnapShot.getDocumentChanges();
@@ -48,7 +47,8 @@ public class FireBaseAdapter {
                         sb.append("\n");
                         sb.append("---\n");
                     });
-
+                    System.out.println("Here's a message.");
+                    System.out.println(sb);
                     listener.success(sb.toString());
                 }
 

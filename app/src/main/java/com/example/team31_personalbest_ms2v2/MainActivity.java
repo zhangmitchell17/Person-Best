@@ -1,13 +1,18 @@
 package com.example.team31_personalbest_ms2v2;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +46,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.Subject;
+
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -56,7 +64,6 @@ public class MainActivity extends AppCompatActivity
     String TAG2 = MainActivity.class.getSimpleName();
 
     public static Activity mainActivity;
-    private String fitnessServiceKey = "GOOGLE_FIT";
 
     private static final String TAG = "SignIn";
 
@@ -66,12 +73,18 @@ public class MainActivity extends AppCompatActivity
     public static boolean loggedIn = false;
 
     private FitnessService fitnessService;
+    private String fitnessServiceKey = "GOOGLE_FIT";
+
     private boolean goalAchievedDisplayed;
 
     private TimeService timeService;
     //public Steps steps;
     private boolean isBound;
-    public static boolean isCancelled = false;
+    public DataUpdateReceiver dataUpdateReceiver;
+
+    public String currentUserEmail;
+    public String currentUserName;
+
 
     CollectionReference notifications;
 
@@ -88,6 +101,30 @@ public class MainActivity extends AppCompatActivity
             isBound = false;
         }
     };
+
+    // observer of time thread
+    private class DataUpdateReceiver extends BroadcastReceiver {
+
+        FitnessService fitnessService;
+
+        DataUpdateReceiver(FitnessService fitnessService) {
+            this.fitnessService = fitnessService;
+        }
+
+        /**
+         * When receive boradcast from timer, update steps and send it to cloud
+         * @param context
+         * @param intent
+         */
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction() == Intent.ACTION_EDIT) {
+                System.out.println("update steps");
+                fitnessService.updateStepCount();
+                sendStepsToCloud();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +160,6 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        //sendNotification("YOU MADE IT");
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -141,7 +177,12 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        timeService = new TimeService();
+        // store user info
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            this.currentUserEmail = acct.getEmail();
+            this.currentUserName = acct.getDisplayName();
+        }
 
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
 
@@ -151,26 +192,43 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // start real time step count
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fitnessService.setup();
         Log.i(TAG, "fitness Service: " + fitnessService.toString());
 
-
-        Button btnUpdate = findViewById(R.id.button_update_steps_main);
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fitnessService.updateStepCount();
-            }
-        });
+        // update step real time
+        dataUpdateReceiver = new DataUpdateReceiver(this.fitnessService);
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_EDIT);
+        registerReceiver(dataUpdateReceiver, intentFilter);
 
         // Bind time service to main activity
         Intent intent = new Intent(MainActivity.this, TimeService.class);
+
         Log.i(TAG, "Time Service: " + intent.toString());
-        //bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         startService(intent);
     }
 
+    /**
+     * Send current user data to cloud
+     */
+    public void sendStepsToCloud() {
+        TextView view = findViewById(R.id.textViewStepMain);
+        String steps = view.getText().toString();
+        Log.i("Cloud steps: ", ("Steps to the cloud: " + steps));
+
+        FirebaseApp.initializeApp(this);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, String> dailyStepCnt = new HashMap();
+        dailyStepCnt.put("steps", steps);
+        String date = new SimpleDateFormat("MM-dd-yyyy").
+                format(Calendar.getInstance().getTime());
+
+
+        db.collection("users").document(this.currentUserEmail).
+                collection("steps").document(date).set(dailyStepCnt);
+    }
 
     /**
      * This method launch the StepCountActivity

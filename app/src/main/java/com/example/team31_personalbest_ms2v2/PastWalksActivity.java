@@ -39,7 +39,7 @@ public class PastWalksActivity extends AppCompatActivity {
     TableLayout table;
 
 
-    /** 
+    /**
      * Gets the day of the week index, with Sunday as 0 and Saturday as 6
      * @param day This is the string of the day of the week
      * @return the index of the day of the week, with Sunday as 0 and Saturday as 6
