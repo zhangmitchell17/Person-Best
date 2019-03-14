@@ -91,10 +91,6 @@ public class MainActivity extends AppCompatActivity
     public String currentUserName = "test";
     User user;
     public FirebaseFirestore db;
-    public DataUpdateReceiver dataUpdateReceiver;
-
-    public String currentUserEmail;
-    public String currentUserName;
 
 
     CollectionReference notifications;
@@ -561,10 +557,7 @@ public class MainActivity extends AppCompatActivity
      * @param stepCount The number of current steps to compare the step goal to
      */
     public void goalAchievement(long stepCount) {
-        SharedPreferences sharedPreferences = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
-        int stepGoal = parseInt(sharedPreferences.getString("step", "0"));
-
-        SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
+        db.
         /*
         // Check if an accomplishment notification has been displayed today yet
         String date = sharedPref.getString("date", "");
