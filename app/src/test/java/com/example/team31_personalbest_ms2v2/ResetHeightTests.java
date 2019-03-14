@@ -21,7 +21,6 @@ public class ResetHeightTests {
     MainActivity activity;
     ActivityController<MainActivity> controller;
 
-    /*
     @Before
     public void init() {
         activity = Robolectric.setupActivity(MainActivity.class);
@@ -42,7 +41,6 @@ public class ResetHeightTests {
         assertEquals(sharePref.getInt("steps", -1), 100);
     }
 
-    /*
     @Test
     public void testIfStepIsResetDifferentDay() {
         SharedPreferences sharePref = activity.getSharedPreferences("resetSteps", MODE_PRIVATE);
@@ -59,6 +57,5 @@ public class ResetHeightTests {
         editor.remove("date");
         editor.apply();
     }
-    */
 
 }
