@@ -99,7 +99,7 @@ public class PastWalksActivity extends AppCompatActivity {
                 .document(currentUserEmail)
                 .collection("WalkRuns");
 
-        table = findViewById(R.id.tableLayout);
+        //table = findViewById(R.id.tableLayout);
 
         initWalkRunUpdateListener();
 

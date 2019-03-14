@@ -37,6 +37,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -92,6 +93,9 @@ public class MainActivity extends AppCompatActivity
     User user;
     public FirebaseFirestore db;
 
+    private String steps;
+    private String goals;
+
 
     CollectionReference notifications;
 
@@ -128,6 +132,7 @@ public class MainActivity extends AppCompatActivity
             if(intent.getAction() == Intent.ACTION_EDIT) {
                 fitnessService.updateStepCount();
                 sendStepsToCloud(db);
+                goalAchievement();
 
                 Log.i("BoardCast: ", "received boardcast");
             }
@@ -158,6 +163,7 @@ public class MainActivity extends AppCompatActivity
 
         FirebaseApp.initializeApp(this);
         subscribeToNotificationsTopic("notifications1");
+
 
         notifications = FirebaseFirestore.getInstance()
                 .collection("Notifications")
@@ -341,7 +347,6 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
         TextView totalSteps = (TextView) findViewById(R.id.textViewStepMain);
         totalSteps.setText(String.valueOf(stepCount));
-        goalAchievement(stepCount);
         Log.i(TAG, "currentTotalSteps: " + totalSteps.getText().toString());
     }
 
@@ -554,20 +559,66 @@ public class MainActivity extends AppCompatActivity
     /**
      * This method displays the step goal achievement notification and
      * asks if the user wants to set a new step goal
-     * @param stepCount The number of current steps to compare the step goal to
      */
-    public void goalAchievement(long stepCount) {
-        db.
-        /*
-        // Check if an accomplishment notification has been displayed today yet
-        String date = sharedPref.getString("date", "");
-        if (!timeService.getDays().equals(date)) {
-            goalAchievedDisplayed = false;
-        }
-        */
+    public void goalAchievement() {
+
+        String date = new SimpleDateFormat("MM-dd-yyyy").
+                format(Calendar.getInstance().getTime());
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(currentUserEmail)
+                .collection("steps")
+                .document(date)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@android.support.annotation.NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful())
+                        {
+                            DocumentSnapshot document = task.getResult();
+                            if (document != null)
+                            {
+                                steps = document.getString("steps");
+                            }
+                        }
+                    }
+                });
+
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document("hoz054@ucsd.edu")
+                .collection("HeightAndGoal")
+                .document("goal")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@android.support.annotation.NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful())
+                        {
+                            DocumentSnapshot document = task.getResult();
+                            if (document != null)
+                            {
+                                goals = document.getString("goal");
+                            }
+                        }
+                    }
+                });
+
+
+        SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
         goalAchievedDisplayed = sharedPref.getBoolean("accomplishmentDisplayed", false);
+        goalAchievedDisplayed = false;
+
+
+        System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+        System.out.println("goals: " + goals);
+        System.out.println("steps: " + steps);
+        int stepGoal = parseInt(goals);
+        int currentSteps = parseInt(steps);
         // Only display it if the step count is greater than the step goal and the notification has not been displayed yet
-        if (stepCount > stepGoal && !goalAchievedDisplayed) {
+        if (currentSteps > stepGoal && !goalAchievedDisplayed) {
+            sendNotification("Good Job! You have achieved your step goal. Check back in to set a new step goal!");
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Achievement Notification");
             final int newStepGoal = (stepGoal * 1.10 > stepGoal + 500) ? stepGoal + 500 :
