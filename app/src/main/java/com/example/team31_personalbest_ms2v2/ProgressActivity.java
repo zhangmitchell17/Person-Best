@@ -62,108 +62,68 @@ public class ProgressActivity extends AppCompatActivity implements
         // making the barchart from the view
         barChart = findViewById(R.id.graphProgress);
 
-        // TODO initialize firebase
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
 
+        Bundle b = getIntent().getExtras();
         String email = "";
-
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-        if (acct != null) {
-            email = acct.getEmail();
+        if(b!=null) {
+            email = b.getString("Email");
         }
 
         plannedWalks = db.collection("users")
-                         .document(email)
-                         .collection("WalkRuns");
+                .document(email)
+                .collection("WalkRuns");
 
         dr = new DataRetriever(this);
         dr.setup();
 
+        Log.i(this.getClass().getSimpleName(), "Thread about to begin");
         /* running on a separate thread so that it doesn't stall the activity and crash */
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Log.i("SHIT", "Thread is running");
                 // TODO replace following code to populate ups with things from cloud
                /*
                 unplannedSteps contains the data from the past seven days
                 */
-                List<Bucket> unplannedSteps = dr.
-                       retrieveAggregatedData(DataType.TYPE_STEP_COUNT_DELTA,
-                               DataType.AGGREGATE_STEP_COUNT_DELTA, Calendar.DAY_OF_YEAR, DAYS_PER_WEEK-1);
-                AggregateData ad = new AggregateData(unplannedSteps);
-                List<Integer> ups = ad.toIntList();
-                List<String> strList = ad.getDateList();
-                String[] dateLabels = new String[strList.size()+1];
-                dateLabels = strList.toArray(dateLabels);
+//                List<Bucket> unplannedSteps = dr.
+//                       retrieveAggregatedData(DataType.TYPE_STEP_COUNT_DELTA,
+//                               DataType.AGGREGATE_STEP_COUNT_DELTA, Calendar.DAY_OF_YEAR, DAYS_PER_WEEK-1);
+//                AggregateData ad = new AggregateData(unplannedSteps);
+//                List<Integer> ups = ad.toIntList();
+                List<Integer> ups = new ArrayList<>();
 
+                SimpleDateFormat monthDayFormat = new SimpleDateFormat(MONTH_DAY_FMT);
+                List<String> dateLabelList = new ArrayList<>();
 
-                SharedPreferences sharedPrefs = MainActivity.mainActivity.getSharedPreferences("WalkRunStatsDate", MODE_PRIVATE);
-                Map<String,?> keys = sharedPrefs.getAll();
+                // create list of date strings
+                for (int i = 0; i > -1*DAYS_PER_WEEK; i--) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.add(Calendar.DAY_OF_YEAR, i);
+                    dateLabelList.add(0, monthDayFormat.format(cal.getTime()));
+                    Log.i("SHIT", "Date: " + monthDayFormat.format(cal.getTime()));
+                }
 
-                SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
-                SimpleDateFormat day = new SimpleDateFormat("MM-dd-yyyy");
+                String[] dateLabels = new String[dateLabelList.size() + 1];
+                dateLabels = dateLabelList.toArray(dateLabels);
 
                 //getting planned walks urns from cloud
                 CloudDataRetriever cdr = new CloudDataRetriever(act);
-                HashMap<String, HashMap<String, Integer>> map = cdr.parseData(DAYS_PER_WEEK);
-                Map<String, Integer> plannedStepsPerDay = map.get("plannedWalksRuns");
-
-                // add todays data since retrieve the last weeks data is exclusive of today
-                dateLabels[dateLabels.length-1] = (new SimpleDateFormat(MONTH_DAY_FMT)).format(new Date());
-                ups.add(dr.retrieveTodaysSteps());
+                Log.i("SHIT", "ABOUT TO CALL PARSEDATA");
+                cdr.parseData(DAYS_PER_WEEK);
 
                 /* post processing ps data */
                 List<Integer> ps = new ArrayList<>();
 
-                // TODO transfer data from plannedStepsPerDay into ps
-
-                /*
-                 * print all keys in plannedstepsperday
-                 */
-                Log.i("PROGRESS_KEYS", plannedStepsPerDay.keySet().toString());
-
-                /* for dates that are in upsdatapoints, then check if they exist in maps, and
-                 * then populate the corresponding
-                 * things in ps
-                 */
-                Calendar cal = Calendar.getInstance();
-                String key;
-                SimpleDateFormat aggFormat = new SimpleDateFormat(MONTH_DAY_FMT);
-                SimpleDateFormat cloudFormat = new SimpleDateFormat("MMM dd yyyy");
-                for(String s : dateLabels) {
-                    try {
-                        cal.setTime(aggFormat.parse(s));
-                    } catch (Exception e) {
-                        Log.e(this.getClass().getSimpleName(),
-                                "LABEL FROM AGG DATA WAS INCORRECTLY FORMATTED");
-                    }
-                    ps.add(plannedStepsPerDay.get(cloudFormat.format(cal)));
-                }
-                // TODO COMMENTED OUT BECAUSE CLOUD SHOULD GATHER DATA FOR TODAY INCLUSIVE
-                // TODO DELETE IF THIS IS THE CASE
-//                /*
-//                 * if plannedStepsPerDay has data for today, then add it to ps
-//                 */
-//                cal.setTimeInMillis(System.currentTimeMillis());
-//                key = day.format(cal.getTime());
-//                if(plannedStepsPerDay.containsKey(key)) {
-//                    Log.i("PROGRESS_VALUE", "plannedStepsPerDay.get(key): "+plannedStepsPerDay.get(key));
-//                    ps.add(plannedStepsPerDay.get(key));
-//                }
-
-                Log.i("PROGRESS", "printing values in ps");
-                for(Integer i : ps) {
-                    Log.i("PROGRESS", "Value is " + i);
-                }
-
                 // filling in zeroes where we hvae no data
                 int oldPSSize = ps.size();
-                for(int j = 0; j < 7-oldPSSize; j++) {
+                for (int j = 0; j < 7 - oldPSSize; j++) {
                     ps.add(0);
                 }
                 int oldUPSSize = ups.size();
-                for(int k = 0; k < 7-oldUPSSize; k++) {
+                for (int k = 0; k < 7 - oldUPSSize; k++) {
                     ups.add(0);
                 }
 
@@ -171,10 +131,11 @@ public class ProgressActivity extends AppCompatActivity implements
                 Log.i("PS_SIZE", "ps size is " + ps.size());
 
                 ProgressChart pc = new ProgressChart(barChart, ups, ps, ups.size(), dateLabels);
+                cdr.register(pc);
                 pc.setup();
             }
-        }).start();
 
+        }).start();
     }
 
     @Override

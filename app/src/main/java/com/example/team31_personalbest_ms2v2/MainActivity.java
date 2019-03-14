@@ -360,6 +360,12 @@ public class MainActivity extends AppCompatActivity
      */
     public void launchProgressActivity() {
         Intent intent = new Intent(this, ProgressActivity.class);
+        String email = "";
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            email = acct.getEmail();
+        }
+        intent.putExtra("Email", email);
         startActivity(intent);
     }
 
@@ -375,7 +381,7 @@ public class MainActivity extends AppCompatActivity
      * launchPastWalksActivity Launches the activity showing the past week's walks/runs
      */
     public void launchFriendsListActivity() {
-        Intent intent = new Intent(this, friendsListActivity.class);
+        Intent intent = new Intent(this, FriendsListActivity.class);
         startActivity(intent);
     }
 

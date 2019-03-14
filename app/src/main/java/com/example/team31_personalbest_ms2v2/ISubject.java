@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.dogegotchi.observer;
+package com.example.team31_personalbest_ms2v2;
 
 /**
  * Generic interface describing a subject (aka observable).

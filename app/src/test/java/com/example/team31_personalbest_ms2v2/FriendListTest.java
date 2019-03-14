@@ -43,13 +43,13 @@ import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
 public class FriendListTest {
-    friendsListActivity friendsListActivity;
-    ActivityController<friendsListActivity> friendsController;
+    FriendsListActivity friendsListActivity;
+    ActivityController<FriendsListActivity> friendsController;
     MockFriendsListActivity mockFriendsListActivity;
 
     @Before
     public void init() {
-        friendsListActivity = Mockito.mock(friendsListActivity.class);
+        friendsListActivity = Mockito.mock(FriendsListActivity.class);
         //mockFriendsListActivity = Robolectric.setupActivity(MockFriendsListActivity.class);
     }
 

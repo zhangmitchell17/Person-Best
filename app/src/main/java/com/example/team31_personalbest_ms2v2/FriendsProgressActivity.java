@@ -18,11 +18,7 @@ public class FriendsProgressActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friends_progress);
 
         // getting friend info to get data from cloud
-        Bundle b = getIntent().getExtras();
-        String value;
-        if(b!=null) {
-            value = b.getString("Email");
-        }
+
 
         bc = findViewById(R.id.barChartFriends);
 

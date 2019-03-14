@@ -1,6 +1,7 @@
 package com.example.team31_personalbest_ms2v2;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -18,7 +19,7 @@ import static com.example.team31_personalbest_ms2v2.Constants.*;
 /**
  * class that creates a stylized barchart
  */
-public class ProgressChart {
+public class ProgressChart implements IDataRetrieverObserver{
 
     BarChart bc;
     String[] bottomAxisLabels;
@@ -62,6 +63,21 @@ public class ProgressChart {
         bc.setData(data);
 
         bc.invalidate(); // refresh
+    }
+
+    /**
+     *
+     */
+    private void update(String label, List<Integer> list) {
+        Log.i("SHIT", "Updating for " + label);
+        if(label.equals("ups")) {
+            unplanned = list;
+        } else if(label.equals("ps")) {
+            planned = list;
+        } else {
+            return;
+        }
+        setup();
     }
 
     /**
@@ -112,6 +128,14 @@ public class ProgressChart {
 
         BarData data = new BarData(set);
         return data;
+    }
+
+    /**
+     *
+     */
+    public void onDataRetrieved(String label, List<Integer> list) {
+        Log.i("SHIT", "progress chart has been notified");
+        update(label, list);
     }
 
 }
