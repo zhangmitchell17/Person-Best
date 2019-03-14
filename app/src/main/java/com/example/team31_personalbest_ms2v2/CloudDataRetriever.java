@@ -36,16 +36,9 @@ public class CloudDataRetriever implements ISubject<IDataRetrieverObserver> {
 
     /* maps names of collections to their respective collection reference */
     HashMap<String, CollectionReference> colMap;
-    public CloudDataRetriever(Context c) {
+    public CloudDataRetriever(Context c, String email) {
         FirebaseApp.initializeApp(c);
         ff = FirebaseFirestore.getInstance();
-
-        String email = "";
-
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(c);
-        if (acct != null) {
-            email = acct.getEmail();
-        }
 
         colMap = new HashMap<>();
         colMap.put("ps", ff.collection("users")

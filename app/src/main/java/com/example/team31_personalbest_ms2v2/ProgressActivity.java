@@ -53,6 +53,7 @@ public class ProgressActivity extends AppCompatActivity implements
     private BarChart barChart;
     private FirebaseFirestore db;
     private CollectionReference plannedWalks;
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,7 @@ public class ProgressActivity extends AppCompatActivity implements
         db = FirebaseFirestore.getInstance();
 
         Bundle b = getIntent().getExtras();
-        String email = "";
+        email = "";
         if(b!=null) {
             email = b.getString("Email");
         }
@@ -110,7 +111,7 @@ public class ProgressActivity extends AppCompatActivity implements
                 dateLabels = dateLabelList.toArray(dateLabels);
 
                 //getting planned walks urns from cloud
-                CloudDataRetriever cdr = new CloudDataRetriever(act);
+                CloudDataRetriever cdr = new CloudDataRetriever(act, email);
                 Log.i("SHIT", "ABOUT TO CALL PARSEDATA");
                 cdr.parseData(DAYS_PER_WEEK);
 
