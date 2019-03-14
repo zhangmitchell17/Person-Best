@@ -619,8 +619,7 @@ public class MainActivity extends AppCompatActivity
                     Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     SharedPreferences sharedPreferences = getSharedPreferences("currentGoal", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    System.out.println("goal string " + document.getString("goal"));
-                    editor.putString("goal", document.getString("goal"));
+                    editor.putString("goal", (String)document.get("goal"));
                     editor.apply();
                     System.out.println("sharePref: " + sharedPreferences.getString("goal", "-1"));
                 } else {
