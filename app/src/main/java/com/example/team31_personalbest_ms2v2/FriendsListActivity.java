@@ -60,10 +60,14 @@ public class FriendsListActivity extends AppCompatActivity {
 
         // add current user to the users database
         FirebaseApp.initializeApp(this);
+
         db = FirebaseFirestore.getInstance();
+
+        /*
         this.user = new User(currentUserName, currentUserEmail);
 
         addUser(user);
+        */
 
         // when user click add friend button show dialog
         addFriendButton = findViewById(R.id.addFriend);
@@ -99,7 +103,7 @@ public class FriendsListActivity extends AppCompatActivity {
 
                             // when user click friends button redirects to the friends info
                             newFriend.setOnClickListener((v -> {
-                                startProgressActivity(friend.email);
+                                launchChatActivity(friend.getName(),currentUserName);
                             }));
 
                             break;
@@ -112,6 +116,15 @@ public class FriendsListActivity extends AppCompatActivity {
     public void startProgressActivity(String friendEmail) {
         Intent intent = new Intent(this, FriendsProgressActivity.class);
         intent.putExtra("Email", friendEmail);
+        startActivity(intent);
+    }
+
+    public void launchChatActivity(String friendName, String userName) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        Bundle extraNames = new Bundle();
+        extraNames.putString("FRIEND_NAME",friendName);
+        extraNames.putString("USER_NAME",userName);
+        intent.putExtras(extraNames);
         startActivity(intent);
     }
 

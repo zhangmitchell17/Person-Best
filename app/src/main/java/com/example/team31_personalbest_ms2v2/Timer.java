@@ -20,9 +20,11 @@ public class Timer extends AsyncTask<String, String, String> {
     private int minutes;
     private int seconds;
     private TextView timeDisplay;
+    private FitnessService fitnessService;
 
-    public Timer(TextView tv) {
+    public Timer(TextView tv, FitnessService fitnessService) {
         this.timeDisplay = tv;
+        this.fitnessService = fitnessService;
     }
 
     public void cancel() {
@@ -98,6 +100,8 @@ public class Timer extends AsyncTask<String, String, String> {
         temp = temp % Constants.SECS_PER_MIN;
         // Updates seconds
         seconds = temp;
+
+        fitnessService.updateStepCount();
 
         Log.i("timer value: ", hours + " " + minutes + " " + seconds);
     }
