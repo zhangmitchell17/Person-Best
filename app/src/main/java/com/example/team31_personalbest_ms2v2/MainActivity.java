@@ -602,7 +602,8 @@ public class MainActivity extends AppCompatActivity
 
 
         FirebaseFirestore.getInstance()
-                .collection("users")
+                .collection("users/" + currentUserEmail + "/HeightAndGoal" )
+
                 .document("hoz054@ucsd.edu")
                 .collection("HeightAndGoal")
                 .document("goal")
