@@ -18,7 +18,7 @@
             android:name=".MockFriendsListActivity"
             android:label="@string/title_activity_mock_friends_list"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".friendsListActivity" />
+        <activity android:name=".FriendsListActivity" />
         <activity android:name=".PastWalksActivity" />
         <activity android:name="ChatActivity"/>
         <service android:name="MyFirebaseMessagingService">
