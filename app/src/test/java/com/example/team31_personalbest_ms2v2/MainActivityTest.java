@@ -50,5 +50,4 @@ public class MainActivityTest {
         controller.resume();
         assertEquals(sharePref.getInt("steps", -1), 100);
     }
-
 }
