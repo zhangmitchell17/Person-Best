@@ -21,12 +21,14 @@ public class ResetHeightTests {
     MainActivity activity;
     ActivityController<MainActivity> controller;
 
+    /*
     @Before
     public void init() {
         activity = Robolectric.setupActivity(MainActivity.class);
         controller = Robolectric.buildActivity(MainActivity.class);
         controller.create();
     }
+
 
     @Test
     public void testIfStepIsResetSameDay() {
