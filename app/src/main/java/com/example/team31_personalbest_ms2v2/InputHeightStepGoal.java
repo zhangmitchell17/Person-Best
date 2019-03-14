@@ -16,6 +16,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -157,11 +159,14 @@ public class InputHeightStepGoal extends AppCompatActivity{
                                 sharePref.getString("step", "1") + " steps";
 
                         // store stride length to the cloud
+                        String date = new SimpleDateFormat("MM-dd-yyyy").
+                                format(Calendar.getInstance().getTime());
                         Map<String, Object> map = new HashMap<>();
                         map.put("goal", newGoal);
+                        map.put("date", date);
                         db.collection("users").document(userEmail)
                                 .collection("HeightAndGoal")
-                                .document("goal")
+                                .document(date)
                                 .set(map);
 
                         Toast.makeText(InputHeightStepGoal.this, "Your step goal is saved",

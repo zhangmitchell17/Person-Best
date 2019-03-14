@@ -61,13 +61,11 @@ public class FriendListTest {
             @Override
             public void success() {
             }
-
             @Override
             public void failure() {
                 Assert.fail();
             }
         });
-
     }
     */
 

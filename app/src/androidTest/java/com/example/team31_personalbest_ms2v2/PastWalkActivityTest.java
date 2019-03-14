@@ -13,7 +13,6 @@ import android.view.ViewParent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +24,7 @@ import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class PastWalkRunActivityTest {
+public class PastWalkActivityTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
@@ -58,7 +58,7 @@ public class PastWalkRunActivityTest {
     }
 
     @Test
-    public void pastWalkRunActivityTest() {
+    public void pastWalkActivityTest() {
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
@@ -68,6 +68,9 @@ public class PastWalkRunActivityTest {
             e.printStackTrace();
         }
 
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
@@ -99,64 +102,17 @@ public class PastWalkRunActivityTest {
         }
 
         ViewInteraction textView = onView(
-                allOf(withText("Day"),
+                allOf(withText("Your Walk/Run Records"),
                         childAtPosition(
-                                childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
-                                        0),
+                                allOf(withId(R.id.linearLayout2),
+                                        childAtPosition(
+                                                withId(R.id.scrollView),
+                                                0)),
                                 0),
                         isDisplayed()));
         textView.check(matches(isDisplayed()));
 
-        ViewInteraction textView2 = onView(
-                allOf(withText("Day"),
-                        childAtPosition(
-                                childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
-                                        0),
-                                0),
-                        isDisplayed()));
-        textView2.check(matches(isDisplayed()));
-
-        ViewInteraction textView3 = onView(
-                allOf(withText("Time"),
-                        childAtPosition(
-                                childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
-                                        0),
-                                1),
-                        isDisplayed()));
-        textView3.check(matches(isDisplayed()));
-
-        ViewInteraction textView4 = onView(
-                allOf(withText("Steps"),
-                        childAtPosition(
-                                childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
-                                        0),
-                                2),
-                        isDisplayed()));
-        textView4.check(matches(isDisplayed()));
-
-        ViewInteraction textView5 = onView(
-                allOf(withText("MPH"),
-                        childAtPosition(
-                                childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
-                                        0),
-                                3),
-                        isDisplayed()));
-        textView5.check(matches(withText("MPH")));
-
-        ViewInteraction textView6 = onView(
-                allOf(withText("MPH"),
-                        childAtPosition(
-                                childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(android.widget.TableLayout.class),
-                                        0),
-                                3),
-                        isDisplayed()));
-        textView6.check(matches(withText("MPH")));
+        pressBack();
     }
 
     private static Matcher<View> childAtPosition(
