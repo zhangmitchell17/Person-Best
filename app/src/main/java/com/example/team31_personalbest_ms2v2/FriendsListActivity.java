@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 
 import static android.support.constraint.Constraints.TAG;
 
-public class friendsListActivity extends AppCompatActivity {
+public class FriendsListActivity extends AppCompatActivity {
     String friendEmail;
     Button addFriendButton;
     String currentUserEmail = "test@ucsd.edu";
@@ -103,7 +103,8 @@ public class friendsListActivity extends AppCompatActivity {
 
                             // when user click friends button redirects to the friends info
                             newFriend.setOnClickListener((v -> {
-                                launchChatActivity(friend.getName(),currentUserName);
+                                //launchChatActivity(friend.getName(),currentUserName);
+                                startProgressActivity(friend.email);
                             }));
 
                             break;
@@ -114,8 +115,8 @@ public class friendsListActivity extends AppCompatActivity {
     }
 
     public void startProgressActivity(String friendEmail) {
-        //TODO: ADD FRIENDS PROGRESS ACTIVITY INTENT HERE(Replace the mainactivity.class)
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ProgressActivity.class);
+        Log.i("SHIT", "friends email is ");
         intent.putExtra("Email", friendEmail);
         startActivity(intent);
     }

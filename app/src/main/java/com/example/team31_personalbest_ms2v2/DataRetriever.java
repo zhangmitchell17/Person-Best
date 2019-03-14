@@ -150,9 +150,10 @@ public class DataRetriever {
      * and returns it in a list
      * @param dt datatype of the data that you want to request
      * @param agg datatype of the data that you want dt aggregated into
+     * @param field value of the window of time you want to aggregate data for
      * @return a list of Buckets requested
      */
-    public List<Bucket> retrieveAggregatedData(DataType dt, DataType agg) {
+    public List<Bucket> retrieveAggregatedData(DataType dt, DataType agg, int field, int amount) {
 
         List<Bucket> buckets = new ArrayList<>();
 
@@ -163,7 +164,7 @@ public class DataRetriever {
         calendar.set(Calendar.SECOND, 0);
         // setting today as the last of the days to retrieve data from
         long endTime = calendar.getTimeInMillis();
-        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+        calendar.add(field, -1*amount);
         // setting startTime as a week ago from endTime
         long startTime = calendar.getTimeInMillis();
 

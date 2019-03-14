@@ -79,7 +79,7 @@ public class TimeService extends Service {
                     hourStr = hourFormat.format(date);
                     dayStr = dayFormat.format(date);
 
-                    Log.i("timeThread: ",secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
+                    //Log.i("timeThread: ",secondStr + " " + minuteStr + " " + hourStr + " " + dayStr);
 
                     if(hourStr.equals("12") && minuteStr.equals("0") && secondStr.equals("00")) {
                         setProgressNotificationFlag();
