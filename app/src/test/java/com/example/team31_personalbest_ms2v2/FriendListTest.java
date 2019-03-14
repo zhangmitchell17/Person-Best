@@ -3,6 +3,7 @@ package com.example.team31_personalbest_ms2v2;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.Button;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
+import static org.robolectric.shadows.ShadowInstrumentation.getInstrumentation;
 
 
 @RunWith(RobolectricTestRunner.class)
@@ -49,6 +51,8 @@ public class FriendListTest {
 
     @Before
     public void init() {
+        Context context = getInstrumentation().getTargetContext();
+        FirebaseApp.initializeApp(context);
         friendsListActivity = Mockito.mock(FriendsListActivity.class);
         //mockFriendsListActivity = Robolectric.setupActivity(MockFriendsListActivity.class);
     }
