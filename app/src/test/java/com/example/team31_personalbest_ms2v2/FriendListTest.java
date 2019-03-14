@@ -43,7 +43,6 @@ import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
 public class FriendListTest {
-
     friendsListActivity friendsListActivity;
     ActivityController<friendsListActivity> friendsController;
     MockFriendsListActivity mockFriendsListActivity;
@@ -62,13 +61,11 @@ public class FriendListTest {
             @Override
             public void success() {
             }
-
             @Override
             public void failure() {
                 Assert.fail();
             }
         });
-
     }
     */
 
@@ -104,5 +101,6 @@ public class FriendListTest {
         friendsListActivity.showDialog(Mockito.anyObject());
         verify(friendsListActivity, atLeastOnce()).showDialog(Mockito.anyObject());
     }
+
 
 }

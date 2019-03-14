@@ -46,6 +46,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -243,14 +244,21 @@ public class MainActivity extends AppCompatActivity
         String steps = view.getText().toString();
         Log.i("Cloud steps: ", ("Steps to the cloud: " + steps));
 
-
         Map<String, String> dailyStepCnt = new HashMap();
         dailyStepCnt.put("steps", steps);
-        String date = new SimpleDateFormat("MM-dd-yyyy").
+
+        Date day = new Date();
+        String simpleDate = new SimpleDateFormat("MM-dd-yyyy").
                 format(Calendar.getInstance().getTime());
 
+        String date = day.toString();
+        String dayOfWeek = date.substring(0, date.indexOf(" "));
+        int indexOfEnd = date.indexOf(" ", date.indexOf(" ", date.indexOf(" ") + 1) +1);
+        // Feb 17 2019
+        String monthDayYear = date.substring(date.indexOf(" ") + 1, indexOfEnd) + " " + date.substring(date.length() - 4);
+        dailyStepCnt.put("monthDayYear", monthDayYear);
         db.collection("users").document(this.currentUserEmail).
-                collection("steps").document(date).set(dailyStepCnt);
+                collection("steps").document(simpleDate).set(dailyStepCnt);
     }
 
     /**
