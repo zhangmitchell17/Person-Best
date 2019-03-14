@@ -11,13 +11,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static java.lang.Integer.parseInt;
 
 /**
  * This file is for you to input your step and height goals
  */
 public class InputHeightStepGoal extends AppCompatActivity{
-
+    FirebaseFirestore db;
+    String userEmail = "test@ucsd.edu";
+    String userName = "test";
 
     /**
      * Begins on creation of the activity page
@@ -25,6 +35,19 @@ public class InputHeightStepGoal extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // init firebase
+        FirebaseApp.initializeApp(this);
+        this.db = FirebaseFirestore.getInstance();
+
+        // store user info
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            this.userEmail = acct.getEmail();
+            this.userName = acct.getDisplayName();
+            System.out.println(userEmail);
+        }
+
         setContentView(R.layout.activity_input_height);
         // Where the user can input their height
         final EditText height = (EditText)findViewById(R.id.heightInput);
@@ -47,13 +70,15 @@ public class InputHeightStepGoal extends AppCompatActivity{
             public void onClick(View v) {
                 // save user height to file savedHeight
                 SharedPreferences sharedPref = getSharedPreferences
-                                                ("savedHeight", MODE_PRIVATE);
+                        ("savedHeight", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
+
                 // Only save the height if the user did not input 0
                 if (!height.getText().toString().equals("0")) {
                     editor.putString("height", height.getText().toString());
                     editor.apply();
                 }
+
                 TextView displayFirstName = (TextView)findViewById(R.id.enteredHeight);
                 String notification = "";
 
@@ -62,20 +87,22 @@ public class InputHeightStepGoal extends AppCompatActivity{
                     int newHeight = parseInt(height.getText().toString());
                     // Invalid height
                     if (sharedPref.getString("height", "").equals("") ||
-                        newHeight <= 0) {
+                            newHeight <= 0) {
                         notification = "Please enter your height :)";
                         Toast.makeText(InputHeightStepGoal.this, "Your stride length is unchanged",
                                 Toast.LENGTH_LONG).show();
-
                     }
                     // Valid height
                     else {
                         int stride = (int) (0.413 * parseInt(height.getText().toString()));
                         notification = "Your stride length will be " + stride + " inches";
-                        sharedPref = getSharedPreferences("savedStride", MODE_PRIVATE);
-                        editor = sharedPref.edit();
-                        editor.putInt("stride", stride);
-                        editor.apply();
+
+                        // store stride length to the cloud
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("stride", stride);
+                        db.collection("users").document(userEmail).
+                                collection("HeightAndGoal").document("stride").set(map);
+
                         Toast.makeText(InputHeightStepGoal.this, "Your stride length is saved",
                                 Toast.LENGTH_LONG).show();
                     }
@@ -128,6 +155,15 @@ public class InputHeightStepGoal extends AppCompatActivity{
                     else {
                         notification = "Congrats! Your new step goal is " +
                                 sharePref.getString("step", "1") + " steps";
+
+                        // store stride length to the cloud
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("goal", newGoal);
+                        db.collection("users").document(userEmail)
+                                .collection("HeightAndGoal")
+                                .document("goal")
+                                .set(map);
+
                         Toast.makeText(InputHeightStepGoal.this, "Your step goal is saved",
                                 Toast.LENGTH_LONG).show();
                     }

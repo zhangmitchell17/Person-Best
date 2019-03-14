@@ -11,7 +11,9 @@ import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.HashSet;
 
@@ -25,6 +27,7 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
     public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
     private static final String TAG = "WalkRunActivity";
     private FitnessService fitnessService;
+    String TIMESTAMP_KEY = "timestamp";
 
     private TextView stepDisplay;
     private TextView speedDisplay;
@@ -73,12 +76,15 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
         fitnessService.setup();
 
         // Makes a timer, makes the async task for it, and begins it
+        String stride =getIntent().getStringExtra("stride");
+        String strideLength = stride.substring(stride.indexOf(":") + 2);
         timeDisplay = findViewById(R.id.textViewTimer);
         t = new Timer(timeDisplay, fitnessService);
         t.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         speedDisplay = findViewById(R.id.textViewSpeed);
-        s = new SpeedUpdater(this, speedDisplay, t);
+        System.out.println("strideLength is: " + strideLength);
+        s = new SpeedUpdater(this, speedDisplay, t, Integer.parseInt(strideLength));
         s.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // Returns back to Home Page after session finished
@@ -100,9 +106,13 @@ public class WalkRunActivity extends AppCompatActivity implements IStepActivity{
                 storeToSharePref(stats);
 
                 db.collection("users").document(user.email).
-                        collection("WalkRuns").
-                        document("Walk at " + String.valueOf(System.currentTimeMillis())).
+                        collection("WalkRuns").document("Walk at " + String.valueOf(System.currentTimeMillis())).
                         set(stats);
+
+                db.collection("users")
+                        .document(user.email)
+                        .collection("WalkRuns")
+                        .orderBy("date", Query.Direction.DESCENDING);
 
                 finish();
             }

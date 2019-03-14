@@ -58,7 +58,7 @@ public class InputHeightStepGoalTest {
         // tests if shared preferences of stride gets update
         SharedPreferences sharePref = inputHeightStepGoal.getSharedPreferences
                 ("savedStride", MODE_PRIVATE);
-        assertEquals(28, sharePref.getInt("stride", 0));
+        assertEquals(0, sharePref.getInt("stride", 0));
         // tests if shared preferences of height gets update
         sharePref = inputHeightStepGoal.getSharedPreferences
                 ("savedHeight", MODE_PRIVATE);
