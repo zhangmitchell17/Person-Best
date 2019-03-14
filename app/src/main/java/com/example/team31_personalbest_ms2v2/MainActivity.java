@@ -210,8 +210,16 @@ public class MainActivity extends AppCompatActivity
      * When user start using new phone or re download the app, he should get goal/step from cloud
      */
     public void grabUserStrideGoalFromCloud(String type, TextView view) {
-         DocumentReference docRef = db.collection("users").
-                document(currentUserEmail).collection("HeightAndGoal").document(type);
+        String date = new SimpleDateFormat("MM-dd-yyyy").
+                format(Calendar.getInstance().getTime());
+        DocumentReference docRef;
+        if(type.equals("stride")) {
+            docRef = db.collection("users").
+                    document(currentUserEmail).collection("HeightAndGoal").document(type);
+        } else {
+            docRef = db.collection("users").
+                    document(currentUserEmail).collection("HeightAndGoal").document(date);
+        }
 
         // grabe user stride and
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
