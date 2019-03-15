@@ -35,6 +35,8 @@ public class ChatActivity extends AppCompatActivity {
     String to;
     FireBaseAdapter fireBaseAdapter;
 
+    String intendedMessage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -56,8 +58,17 @@ public class ChatActivity extends AppCompatActivity {
         TextView nameView = findViewById((R.id.friend_name));
         nameView.setText(to);
 
+        Bundle extras = getIntent().getExtras();
+        intendedMessage = extras.getString("MESSAGE");
+        if (intendedMessage != "") {
+            sendIntendedMessage();
+        }
+
     }
 
+    /**
+     * A helper method to get the user and the friend of the user
+     */
     private void getFromAndTo() {
         Bundle extraNames = getIntent().getExtras();
         from = extraNames.getString("USER_NAME");
@@ -65,6 +76,9 @@ public class ChatActivity extends AppCompatActivity {
         //System.out.println(from + " && " + to);
     }
 
+    /**
+     * A helper method to setup the document(chat) that we want to write in
+     */
     private void setupDocumentKey() {
         if (from.compareTo(to) > 0) {
             DOCUMENT_KEY = COLLECTION_KEY + " between " + from + " and " + to;
@@ -83,8 +97,19 @@ public class ChatActivity extends AppCompatActivity {
         //if (chat == null) System.out.println("Chat is null! Can't chat with friend!");
     }
 
-    private void sendMessage() {
+    /**
+     * If there is a message already that the user wants to send, send it
+     */
+    private void sendIntendedMessage() {
+        EditText messageView = findViewById(R.id.text_message);
+        messageView.setText(intendedMessage);
+        sendMessage();
+    }
 
+    /**
+     * Send the message entered by the user
+     */
+    private void sendMessage() {
         EditText messageView = findViewById(R.id.text_message);
 
         Map<String, String> newMessage = new HashMap<>();
