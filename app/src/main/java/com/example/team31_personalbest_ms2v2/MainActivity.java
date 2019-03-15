@@ -1,6 +1,9 @@
 package com.example.team31_personalbest_ms2v2;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,6 +16,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +30,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,12 +43,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -55,6 +66,7 @@ import javax.security.auth.Subject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import static android.support.constraint.Constraints.TAG;
 import static java.lang.Integer.parseInt;
 
 // used to create timer and reset step at beginning of day
@@ -67,6 +79,7 @@ public class MainActivity extends AppCompatActivity
     public static Activity mainActivity;
 
     private static final String TAG = "SignIn";
+    String TAG2 = MainActivity.class.getSimpleName();
 
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
 
@@ -87,6 +100,10 @@ public class MainActivity extends AppCompatActivity
     public String currentUserName = "test";
     User user;
     public FirebaseFirestore db;
+    CollectionReference notifications;
+
+    private String steps;
+    private Long goals;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -121,7 +138,7 @@ public class MainActivity extends AppCompatActivity
             if(intent.getAction() == Intent.ACTION_EDIT) {
                 fitnessService.updateStepCount();
                 sendStepsToCloud(db);
-
+                goalAchievement();
                 Log.i("BoardCast: ", "received boardcast");
             }
         }
@@ -180,6 +197,10 @@ public class MainActivity extends AppCompatActivity
         FirebaseApp.initializeApp(this);
         this.db = FirebaseFirestore.getInstance();
 
+        notifications = FirebaseFirestore.getInstance()
+                .collection("Notifications")
+                .document("notifications1")
+                .collection("notification");
 
         // init fitness service
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
@@ -205,22 +226,17 @@ public class MainActivity extends AppCompatActivity
 
         Log.i(TAG, "Time Service: " + intent.toString());
         startService(intent);
+
+        subscribeToNotificationsTopic("notifications1");
     }
 
     /**
      * When user start using new phone or re download the app, he should get goal/step from cloud
      */
     public void grabUserStrideGoalFromCloud(String type, TextView view) {
-        String date = new SimpleDateFormat("MM-dd-yyyy").
-                format(Calendar.getInstance().getTime());
         DocumentReference docRef;
-        if(type.equals("stride")) {
             docRef = db.collection("users").
                     document(currentUserEmail).collection("HeightAndGoal").document(type);
-        } else {
-            docRef = db.collection("users").
-                    document(currentUserEmail).collection("HeightAndGoal").document(date);
-        }
 
         // grabe user stride and
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -254,7 +270,6 @@ public class MainActivity extends AppCompatActivity
         String date = day.toString();
         String dayOfWeek = date.substring(0, date.indexOf(" "));
         int indexOfEnd = date.indexOf(" ", date.indexOf(" ", date.indexOf(" ") + 1) +1);
-        // Feb 17 2019
         String monthDayYear = date.substring(date.indexOf(" ") + 1, indexOfEnd) + " " + date.substring(date.length() - 4);
         dailyStepCnt.put("monthDayYear", monthDayYear);
         db.collection("users").document(this.currentUserEmail).
@@ -277,24 +292,6 @@ public class MainActivity extends AppCompatActivity
      */
     public void onResume() {
         super.onResume();
-
-        //When app is launched check if date changed, if date is changed reset steps
-        SharedPreferences sharePref = getSharedPreferences("resetSteps", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharePref.edit();
-
-        // today's date
-        String date = new SimpleDateFormat("MM-dd-yyyy").format(Calendar.getInstance().getTime());
-
-        // if date is not equal, which means we should reset date
-        if(!sharePref.getString("date", "").equals(date)) {
-            Toast.makeText(MainActivity.this, "Your step is reset", Toast.LENGTH_LONG).show();
-            editor.putInt("steps", 0);
-        }
-
-        // store date in sharedPreferenceFile
-        editor.remove("date");
-        editor.putString("date", date);
-        editor.apply();
 
         // update step count on screen
         updateStepCountAndStride();
@@ -342,7 +339,6 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
         TextView totalSteps = (TextView) findViewById(R.id.textViewStepMain);
         totalSteps.setText(String.valueOf(stepCount));
-        goalAchievement(stepCount);
         Log.i(TAG, "currentTotalSteps: " + totalSteps.getText().toString());
     }
 
@@ -557,71 +553,128 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void sendNotification(String message) {
+        Map<String, String> newMessage = new HashMap<>();
+        newMessage.put("text", message);
+
+        notifications.add(newMessage).addOnSuccessListener(result -> {
+            Log.e(TAG2, "Successfully sent notification");
+        }).addOnFailureListener(error -> {
+            Log.e(TAG2, error.getLocalizedMessage());
+        });
+    }
+
+    private void subscribeToNotificationsTopic(String documentKey) {
+        FirebaseMessaging.getInstance().subscribeToTopic(documentKey)
+                .addOnCompleteListener(task -> {
+                            String msg = "Subscribed to notifications";
+                            if (!task.isSuccessful()) {
+                                msg = "Subscribe to notifications failed";
+                            }
+                            Log.d(TAG2, msg);
+                            Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        }
+                );
+    }
+
+    void showNotification(String title, String content) {
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("default",
+                    "YOUR_CHANNEL_NAME",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("YOUR_NOTIFICATION_CHANNEL_DISCRIPTION");
+            mNotificationManager.createNotificationChannel(channel);
+        }
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "default")
+                .setSmallIcon(R.mipmap.ic_launcher) // notification icon
+                .setContentTitle(title) // title for notification
+                .setContentText(content)// message for notification
+                .setAutoCancel(true); // clear notification after click
+        Intent intent = new Intent(getApplicationContext(), InputHeightStepGoal.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(pi);
+        mNotificationManager.notify(0, mBuilder.build());
+    }
+
     /**
      * This method displays the step goal achievement notification and
      * asks if the user wants to set a new step goal
      * @param stepCount The number of current steps to compare the step goal to
      */
-    public void goalAchievement(long stepCount) {
-        SharedPreferences sharedPreferences = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
-        int stepGoal = parseInt(sharedPreferences.getString("step", "0"));
+    public void goalAchievement() {
+        String date = new SimpleDateFormat("MM-dd-yyyy").
+                format(Calendar.getInstance().getTime());
 
-        SharedPreferences sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
-        /*
-        // Check if an accomplishment notification has been displayed today yet
-        String date = sharedPref.getString("date", "");
-        if (!timeService.getDays().equals(date)) {
-            goalAchievedDisplayed = false;
-        }
-        */
-        goalAchievedDisplayed = sharedPref.getBoolean("accomplishmentDisplayed", false);
-        // Only display it if the step count is greater than the step goal and the notification has not been displayed yet
-        if (stepCount > stepGoal && !goalAchievedDisplayed) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Achievement Notification");
-            final int newStepGoal = (stepGoal * 1.10 > stepGoal + 500) ? stepGoal + 500 :
-                    (int) (stepGoal * 1.10);
-            builder.setMessage("Good Job! You have achieved your step goal. Would you like accept our a new step goal of: " + newStepGoal);
-            // Yes button sets the recommended step goal
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    SharedPreferences sharedPreferences = getSharedPreferences("savedStepGoal", MODE_PRIVATE);
+        DocumentReference docRef = db.collection("users")
+                .document(currentUserEmail)
+                .collection("HeightAndGoal")
+                .document("goal");
+
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    SharedPreferences sharedPreferences = getSharedPreferences("currentGoal", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("step", "" + newStepGoal);
+                    editor.putString("goal", (String)document.get("goal"));
                     editor.apply();
-                    updateStepCountAndStride();
+                    System.out.println("sharePref: " + sharedPreferences.getString("goal", "-1"));
+                } else {
+                    Log.d(TAG, "No such document");
                 }
-            });
-            // Redirect to page to let the user set their own step goal
-            builder.setNeutralButton("I'd like to set my own new step goal", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    launchInputHeightStepGoalActivity();
+            } else {
+                Log.d(TAG, "get failed with ", task.getException());
+            }
+        });
+
+        SharedPreferences sharedPreferences2 = getSharedPreferences("currentGoal", MODE_PRIVATE);
+        int stepGoal = Integer.parseInt(sharedPreferences2.getString("goal", "0"));
+
+        docRef = db.collection("users")
+                .document(currentUserEmail)
+                .collection("steps")
+                .document(date);
+
+        docRef.get()
+        .addOnCompleteListener(task -> {
+            if (task.isSuccessful())
+            {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists())
+                {
+                    SharedPreferences sharedPreferences = getSharedPreferences("currentSteps", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("steps", document.getString("steps"));
+                    editor.apply();
                 }
-            });
-            // Close the message
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog alert = builder.create();
-            alert.show();
+            }
+        });
+
+        SharedPreferences sharedPref = getSharedPreferences(date + 1, MODE_PRIVATE);
+        goalAchievedDisplayed = sharedPref.getBoolean("accomplishmentDisplayed", false);
+
+        System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+
+        SharedPreferences sharePref = getSharedPreferences("currentSteps", MODE_PRIVATE);
+        int currentSteps = Integer.parseInt(sharePref.getString("steps","0"));
+
+        Log.i("goals: ", Integer.toString(stepGoal));
+        Log.i("steps: ", Integer.toString(currentSteps));
+        Log.i("goalAchievedDisplayed", Boolean.toString(goalAchievedDisplayed));
+
+        // Only display it if the step count is greater than the step goal and the notification has not been displayed yet
+        if (currentSteps >= stepGoal && !goalAchievedDisplayed) {
+            showNotification("good job", "Please set a new step goal");
 
             // Save the date that the accomplishment notification has been set
-            sharedPref = getSharedPreferences("accomplishmentDate", MODE_PRIVATE);
+            sharedPref = getSharedPreferences(date + 1, MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            String currentDate = sharedPref.getString("currentDate", "");
-            editor.putString("date", currentDate);
             editor.putBoolean("accomplishmentDisplayed", true);
             editor.apply();
         }
-
-
     }
 
     /**

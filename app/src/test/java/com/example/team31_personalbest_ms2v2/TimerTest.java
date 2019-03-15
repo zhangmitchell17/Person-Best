@@ -1,5 +1,6 @@
 package com.example.team31_personalbest_ms2v2;
 
+import android.content.Context;
 import android.widget.Button;
 
 import org.junit.Before;
@@ -12,8 +13,11 @@ import org.robolectric.shadows.ShadowIntent;
 
 import android.content.Intent;
 
+import com.google.firebase.FirebaseApp;
+
 import static org.junit.Assert.assertEquals;
 import static org.robolectric.Shadows.shadowOf;
+import static org.robolectric.shadows.ShadowInstrumentation.getInstrumentation;
 
 @RunWith(RobolectricTestRunner.class)
 public class TimerTest {
@@ -25,6 +29,8 @@ public class TimerTest {
 
     @Before
     public void setup() {
+        Context context = getInstrumentation().getTargetContext();
+        FirebaseApp.initializeApp(context);
         mainActivity = Robolectric.setupActivity(MainActivity.class);
 
         //controller = Robolectric.buildActivity(MainActivity.class);
