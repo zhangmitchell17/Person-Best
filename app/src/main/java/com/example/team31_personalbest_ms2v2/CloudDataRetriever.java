@@ -28,10 +28,12 @@ import java.util.Map;
 
 import static android.support.constraint.Constraints.TAG;
 
+/**
+ * ClodDataRetriever is a class that retrieve
+ */
 public class CloudDataRetriever implements ISubject<IDataRetrieverObserver> {
     Collection<IDataRetrieverObserver> observers;
 
-    Context c;
     FirebaseFirestore ff;
 
     /* maps names of collections to their respective collection reference */

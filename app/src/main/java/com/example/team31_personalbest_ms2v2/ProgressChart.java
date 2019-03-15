@@ -101,8 +101,7 @@ public class ProgressChart implements IDataRetrieverObserver{
 
         // bottomAxis formatting ----
         // labels bars as per bottomAxisLabels
-        //bottomAxis.setValueFormatter(new IndexAxisValueFormatter(bottomAxisLabels));
-        bottomAxis.setValueFormatter(new DateFormatter(bottomAxisLabels.length));
+        bottomAxis.setValueFormatter(new DateFormatter());
         bottomAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         bottomAxis.setDrawLabels(true);
         bottomAxis.setDrawGridLines(false);
@@ -160,6 +159,9 @@ public class ProgressChart implements IDataRetrieverObserver{
 
     /**
      *
+     * @param label label of the thing you are updating
+     * @param dates list of dates that will be the new
+     * @param list
      */
     public void onDataRetrieved(String label, List<String> dates, List<Integer> list) {
         Log.i("SHIT", "progress chart has been notified");
@@ -168,17 +170,29 @@ public class ProgressChart implements IDataRetrieverObserver{
 
 }
 
+/**
+ *
+ */
 class DateFormatter implements IAxisValueFormatter {
     private SimpleDateFormat simpleDateFormat;
-    private int max;
 
-    public DateFormatter(int max) {
+    /**
+     * ctor for DateFormatter
+     */
+    public DateFormatter() {
         simpleDateFormat = new SimpleDateFormat(MONTH_DAY_FMT);
-        this.max = max;
     }
+
+    /**
+     *
+     * @param value is the value in the axis to convert to a label
+     * @param axis is the axis that you
+     * @return
+     */
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
         Calendar cal = Calendar.getInstance();
+        int max = (int) axis.getAxisMaximum();
         if(value >= max-1 || value != (int)value) {
             return "";
         }
