@@ -21,9 +21,9 @@ import java.util.Map;
 import static android.content.ContentValues.TAG;
 
 public class FireBaseAdapter {
-    String DOCUMENT_KEY = "chat1";
-    String FROM_KEY = "from";
-    String TEXT_KEY = "text";
+    String DOCUMENT_KEY;
+    String FROM_KEY;
+    String TEXT_KEY;
     String TIMESTAMP_KEY = "timestamp";
 
     CollectionReference chat;
@@ -47,8 +47,8 @@ public class FireBaseAdapter {
                         sb.append("\n");
                         sb.append("---\n");
                     });
-                    System.out.println("Here's a message.");
-                    System.out.println(sb);
+                    //System.out.println("Here's a message.");
+                    //System.out.println(sb);
                     listener.success(sb.toString());
                 }
 
