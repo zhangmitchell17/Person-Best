@@ -97,6 +97,9 @@ public class ChatActivity extends AppCompatActivity {
         //if (chat == null) System.out.println("Chat is null! Can't chat with friend!");
     }
 
+    /**
+     * If there is a message already that the user wants to send, send it
+     */
     private void sendIntendedMessage() {
         EditText messageView = findViewById(R.id.text_message);
         messageView.setText(intendedMessage);
