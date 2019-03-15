@@ -25,6 +25,7 @@ public class ProgressChart implements IDataRetrieverObserver{
     String[] bottomAxisLabels;
     List<Integer> planned;
     List<Integer> unplanned;
+    List<Integer> goals;
     int len;
 
     /**
@@ -35,12 +36,14 @@ public class ProgressChart implements IDataRetrieverObserver{
      * @param planned list of preformatted planned step values
      * @param bottomAxisLabels list of axis labels that correspond to unplanned and planned
      */
-    public ProgressChart(BarChart bc, List<Integer> unplanned, List<Integer> planned, int len,
+    public ProgressChart(BarChart bc, List<Integer> unplanned, List<Integer> planned,
+                         List<Integer> goals, int len,
                          String[] bottomAxisLabels) {
         this.bc = bc;
         this.bottomAxisLabels = bottomAxisLabels;
         this.planned = planned;
         this.unplanned = unplanned;
+        this.goals = goals;
         this.len = len;
     }
 
@@ -74,6 +77,8 @@ public class ProgressChart implements IDataRetrieverObserver{
             unplanned = list;
         } else if(label.equals("ps")) {
             planned = list;
+        } else if(label.equals("goals")) {
+            goals = list;
         } else {
             return;
         }
@@ -116,15 +121,19 @@ public class ProgressChart implements IDataRetrieverObserver{
 
         // populating barEntries with values from planned and unplanned
         for(int i = 0; i < len; i++) {
-            barEntries.add(new BarEntry(i, new float[]{planned.get(i), unplanned.get(i)}));
+            int stepsToReachGoal = (goals.get(i)-unplanned.get(i)-planned.get(i)>=0) ?
+                    goals.get(i)-unplanned.get(i)-planned.get(i) : 0;
+            barEntries.add(new BarEntry(i, new float[]{planned.get(i), unplanned.get(i),
+                                                       stepsToReachGoal}));
         }
 
         // making dataset from set labeled "steps"
         BarDataSet set = new BarDataSet(barEntries, "Steps");
         // labels for the chart legend
-        set.setStackLabels(new String[]{PLANNED_STEPS_STR, UNPLANNED_STEPS_STR});
+        set.setStackLabels(new String[]{PLANNED_STEPS_STR, UNPLANNED_STEPS_STR, GOAL_STR});
         // colors for the chart legend
-        set.setColors(Color.parseColor(PASTEL_GREEN), Color.parseColor(PASTEL_BLUE));
+        set.setColors(Color.parseColor(PASTEL_GREEN), Color.parseColor(PASTEL_BLUE),
+                      Color.parseColor(LIGHT_GREY));
 
         BarData data = new BarData(set);
         return data;

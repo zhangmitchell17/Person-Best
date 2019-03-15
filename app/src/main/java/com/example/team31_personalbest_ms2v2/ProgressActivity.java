@@ -49,10 +49,8 @@ public class ProgressActivity extends AppCompatActivity implements
 
     private final int STEPS_IDX = 1;
 
-    private DataRetriever dr;
     private BarChart barChart;
     private FirebaseFirestore db;
-    private CollectionReference plannedWalks;
     private String email;
 
     @Override
@@ -72,71 +70,40 @@ public class ProgressActivity extends AppCompatActivity implements
             email = b.getString("Email");
         }
 
-        plannedWalks = db.collection("users")
-                .document(email)
-                .collection("WalkRuns");
+        SimpleDateFormat monthDayFormat = new SimpleDateFormat(MONTH_DAY_FMT);
+        List<String> dateLabelList = new ArrayList<>();
 
-        dr = new DataRetriever(this);
-        dr.setup();
+        // create list of date strings
+        for (int i = 0; i > -1*DAYS_PER_WEEK; i--) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DAY_OF_YEAR, i);
+            dateLabelList.add(0, monthDayFormat.format(cal.getTime()));
+            Log.i("SHIT", "Date: " + monthDayFormat.format(cal.getTime()));
+        }
 
-        Log.i(this.getClass().getSimpleName(), "Thread about to begin");
-        /* running on a separate thread so that it doesn't stall the activity and crash */
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.i("SHIT", "Thread is running");
-                // TODO replace following code to populate ups with things from cloud
-               /*
-                unplannedSteps contains the data from the past seven days
-                */
-//                List<Bucket> unplannedSteps = dr.
-//                       retrieveAggregatedData(DataType.TYPE_STEP_COUNT_DELTA,
-//                               DataType.AGGREGATE_STEP_COUNT_DELTA, Calendar.DAY_OF_YEAR, DAYS_PER_WEEK-1);
-//                AggregateData ad = new AggregateData(unplannedSteps);
-//                List<Integer> ups = ad.toIntList();
-                List<Integer> ups = new ArrayList<>();
+        String[] dateLabels = new String[dateLabelList.size() + 1];
+        dateLabels = dateLabelList.toArray(dateLabels);
 
-                SimpleDateFormat monthDayFormat = new SimpleDateFormat(MONTH_DAY_FMT);
-                List<String> dateLabelList = new ArrayList<>();
+        //getting planned walks urns from cloud
+        CloudDataRetriever cdr = new CloudDataRetriever(act, email);
+        Log.i("SHIT", "ABOUT TO CALL PARSEDATA");
+        cdr.parseData(DAYS_PER_WEEK);
 
-                // create list of date strings
-                for (int i = 0; i > -1*DAYS_PER_WEEK; i--) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.DAY_OF_YEAR, i);
-                    dateLabelList.add(0, monthDayFormat.format(cal.getTime()));
-                    Log.i("SHIT", "Date: " + monthDayFormat.format(cal.getTime()));
-                }
+        List<Integer> ps = new ArrayList<>();
+        List<Integer> ups = new ArrayList<>();
+        List<Integer> goals = new ArrayList<>();
 
-                String[] dateLabels = new String[dateLabelList.size() + 1];
-                dateLabels = dateLabelList.toArray(dateLabels);
+        for (int i = 0; i < DAYS_PER_WEEK; i++) {
+            ps.add(0);
+            ups.add(0);
+            goals.add(0);
+        }
+        Log.i("UPS_SIZE", "ups size is " + ups.size());
+        Log.i("PS_SIZE", "ps size is " + ps.size());
 
-                //getting planned walks urns from cloud
-                CloudDataRetriever cdr = new CloudDataRetriever(act, email);
-                Log.i("SHIT", "ABOUT TO CALL PARSEDATA");
-                cdr.parseData(DAYS_PER_WEEK);
-
-                /* post processing ps data */
-                List<Integer> ps = new ArrayList<>();
-
-                // filling in zeroes where we hvae no data
-                int oldPSSize = ps.size();
-                for (int j = 0; j < 7 - oldPSSize; j++) {
-                    ps.add(0);
-                }
-                int oldUPSSize = ups.size();
-                for (int k = 0; k < 7 - oldUPSSize; k++) {
-                    ups.add(0);
-                }
-
-                Log.i("UPS_SIZE", "ups size is " + ups.size());
-                Log.i("PS_SIZE", "ps size is " + ps.size());
-
-                ProgressChart pc = new ProgressChart(barChart, ups, ps, ups.size(), dateLabels);
-                cdr.register(pc);
-                pc.setup();
-            }
-
-        }).start();
+        ProgressChart pc = new ProgressChart(barChart, ups, ps, goals, dateLabelList.size(), dateLabels);
+        cdr.register(pc);
+        pc.setup();
     }
 
     @Override

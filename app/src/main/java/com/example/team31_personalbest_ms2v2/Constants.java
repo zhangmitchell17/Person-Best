@@ -12,9 +12,11 @@ public class Constants {
 
     public static final String PLANNED_STEPS_STR = "Planned Steps";
     public static final String UNPLANNED_STEPS_STR = "Unplanned Steps";
+    public static final String GOAL_STR = "Steps to Reach Goal";
 
     public static final String PASTEL_GREEN = "#81dafc";
     public static final String PASTEL_BLUE = "#77dd77";
+    public static final String LIGHT_GREY = "#D3D3D3";
 
     public static final String MONTH_DAY_FMT = "MM/dd";
 
@@ -23,4 +25,5 @@ public class Constants {
     public static final int SECS_PER_MIN = 60;
     public static final int MS_PER_SEC = 1000;
     public static final int DAYS_PER_WEEK = 7;
+    public static final int DAYS_PER_MONTH = 28;
 }
