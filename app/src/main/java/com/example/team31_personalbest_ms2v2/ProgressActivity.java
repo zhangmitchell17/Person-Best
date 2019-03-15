@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.TextView;
 
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -35,9 +38,7 @@ import static com.example.team31_personalbest_ms2v2.Constants.*;
  * This file defines the ProgressActivity class which is used to record
  * the weekly and daily progress of a user
  */
-public class ProgressActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+public class ProgressActivity extends AppCompatActivity {
     private Activity act = this;
     private final String[] dayNames = { "Sunday", "Monday", "Tuesday",
             "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -53,6 +54,10 @@ public class ProgressActivity extends AppCompatActivity implements
     private FirebaseFirestore db;
     private String email;
 
+    private TextView textViewWeekly;
+    private TextView textViewMonthly;
+    private CloudDataRetriever cdr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +65,26 @@ public class ProgressActivity extends AppCompatActivity implements
 
         // making the barchart from the view
         barChart = findViewById(R.id.graphProgress);
+        textViewWeekly = findViewById(R.id.textViewWeekly);
+        textViewMonthly = findViewById(R.id.textViewMonthly);
+
+        textViewMonthly.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.i("SHIT", "Displaying weekly data");
+                cdr.parseData(DAYS_PER_MONTH);
+                return false;
+            }
+        });
+
+        textViewWeekly.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.i("SHIT", "Displaying monthly data");
+                cdr.parseData(DAYS_PER_WEEK);
+                return false;
+            }
+        });
 
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
@@ -85,7 +110,7 @@ public class ProgressActivity extends AppCompatActivity implements
         dateLabels = dateLabelList.toArray(dateLabels);
 
         //getting planned walks urns from cloud
-        CloudDataRetriever cdr = new CloudDataRetriever(act, email);
+        cdr = new CloudDataRetriever(act, email);
         Log.i("SHIT", "ABOUT TO CALL PARSEDATA");
         cdr.parseData(DAYS_PER_WEEK);
 
@@ -93,7 +118,7 @@ public class ProgressActivity extends AppCompatActivity implements
         List<Integer> ups = new ArrayList<>();
         List<Integer> goals = new ArrayList<>();
 
-        for (int i = 0; i < DAYS_PER_WEEK; i++) {
+        for (int i = 0; i < DAYS_PER_MONTH; i++) {
             ps.add(0);
             ups.add(0);
             goals.add(0);
@@ -106,19 +131,6 @@ public class ProgressActivity extends AppCompatActivity implements
         pc.setup();
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.e("HistoryAPI", "onConnectionSuspended");
-    }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e("HistoryAPI", "onConnectionFailed");
-    }
-
-    public void onConnected(@Nullable Bundle bundle) {
-        Log.e("HistoryAPI", "onConnected");
-
-    }
 
 }

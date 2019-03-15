@@ -7,5 +7,5 @@ import java.util.List;
  * when data has been retrieved by the subject they are observing
  */
 public interface IDataRetrieverObserver {
-    void onDataRetrieved(String label, List<Integer> list);
+    void onDataRetrieved(String label, List<String> dates, List<Integer> list);
 }
