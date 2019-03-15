@@ -653,7 +653,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        SharedPreferences sharedPref = getSharedPreferences(date + 1, MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(date + 2, MODE_PRIVATE);
         goalAchievedDisplayed = sharedPref.getBoolean("accomplishmentDisplayed", false);
 
         System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
@@ -670,7 +670,7 @@ public class MainActivity extends AppCompatActivity
             showNotification("good job", "Please set a new step goal");
 
             // Save the date that the accomplishment notification has been set
-            sharedPref = getSharedPreferences(date + 1, MODE_PRIVATE);
+            sharedPref = getSharedPreferences(date + 2, MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean("accomplishmentDisplayed", true);
             editor.apply();
