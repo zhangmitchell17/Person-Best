@@ -1,6 +1,7 @@
 package com.example.team31_personalbest_ms2v2;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -48,6 +49,9 @@ public class FriendsProgressActivity extends AppCompatActivity implements
     private ImageButton sendButton;
     private EditText editTextMessage;
 
+    private String userName;
+    private String friendName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,19 +59,32 @@ public class FriendsProgressActivity extends AppCompatActivity implements
 
         // making the barchart from the view
         barChart = findViewById(R.id.graphProgress);
-        sendButton = findViewById(R.id.buttonChatShortcut);
+
+        Bundle extraStrings = getIntent().getExtras();
+        email = "";
+        userName = "";
+        friendName = "";
+        if(extraStrings!=null) {
+            email = extraStrings.getString("Email");
+            userName = extraStrings.getString("UserName");
+            friendName = extraStrings.getString("FriendName");
+        }
+
         editTextMessage = findViewById(R.id.editTextProgress);
+
+        sendButton = findViewById(R.id.buttonChatShortcut);
         sendButton.setOnClickListener((view)->{
             // TODO launch chat activity and send the message in the editText
+            String message = "";
+            if (editTextMessage.getText().toString() != null) {
+                message = editTextMessage.getText().toString();
+            }
+            editTextMessage.setText("");
+            launchChatActivity(friendName, userName, message);
         });
+
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
-
-        Bundle b = getIntent().getExtras();
-        email = "";
-        if(b!=null) {
-            email = b.getString("Email");
-        }
 
         SimpleDateFormat monthDayFormat = new SimpleDateFormat(MONTH_DAY_FMT);
         List<String> dateLabelList = new ArrayList<>();
@@ -120,4 +137,13 @@ public class FriendsProgressActivity extends AppCompatActivity implements
 
     }
 
+    public void launchChatActivity(String friendName, String userName, String editTextMessage) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        Bundle extraNamesAndMessage = new Bundle();
+        extraNamesAndMessage.putString("FRIEND_NAME",friendName);
+        extraNamesAndMessage.putString("USER_NAME",userName);
+        extraNamesAndMessage.putString("MESSAGE", editTextMessage);
+        intent.putExtras(extraNamesAndMessage);
+        startActivity(intent);
+    }
 }
