@@ -28,12 +28,13 @@ public class ResetHeightTests {
         controller.create();
     }
 
+
     @Test
     public void testIfStepIsResetSameDay() {
         SharedPreferences sharePref = activity.getSharedPreferences("resetSteps", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharePref.edit();
         editor.putString("date", new SimpleDateFormat("MM-dd-yyyy").
-                         format(Calendar.getInstance().getTime()));
+                format(Calendar.getInstance().getTime()));
         editor.putInt("steps", 100);
         editor.apply();
         controller.resume();
@@ -56,6 +57,5 @@ public class ResetHeightTests {
         editor.remove("date");
         editor.apply();
     }
-
 
 }

@@ -1,40 +1,35 @@
 package com.example.team31_personalbest_ms2v2;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.data.Bucket;
-import com.google.android.gms.fitness.data.DataPoint;
-import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.data.Field;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import static com.example.team31_personalbest_ms2v2.Constants.*;
 
 /**
  * This file defines the ProgressActivity class which is used to record
@@ -43,6 +38,7 @@ import androidx.annotation.Nullable;
 public class ProgressActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
+    private Activity act = this;
     private final String[] dayNames = { "Sunday", "Monday", "Tuesday",
             "Wednesday", "Thursday", "Friday", "Saturday"};
 
@@ -53,11 +49,12 @@ public class ProgressActivity extends AppCompatActivity implements
 
     private final int STEPS_IDX = 1;
 
-    DataRetriever dr;
-    List<Integer> ups;
-    List<DataPoint> upsDataPoints;
-    List<BarEntry> stepVals;
-    BarChart barChart;
+    private DataRetriever dr;
+    private BarChart barChart;
+    private FirebaseFirestore db;
+    private CollectionReference plannedWalks;
+    private String email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,240 +63,80 @@ public class ProgressActivity extends AppCompatActivity implements
         // making the barchart from the view
         barChart = findViewById(R.id.graphProgress);
 
-        XAxis xAxis = barChart.getXAxis();
+        FirebaseApp.initializeApp(this);
+        db = FirebaseFirestore.getInstance();
 
-        // Making the x axis labeled by day
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(dayAbbrev));
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawLabels(true);
-        xAxis.setDrawGridLines(false);
-        xAxis.setDrawAxisLine(true);
-        xAxis.setAxisMinimum(-1);
-        xAxis.setAxisMaximum(7);
+        Bundle b = getIntent().getExtras();
+        email = "";
+        if(b!=null) {
+            email = b.getString("Email");
+        }
 
-        YAxis leftAxis = barChart.getAxisLeft();
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setAxisMinimum(0f);
-        barChart.getAxisRight().setEnabled(false);
-
-        stepVals = new ArrayList<>();
+        plannedWalks = db.collection("users")
+                .document(email)
+                .collection("WalkRuns");
 
         dr = new DataRetriever(this);
         dr.setup();
 
+        Log.i(this.getClass().getSimpleName(), "Thread about to begin");
         /* running on a separate thread so that it doesn't stall the activity and crash */
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Log.i("SHIT", "Thread is running");
+                // TODO replace following code to populate ups with things from cloud
                /*
                 unplannedSteps contains the data from the past seven days
                 */
-                List<Bucket> unplannedSteps = dr.
-                       retrieveAggregatedData(DataType.TYPE_STEP_COUNT_DELTA,
-                               DataType.AGGREGATE_STEP_COUNT_DELTA);
-                ups = new ArrayList();
-                upsDataPoints = new ArrayList<>();
-                DateFormat dateFormat = DateFormat.getDateInstance();
-                DateFormat timeFormat = DateFormat.getTimeInstance();
+//                List<Bucket> unplannedSteps = dr.
+//                       retrieveAggregatedData(DataType.TYPE_STEP_COUNT_DELTA,
+//                               DataType.AGGREGATE_STEP_COUNT_DELTA, Calendar.DAY_OF_YEAR, DAYS_PER_WEEK-1);
+//                AggregateData ad = new AggregateData(unplannedSteps);
+//                List<Integer> ups = ad.toIntList();
+                List<Integer> ups = new ArrayList<>();
 
-                /*
-                 * only append once sunday is reached since we don't necessary want the past weeks
-                 * data, but the data for this week
-                 */
-                boolean afterSunday = false;
-                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat monthDayFormat = new SimpleDateFormat(MONTH_DAY_FMT);
+                List<String> dateLabelList = new ArrayList<>();
 
-                /*
-                 * each nested object only has one object in it besides unplannedSteps itself
-                 * just iterating over to access the innermost object which is Field
-                 */
-                for(Bucket b : unplannedSteps) {
-                    for(DataSet ds : b.getDataSets()) {
-                        Log.e("History", "Data returned for Data type: " + ds.getDataType().getName());
-                        for (DataPoint dp : ds.getDataPoints()) {
-                            calendar.setTimeInMillis(dp.getStartTime(TimeUnit.MILLISECONDS));
-                            if(!afterSunday && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-                                afterSunday = true;
-                            }
-                            if(afterSunday) {
-                                upsDataPoints.add(dp);
-                            }
-                            for(Field field: dp.getDataType().getFields()) {
-                                /*
-                                 * if we haven't reached sunday yet and the day is sunday,
-                                 * set the corresponding boolean to true
-                                 */
-
-                                if(afterSunday) {
-                                    Log.e("History", "Data point:");
-                                    Log.e("History", "\tType: " + dp.getDataType().getName());
-                                    Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-                                    Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-                                    Log.d("UPS VALUE", dp.getValue(field).asInt() + " " + field.getName());
-                                    ups.add(dp.getValue(field).asInt());
-
-                                }
-                            }
-                        }
-                    }
+                // create list of date strings
+                for (int i = 0; i > -1*DAYS_PER_WEEK; i--) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.add(Calendar.DAY_OF_YEAR, i);
+                    dateLabelList.add(0, monthDayFormat.format(cal.getTime()));
+                    Log.i("SHIT", "Date: " + monthDayFormat.format(cal.getTime()));
                 }
 
-                /*
-                 * TODO write code to get planned walks run and replace ps with a proper array
-                 */
-                SharedPreferences sharedPrefs = MainActivity.mainActivity.getSharedPreferences("WalkRunStatsDate", MODE_PRIVATE);
-                Map<String,?> keys = sharedPrefs.getAll();
+                String[] dateLabels = new String[dateLabelList.size() + 1];
+                dateLabels = dateLabelList.toArray(dateLabels);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
-                SimpleDateFormat day = new SimpleDateFormat("MM-dd-yyyy");
-                Map<String, Integer> plannedStepsPerDay = new HashMap<>();
-
-                /* populating plannedStepsPerDay */
-                Log.i("SIZE_OF_SP", "SharedPref size : " + keys.size());
-                /*
-                 * for loop to loop through all entries of sharedpreferences
-                 */
-                for(Map.Entry<String,?> entry : keys.entrySet()){
-                    Log.d("PROG_ACT_SDF","key in sharedprefss: " + entry.getKey());
-
-                    HashSet<String> values = (HashSet<String>) entry.getValue();
-                    /* try catch to see if the date is parseable */
-                    try {
-                        // seeing if the key is parseable
-                        Date date = sdf.parse(entry.getKey());
-
-                        // making another string out of it with another format
-                        // specified by "day"
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(date);
-                        String dayDate = day.format(cal.getTime());
-
-                        // code to add steps to proper day
-                        int count = plannedStepsPerDay.containsKey(dayDate) ?
-                                plannedStepsPerDay.get(dayDate) :
-                                0;
-
-                        // variable to hold new steps for the planned walk/run
-                        int moreSteps = 0;
-
-                        // loop that iterates through the hash set given by the key
-                        for(String s : values) {
-                            int index = -1;
-                            Log.i("VALUE_IN_VALUES", "values.s = " + s);
-                            // each string in the hash set starts with either time
-                            // steps, or mph, so iterate until we find which identifer it
-                            // starts with
-                            if (s.substring(0, s.indexOf(":")).equals("Steps")) {
-                                moreSteps = Integer.parseInt(s.substring(s.indexOf(":") + 2));
-                                Log.i("MORE_STEPS", "moreSteps = " + moreSteps);
-                            }
-                        }
-
-                        plannedStepsPerDay.put(dayDate, count + moreSteps);
-
-                    } catch (Exception e) {
-                        Log.e("PROG_ACT_SDF","String cannot be parsed so its not a date");
-                        e.printStackTrace();
-                    }
-                }
-
-                /* post processing ups data
-                 */
-                if(upsDataPoints.size() > 0) {
-
-                    // getting the starting time of the first day of data we retrieve
-                    long timeOfFirstDay = upsDataPoints.get(0)
-                            .getStartTime(TimeUnit.MILLISECONDS);
-
-                    // getting the number of the first day we retrieve data for
-                    calendar.setTimeInMillis(timeOfFirstDay);
-                    int firstDay = calendar.get(Calendar.DAY_OF_WEEK);
-
-                    if (firstDay == Calendar.SUNDAY) {
-                        ups.clear();
-                    }
-
-                    /*
-                     * if it never reached sunday then we don't have data for a sunday
-                     * meaning the interval of time for which we have data
-                     * is after the previous sunday and before the current sunday
-                     */
-                    if (!afterSunday) {
-                        /*
-                         * so fill the days before the current day with 0
-                         */
-                        for (int i = 1; i <= firstDay; i++) {
-                            ups.add(0, 0);
-                        }
-                    }
-                }
-
-                // add todays data since retrieve the last weeks data is exclusive of today
-                ups.add(dr.retrieveTodaysSteps());
+                //getting planned walks urns from cloud
+                CloudDataRetriever cdr = new CloudDataRetriever(act, email);
+                Log.i("SHIT", "ABOUT TO CALL PARSEDATA");
+                cdr.parseData(DAYS_PER_WEEK);
 
                 /* post processing ps data */
                 List<Integer> ps = new ArrayList<>();
-                /*
-                 * print all keys in plannedstepsperday
-                 */
-                Log.i("PROGRESS_KEYS",plannedStepsPerDay.keySet().toString());
 
-                /* for dates that are in upsdatapoints, then check if they exist in maps, and
-                 * then populate the corresponding
-                 * things in ps
-                 */
-                Calendar cal = Calendar.getInstance();
-                String key;
-
-                /* assumes that for every day that unplanned steps are made, there
-                 * are planned steps
-                 */
-
-                /*
-                 * if plannedStepsPerDay has data for today, then add it to ps
-                 */
-                cal.setTimeInMillis(System.currentTimeMillis());
-                key = day.format(cal.getTime());
-                if(plannedStepsPerDay.containsKey(key)) {
-                    Log.i("PROGRESS_VALUE", "plannedStepsPerDay.get(key): "+plannedStepsPerDay.get(key));
-                    ps.add(plannedStepsPerDay.get(key));
-                }
-
-                Log.i("PROGRESS", "printing values in ps");
-                for(Integer i : ps) {
-                    Log.i("PROGRESS", "Value is " + i);
-                }
-
+                // filling in zeroes where we hvae no data
                 int oldPSSize = ps.size();
-                for(int j = 0; j < 7-oldPSSize; j++) {
+                for (int j = 0; j < 7 - oldPSSize; j++) {
                     ps.add(0);
                 }
                 int oldUPSSize = ups.size();
-                for(int k = 0; k < 7-oldUPSSize; k++) {
+                for (int k = 0; k < 7 - oldUPSSize; k++) {
                     ups.add(0);
                 }
 
-                // populate BarEntries
-                for (int i = 0; i < 7; i++) {
-                    stepVals.add(new BarEntry(i, new float[]{ps.get(i), ups.get(i)}));
-                }
+                Log.i("UPS_SIZE", "ups size is " + ups.size());
+                Log.i("PS_SIZE", "ps size is " + ps.size());
 
-                // making dataset from set
-                BarDataSet set = new BarDataSet(stepVals, "Steps");
-
-                // labels for the chart legend
-                set.setStackLabels(new String[]{"Planned Steps", "Unplanned Steps"});
-                set.setColors(Color.parseColor("#81dafc"), // pastel green
-                       Color.parseColor(("#77dd77"))); // pastel blue
-                BarData data = new BarData(set);
-
-                barChart.getDescription().setEnabled(false);
-                barChart.setData(data);
-
-                barChart.invalidate(); // refresh
+                ProgressChart pc = new ProgressChart(barChart, ups, ps, ups.size(), dateLabels);
+                cdr.register(pc);
+                pc.setup();
             }
-        }).start();
 
+        }).start();
     }
 
     @Override
@@ -315,14 +152,6 @@ public class ProgressActivity extends AppCompatActivity implements
     public void onConnected(@Nullable Bundle bundle) {
         Log.e("HistoryAPI", "onConnected");
 
-    }
-
-    public Calendar getMostRecentSunday() {
-        Calendar cal = Calendar.getInstance();
-        while(cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
-            cal.add(Calendar.DAY_OF_YEAR, -1);
-        }
-        return cal;
     }
 
 }

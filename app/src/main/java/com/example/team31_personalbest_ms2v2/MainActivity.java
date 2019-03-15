@@ -46,6 +46,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -210,8 +211,16 @@ public class MainActivity extends AppCompatActivity
      * When user start using new phone or re download the app, he should get goal/step from cloud
      */
     public void grabUserStrideGoalFromCloud(String type, TextView view) {
-         DocumentReference docRef = db.collection("users").
-                document(currentUserEmail).collection("HeightAndGoal").document(type);
+        String date = new SimpleDateFormat("MM-dd-yyyy").
+                format(Calendar.getInstance().getTime());
+        DocumentReference docRef;
+        if(type.equals("stride")) {
+            docRef = db.collection("users").
+                    document(currentUserEmail).collection("HeightAndGoal").document(type);
+        } else {
+            docRef = db.collection("users").
+                    document(currentUserEmail).collection("HeightAndGoal").document(date);
+        }
 
         // grabe user stride and
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -235,14 +244,21 @@ public class MainActivity extends AppCompatActivity
         String steps = view.getText().toString();
         Log.i("Cloud steps: ", ("Steps to the cloud: " + steps));
 
-
         Map<String, String> dailyStepCnt = new HashMap();
         dailyStepCnt.put("steps", steps);
-        String date = new SimpleDateFormat("MM-dd-yyyy").
+
+        Date day = new Date();
+        String simpleDate = new SimpleDateFormat("MM-dd-yyyy").
                 format(Calendar.getInstance().getTime());
 
+        String date = day.toString();
+        String dayOfWeek = date.substring(0, date.indexOf(" "));
+        int indexOfEnd = date.indexOf(" ", date.indexOf(" ", date.indexOf(" ") + 1) +1);
+        // Feb 17 2019
+        String monthDayYear = date.substring(date.indexOf(" ") + 1, indexOfEnd) + " " + date.substring(date.length() - 4);
+        dailyStepCnt.put("monthDayYear", monthDayYear);
         db.collection("users").document(this.currentUserEmail).
-                collection("steps").document(date).set(dailyStepCnt);
+                collection("steps").document(simpleDate).set(dailyStepCnt);
     }
 
     /**
@@ -360,6 +376,12 @@ public class MainActivity extends AppCompatActivity
      */
     public void launchProgressActivity() {
         Intent intent = new Intent(this, ProgressActivity.class);
+        String email = "";
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            email = acct.getEmail();
+        }
+        intent.putExtra("Email", email);
         startActivity(intent);
     }
 
@@ -375,7 +397,7 @@ public class MainActivity extends AppCompatActivity
      * launchPastWalksActivity Launches the activity showing the past week's walks/runs
      */
     public void launchFriendsListActivity() {
-        Intent intent = new Intent(this, friendsListActivity.class);
+        Intent intent = new Intent(this, FriendsListActivity.class);
         startActivity(intent);
     }
 
