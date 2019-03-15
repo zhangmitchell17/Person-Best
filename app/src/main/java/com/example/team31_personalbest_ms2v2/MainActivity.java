@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity
     private String fitnessServiceKey = "GOOGLE_FIT";
 
     private boolean goalAchievedDisplayed;
+    private boolean progressEncouragementDisplayed;
 
     private TimeService timeService;
     //public Steps steps;
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity
                 fitnessService.updateStepCount();
                 sendStepsToCloud(db);
                 goalAchievement();
+                progressEncouragement();
                 Log.i("BoardCast: ", "received boardcast");
             }
         }
@@ -227,6 +229,7 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG, "Time Service: " + intent.toString());
         startService(intent);
 
+        progressEncouragement();
         subscribeToNotificationsTopic("notifications1");
     }
 
@@ -673,6 +676,87 @@ public class MainActivity extends AppCompatActivity
             sharedPref = getSharedPreferences(date + 1, MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean("accomplishmentDisplayed", true);
+            editor.apply();
+        }
+    }
+
+    public void progressEncouragement() {
+        String date = new SimpleDateFormat("MM-dd-yyyy").
+                format(Calendar.getInstance().getTime());
+
+        int day = Integer.parseInt(date.substring(3, 5)) - 1;
+        String month = date.substring(0, 2);
+        String year = date.substring(6);
+        String preDate = month + "-" + day + "-" + year;
+
+        System.out.println("preDate is :" + (preDate.equals(date)));
+
+        DocumentReference docRef = db.collection("users")
+                .document(currentUserEmail)
+                .collection("steps")
+                .document(date);
+
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    SharedPreferences sharedPreferences = getSharedPreferences("todaySteps", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("steps", (String)document.get("steps"));
+                    editor.apply();
+                    System.out.println("sharePref: " + sharedPreferences.getString("todaySteps", "-1"));
+                } else {
+                    Log.d(TAG, "No such document");
+                }
+            } else {
+                Log.d(TAG, "get failed with ", task.getException());
+            }
+        });
+
+        SharedPreferences sharedPreferences2 = getSharedPreferences("todaySteps", MODE_PRIVATE);
+        int todaySteps = Integer.parseInt(sharedPreferences2.getString("steps", "0"));
+
+        docRef = db.collection("users")
+                .document(currentUserEmail)
+                .collection("steps")
+                .document(preDate);
+
+        docRef.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful())
+                    {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists())
+                        {
+                            SharedPreferences sharedPreferences = getSharedPreferences("predaySteps", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("steps", document.getString("steps"));
+                            editor.apply();
+                        }
+                    }
+                });
+
+        SharedPreferences sharedPref = getSharedPreferences(date, MODE_PRIVATE);
+        progressEncouragementDisplayed = sharedPref.getBoolean("encouragementDisplayed", false);
+
+        System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+
+        SharedPreferences sharePref = getSharedPreferences("predaySteps", MODE_PRIVATE);
+        int preSteps = Integer.parseInt(sharePref.getString("steps","0"));
+
+        Log.i("todaySteps: ", Integer.toString(todaySteps));
+        Log.i("preSteps: ", Integer.toString(preSteps));
+        Log.i("progressEncouragementDisplayed", Boolean.toString(progressEncouragementDisplayed));
+
+        // Only display it if the step count is greater than the step goal and the notification has not been displayed yet
+        if ((todaySteps > preSteps + 500) && !progressEncouragementDisplayed) {
+            showNotification("good job", "You made a huge progress");
+
+            // Save the date that the accomplishment notification has been set
+            sharedPref = getSharedPreferences(date, MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("encouragementDisplayed", true);
             editor.apply();
         }
     }
