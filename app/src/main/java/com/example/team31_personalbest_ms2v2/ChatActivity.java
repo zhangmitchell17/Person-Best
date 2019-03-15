@@ -41,7 +41,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        FirebaseApp.initializeApp(this);
+        //FirebaseApp.initializeApp(this);
 
         getFromAndTo();
         setupDocumentKey();

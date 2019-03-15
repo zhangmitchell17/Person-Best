@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         // init firebase firestore
-        FirebaseApp.initializeApp(this);
+        //FirebaseApp.initializeApp(this);
         this.db = FirebaseFirestore.getInstance();
 
 

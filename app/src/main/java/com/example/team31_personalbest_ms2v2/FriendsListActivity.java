@@ -59,7 +59,7 @@ public class FriendsListActivity extends AppCompatActivity {
         }
 
         // add current user to the users database
-        FirebaseApp.initializeApp(this);
+        //FirebaseApp.initializeApp(this);
 
         db = FirebaseFirestore.getInstance();
 

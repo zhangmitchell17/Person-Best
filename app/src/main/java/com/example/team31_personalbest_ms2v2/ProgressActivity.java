@@ -63,7 +63,7 @@ public class ProgressActivity extends AppCompatActivity implements
         // making the barchart from the view
         barChart = findViewById(R.id.graphProgress);
 
-        FirebaseApp.initializeApp(this);
+        //FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
 
         Bundle b = getIntent().getExtras();

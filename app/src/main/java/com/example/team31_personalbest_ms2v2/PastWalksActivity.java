@@ -99,7 +99,7 @@ public class PastWalksActivity extends AppCompatActivity {
             this.currentUserName = acct.getDisplayName();
         }
 
-        FirebaseApp.initializeApp(this);
+        //FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
 
         walks = db.collection("users")
