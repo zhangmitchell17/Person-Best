@@ -115,7 +115,7 @@ public class FriendsListActivity extends AppCompatActivity {
     }
 
     public void startProgressActivity(String friendEmail) {
-        Intent intent = new Intent(this, ProgressActivity.class);
+        Intent intent = new Intent(this, FriendsProgressActivity.class);
         Log.i("SHIT", "friends email is ");
         intent.putExtra("Email", friendEmail);
         startActivity(intent);

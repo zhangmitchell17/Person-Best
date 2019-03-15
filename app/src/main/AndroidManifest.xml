@@ -19,6 +19,7 @@
             android:label="@string/title_activity_mock_friends_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".FriendsListActivity" />
+        <activity android:name=".FriendsProgressActivity"/>
         <activity android:name=".PastWalksActivity" />
         <activity android:name="ChatActivity"/>
         <service android:name="MyFirebaseMessagingService">
@@ -53,7 +54,6 @@
         <activity
             android:name=".Login"
             android:screenOrientation="portrait" />
-        <activity android:name=".StepCountActivity" />
     </application>
 
 </manifest>

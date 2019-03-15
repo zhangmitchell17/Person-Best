@@ -47,6 +47,9 @@ public class CloudDataRetriever implements ISubject<IDataRetrieverObserver> {
         colMap.put("ups", ff.collection("users")
                 .document(email)
                 .collection("steps"));
+        colMap.put("goals", ff.collection("users")
+                .document(email)
+                .collection("HeightAndGoal"));
 
         observers = new ArrayList<>();
     }
@@ -85,18 +88,23 @@ public class CloudDataRetriever implements ISubject<IDataRetrieverObserver> {
 
                                   if(dateSet.contains(document.get("monthDayYear"))) {
                                       String dateString = (String) document.get("monthDayYear");
-                                      Integer newSteps = Integer.parseInt((String)document.get("steps"));
-                                      // if the string exists in the value map, then
-                                      // increment the old value by the new value, otherwise
-                                      // just put in it
-                                      if(valueMap.containsKey(dateString)) {
-                                          //add
-                                          Integer oldSteps = valueMap.get(dateString);
-                                          valueMap.replace(dateString, oldSteps + newSteps);
-
+                                      if(colRefName.equals("goals")) {
+                                          Integer goal = Integer.parseInt((String) document.get("goal"));
+                                          valueMap.put(dateString, goal);
                                       } else {
-                                          // put
-                                          valueMap.put(dateString, newSteps);
+                                          Integer newSteps = Integer.parseInt((String) document.get("steps"));
+                                          // if the string exists in the value map, then
+                                          // increment the old value by the new value, otherwise
+                                          // just put in it
+                                          if (valueMap.containsKey(dateString)) {
+                                              //add
+                                              Integer oldSteps = valueMap.get(dateString);
+                                              valueMap.replace(dateString, oldSteps + newSteps);
+
+                                          } else {
+                                              // put
+                                              valueMap.put(dateString, newSteps);
+                                          }
                                       }
                                   }
                               }

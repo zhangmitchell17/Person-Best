@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -159,14 +160,27 @@ public class InputHeightStepGoal extends AppCompatActivity{
                                 sharePref.getString("step", "1") + " steps";
 
                         // store stride length to the cloud
-                        String date = new SimpleDateFormat("MM-dd-yyyy").
+                        Date day = new Date();
+                        String simpleDate = new SimpleDateFormat("MM-dd-yyyy").
                                 format(Calendar.getInstance().getTime());
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("goal", newGoal);
-                        map.put("date", date);
+
+                        String date = day.toString();
+                        String dayOfWeek = date.substring(0, date.indexOf(" "));
+                        int indexOfEnd = date.indexOf(" ", date.indexOf(" ", date.indexOf(" ") + 1) +1);
+                        String monthDayYear = date.substring(date.indexOf(" ") + 1, indexOfEnd) + " " + date.substring(date.length() - 4);
+                        Map<String, String> map = new HashMap<>();
+                        map.put("goal", Integer.toString(newGoal));
+                        map.put("date", simpleDate);
+                        map.put("monthDayYear", monthDayYear);
+
                         db.collection("users").document(userEmail)
                                 .collection("HeightAndGoal")
-                                .document(date)
+                                .document(simpleDate)
+                                .set(map);
+
+                        db.collection("users").document(userEmail)
+                                .collection("HeightAndGoal")
+                                .document("goal")
                                 .set(map);
 
                         Toast.makeText(InputHeightStepGoal.this, "Your step goal is saved",

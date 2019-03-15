@@ -4,18 +4,89 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FriendsProgressActivity">
+    tools:context=".ProgressActivity"
+    android:orientation="vertical"
+    >
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_topOfChart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.10"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_bottomOfChart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.80"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_topOfShortcut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.90"/>
 
     <com.github.mikephil.charting.charts.BarChart
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/barChartFriends"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:id="@+id/graphProgress"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        app:layout_constraintHeight_percent="0.8"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_topOfChart"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottomOfChart"/>
+
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:id="@+id/linearLayoutChatShortcut"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toTopOf="@id/guideline_topOfShortcut"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/guideline_textButtonDivider"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.80"/>
+
+        <EditText
+            android:id="@+id/editTextProgress"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:hint="message"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="@id/guideline_textButtonDivider"
+            app:layout_constraintTop_toTopOf="parent" />
+        <ImageButton
+            android:id="@+id/buttonChatShortcut"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            app:layout_constraintHeight_percent=".8"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/guideline_textButtonDivider"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/send_button"
+            android:background="#FFFFFF"
+            android:clickable="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:padding="15dp"/>
+    </android.support.constraint.ConstraintLayout>
+
 
 </android.support.constraint.ConstraintLayout>

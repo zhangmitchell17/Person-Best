@@ -1,5 +1,8 @@
 package com.example.team31_personalbest_ms2v2;
+import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.google.firebase.FirebaseApp;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +18,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.robolectric.shadows.ShadowInstrumentation.getInstrumentation;
 
 @RunWith(RobolectricTestRunner.class)
 public class ResetHeightTests {
@@ -23,6 +27,8 @@ public class ResetHeightTests {
 
     @Before
     public void init() {
+        Context context = getInstrumentation().getTargetContext();
+        FirebaseApp.initializeApp(context);
         activity = Robolectric.setupActivity(MainActivity.class);
         controller = Robolectric.buildActivity(MainActivity.class);
         controller.create();
@@ -53,7 +59,7 @@ public class ResetHeightTests {
         editor.putInt("steps", 100);
         controller.resume();
 
-        assertEquals(sharePref.getInt("steps", -1), 0);
+        assertEquals(sharePref.getInt("steps", 0), 0);
         editor.remove("date");
         editor.apply();
     }
