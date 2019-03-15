@@ -111,7 +111,7 @@ public class CloudDataRetriever implements ISubject<IDataRetrieverObserver> {
 
                               Log.d("SHIT","SHIT SHULD BE NOTIFIED");
                               Log.i("SHIT", "Retrieved data for " + colRefName);
-                              dataRetrievalComplete(colRefName, mapToList(dateList, valueMap));
+                              dataRetrievalComplete(colRefName, dateList, mapToList(dateList, valueMap));
                           }
                       }
                   });
@@ -126,10 +126,10 @@ public class CloudDataRetriever implements ISubject<IDataRetrieverObserver> {
         observers.remove(observer);
     }
 
-    private void dataRetrievalComplete(String label, List<Integer> list) {
+    private void dataRetrievalComplete(String label, List<String> dates, List<Integer> list) {
         Log.i("SHIT", "notifying observers");
         for(IDataRetrieverObserver observer: observers) {
-            observer.onDataRetrieved(label, list);
+            observer.onDataRetrieved(label, dates, list);
         }
     }
 

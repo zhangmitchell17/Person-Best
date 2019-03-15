@@ -21,6 +21,33 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.90"/>
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_buttonMidDivider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:id="@+id/textViewWeekly"
+        android:text="weekly"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/guideline_buttonMidDivider"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_topOfChart"
+        android:gravity="center"/>
+    <TextView
+        android:id="@+id/textViewMonthly"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="monthly"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_buttonMidDivider"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_topOfChart"
+        android:gravity="center"/>
 
     <com.github.mikephil.charting.charts.BarChart
         android:layout_width="0dp"

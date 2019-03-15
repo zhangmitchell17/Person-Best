@@ -4,14 +4,18 @@ import android.graphics.Color;
 import android.util.Log;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static com.example.team31_personalbest_ms2v2.Constants.*;
@@ -71,8 +75,11 @@ public class ProgressChart implements IDataRetrieverObserver{
     /**
      *
      */
-    private void update(String label, List<Integer> list) {
+    private void update(String label, List<String> dates, List<Integer> list) {
         Log.i("SHIT", "Updating for " + label);
+        String[] dateLabels = new String[dates.size() + 1];
+        this.len = dates.size();
+        this.bottomAxisLabels = dates.toArray(dateLabels);
         if(label.equals("ups")) {
             unplanned = list;
         } else if(label.equals("ps")) {
@@ -94,7 +101,8 @@ public class ProgressChart implements IDataRetrieverObserver{
 
         // bottomAxis formatting ----
         // labels bars as per bottomAxisLabels
-        bottomAxis.setValueFormatter(new IndexAxisValueFormatter(bottomAxisLabels));
+        //bottomAxis.setValueFormatter(new IndexAxisValueFormatter(bottomAxisLabels));
+        bottomAxis.setValueFormatter(new DateFormatter(bottomAxisLabels.length));
         bottomAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         bottomAxis.setDrawLabels(true);
         bottomAxis.setDrawGridLines(false);
@@ -110,6 +118,8 @@ public class ProgressChart implements IDataRetrieverObserver{
         leftAxis.setAxisMinimum(0);
         // we are only utilizing one axis and it will be the left one
         bc.getAxisRight().setEnabled(false);
+
+        //bc.setVisibleXRangeMaximum(len);
     }
 
     /**
@@ -120,10 +130,19 @@ public class ProgressChart implements IDataRetrieverObserver{
         List<BarEntry> barEntries = new ArrayList<>();
 
         // populating barEntries with values from planned and unplanned
-        for(int i = 0; i < len; i++) {
-            int stepsToReachGoal = (goals.get(i)-unplanned.get(i)-planned.get(i)>=0) ?
-                    goals.get(i)-unplanned.get(i)-planned.get(i) : 0;
-            barEntries.add(new BarEntry(i, new float[]{planned.get(i), unplanned.get(i),
+        for(int i = len-1; i >= 0; i--) {
+            // for the i'th elemnt to exist, goals size needs to be
+            // i+1 elements atleast, so if it isn't then make the value 0
+            int tmpGoal = (goals.size()<i+1) ? 0 : goals.get(i);
+            int tmpUPS = (unplanned.size()<i+1) ? 0 : unplanned.get(i);
+            int tmpPS = (planned.size()<i+1) ? 0 : planned.get(i);
+
+            Log.i("SHIT", "Bar Chart is adding " + tmpUPS + " unplanned steps, " +
+                    tmpPS + " planned steps, for the date of " + bottomAxisLabels[i]);
+
+            int stepsToReachGoal = (tmpGoal-tmpUPS-tmpPS>=0) ?
+                    tmpGoal-tmpUPS-tmpPS : 0;
+            barEntries.add(0, new BarEntry(i, new float[]{tmpPS, tmpUPS,
                                                        stepsToReachGoal}));
         }
 
@@ -142,9 +161,28 @@ public class ProgressChart implements IDataRetrieverObserver{
     /**
      *
      */
-    public void onDataRetrieved(String label, List<Integer> list) {
+    public void onDataRetrieved(String label, List<String> dates, List<Integer> list) {
         Log.i("SHIT", "progress chart has been notified");
-        update(label, list);
+        update(label, dates, list);
     }
 
+}
+
+class DateFormatter implements IAxisValueFormatter {
+    private SimpleDateFormat simpleDateFormat;
+    private int max;
+
+    public DateFormatter(int max) {
+        simpleDateFormat = new SimpleDateFormat(MONTH_DAY_FMT);
+        this.max = max;
+    }
+    @Override
+    public String getFormattedValue(float value, AxisBase axis) {
+        Calendar cal = Calendar.getInstance();
+        if(value >= max-1 || value != (int)value) {
+            return "";
+        }
+        cal.add(Calendar.DAY_OF_YEAR, -1*(max-(int)value-2));
+        return simpleDateFormat.format(cal.getTime());
+    }
 }
